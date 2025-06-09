@@ -298,16 +298,26 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       }
     }
     
+    // Calculate final racing stats by adding diet bonuses to base stats
+    const finalSpeed = parseInt(formData.speed) + (formData.diet_speed ? parseInt(formData.diet_speed) : 0);
+    const finalSprintEnergy = parseInt(formData.sprint_energy) + (formData.diet_sprint_energy ? parseInt(formData.diet_sprint_energy) : 0);
+    const finalAcceleration = parseInt(formData.acceleration) + (formData.diet_acceleration ? parseInt(formData.diet_acceleration) : 0);
+    const finalAgility = parseInt(formData.agility) + (formData.diet_agility ? parseInt(formData.diet_agility) : 0);
+    const finalJump = parseInt(formData.jump) + (formData.diet_jump ? parseInt(formData.diet_jump) : 0);
+
+    // Ensure final stats don't exceed 300
+    const clampStat = (value: number) => Math.min(value, 300);
+    
     const horseData: TablesInsert<"horses"> = {
       user_id: PERSONAL_USER_ID,
       name: formData.name.trim(),
       category: formData.category || null, // Single category, not comma-separated
       tier: tierValue,
-      speed: parseInt(formData.speed),
-      sprint_energy: parseInt(formData.sprint_energy),
-      acceleration: parseInt(formData.acceleration),
-      agility: parseInt(formData.agility),
-      jump: parseInt(formData.jump),
+      speed: clampStat(finalSpeed),
+      sprint_energy: clampStat(finalSprintEnergy),
+      acceleration: clampStat(finalAcceleration),
+      agility: clampStat(finalAgility),
+      jump: clampStat(finalJump),
       diet_speed: formData.diet_speed ? parseInt(formData.diet_speed) : null,
       diet_sprint_energy: formData.diet_sprint_energy ? parseInt(formData.diet_sprint_energy) : null,
       diet_acceleration: formData.diet_acceleration ? parseInt(formData.diet_acceleration) : null,
@@ -321,7 +331,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       notes: formData.notes.trim() || null,
     };
 
-    console.log("Submitting horse data:", horseData);
+    console.log("Submitting horse data with diet bonuses applied:", horseData);
     createHorseMutation.mutate(horseData);
   };
 
