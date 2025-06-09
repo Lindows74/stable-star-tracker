@@ -63,15 +63,14 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Thoroughbred",
     "Arabian",
     "Quarter Horse",
-    "Standardbred",
-    "Paint Horse",
-    "Appaloosa"
+    "Standardbred"
   ];
 
   const categoryOptions = [
     { value: "flat_racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
     { value: "cross_country", label: "Cross Country" },
+    { value: "misc", label: "Misc" },
   ];
 
   const surfaceOptions = [
