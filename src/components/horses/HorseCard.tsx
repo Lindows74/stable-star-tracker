@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -31,6 +30,7 @@ import type { Tables } from "@/integrations/supabase/types";
 interface HorseCardProps {
   horse: Tables<"horses"> & {
     horse_categories?: { category: string }[];
+    horse_traits?: { trait_name: string }[];
   };
 }
 
@@ -53,6 +53,17 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
       if (categoriesError) {
         console.error("Error deleting horse categories:", categoriesError);
         throw categoriesError;
+      }
+
+      // Delete horse traits
+      const { error: traitsError } = await supabase
+        .from("horse_traits")
+        .delete()
+        .eq("horse_id", horse.id);
+
+      if (traitsError) {
+        console.error("Error deleting horse traits:", traitsError);
+        throw traitsError;
       }
 
       // Delete the horse
@@ -106,6 +117,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
 
   // Get categories from the new horse_categories relationship
   const categories = horse.horse_categories?.map(hc => hc.category) || [];
+  const traits = horse.horse_traits?.map(ht => ht.trait_name) || [];
 
   const stats = [
     { 
@@ -181,6 +193,23 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                       {formatCategoryName(category)}
                     </Badge>
                   ))}
+                </div>
+              )}
+
+              {traits.length > 0 && (
+                <div className="mt-2">
+                  <h5 className="text-xs font-medium text-gray-600 mb-1">Traits:</h5>
+                  <div className="flex flex-wrap gap-1">
+                    {traits.map((trait, index) => (
+                      <Badge 
+                        key={index} 
+                        variant="secondary"
+                        className="text-xs bg-amber-100 text-amber-800"
+                      >
+                        {trait}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
             </CardHeader>

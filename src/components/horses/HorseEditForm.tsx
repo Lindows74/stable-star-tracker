@@ -34,11 +34,13 @@ const formSchema = z.object({
   max_jump: z.boolean().default(false),
   notes: z.string().optional(),
   categories: z.array(z.string()).min(1, "At least one category is required"),
+  traits: z.array(z.string()).max(5, "Maximum 5 traits allowed").optional(),
 });
 
 interface HorseEditFormProps {
   horse: Tables<"horses"> & {
     horse_categories?: { category: string }[];
+    horse_traits?: { trait_name: string }[];
   };
   onCancel: () => void;
 }
@@ -52,6 +54,16 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
     { id: "steeplechase", label: "Steeplechase" },
     { id: "cross_country", label: "Cross Country" },
     { id: "misc", label: "Misc" },
+  ];
+
+  const traits = [
+    "Blazing Hoof", "To the Moon", "Fleet Dash", "Flash Ignite", "Agile Arrow",
+    "Quick Gallop", "Swift Trot", "Steady Strider", "Meadow Runner", "Endurance Charger",
+    "Marathon Trotter", "Short Star", "Mid Miracle", "Marathon Master", "Swampy Strider",
+    "Mid Dash", "Granite Gallop", "Energy Saver", "Lightning Bolt", "Top Endurance",
+    "Thundering Hooves", "Hard N' Fast", "Fast Draw", "River Rider", "Meadowstride",
+    "Perfect Step", "Leaping Star", "Leaping Lancer", "Thrifty Spender", "Elite Lineage",
+    "Top Student"
   ];
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -76,6 +88,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       max_jump: horse.max_jump || false,
       notes: horse.notes || "",
       categories: horse.horse_categories?.map(hc => hc.category) || [],
+      traits: horse.horse_traits?.map(ht => ht.trait_name) || [],
     },
   });
 
@@ -143,6 +156,35 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
         }
       }
 
+      // Delete existing traits
+      const { error: deleteTraitsError } = await supabase
+        .from("horse_traits")
+        .delete()
+        .eq("horse_id", horse.id);
+
+      if (deleteTraitsError) {
+        console.error("Error deleting existing traits:", deleteTraitsError);
+        throw deleteTraitsError;
+      }
+
+      // Insert new traits
+      if (values.traits && values.traits.length > 0) {
+        const traitInserts = values.traits.map((trait) => ({
+          horse_id: horse.id,
+          trait_name: trait,
+          trait_category: "misc" as const,
+        }));
+
+        const { error: traitError } = await supabase
+          .from("horse_traits")
+          .insert(traitInserts);
+
+        if (traitError) {
+          console.error("Error inserting traits:", traitError);
+          throw traitError;
+        }
+      }
+
       await queryClient.invalidateQueries({ queryKey: ["horses"] });
       toast.success("Horse updated successfully!");
       onCancel();
@@ -189,6 +231,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                         min="1" 
                         max="10" 
                         {...field}
+                        value={field.value || ""}
                         onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                       />
                     </FormControl>
@@ -231,6 +274,43 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
             </div>
 
             <div>
+              <FormLabel className="text-base font-semibold">Horse Traits (Max 5)</FormLabel>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 max-h-48 overflow-y-auto">
+                {traits.map((trait) => (
+                  <FormField
+                    key={trait}
+                    control={form.control}
+                    name="traits"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value?.includes(trait)}
+                            onCheckedChange={(checked) => {
+                              const currentTraits = field.value || [];
+                              if (checked && currentTraits.length >= 5) {
+                                toast.error("Maximum 5 traits allowed");
+                                return;
+                              }
+                              const updatedTraits = checked
+                                ? [...currentTraits, trait]
+                                : currentTraits.filter((value) => value !== trait);
+                              field.onChange(updatedTraits);
+                            }}
+                          />
+                        </FormControl>
+                        <FormLabel className="text-xs font-normal">
+                          {trait}
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+              <FormMessage />
+            </div>
+
+            <div>
               <FormLabel className="text-base font-semibold">Racing Stats</FormLabel>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
                 {[
@@ -253,6 +333,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                             min="0" 
                             max="300" 
                             {...field}
+                            value={field.value || ""}
                             onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                           />
                         </FormControl>
@@ -287,6 +368,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                             min="0" 
                             max="50" 
                             {...field}
+                            value={field.value || ""}
                             onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                           />
                         </FormControl>
@@ -316,7 +398,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
                           <Checkbox
-                            checked={field.value}
+                            checked={field.value || false}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
