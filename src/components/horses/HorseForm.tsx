@@ -44,6 +44,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     notes: "",
     surfaces: [] as string[],
     distances: [] as string[],
+    field_positions: [] as string[],
   });
 
   const [breedSelections, setBreedSelections] = useState<BreedSelection[]>([]);
@@ -85,6 +86,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     { value: "medium", label: "Medium" },
     { value: "soft", label: "Soft" },
     { value: "very_soft", label: "Very Soft" },
+  ];
+
+  const fieldPositionOptions = [
+    { value: "front", label: "Front" },
+    { value: "middle", label: "Middle" },
+    { value: "back", label: "Back" },
   ];
 
   const distanceOptions = [
@@ -146,6 +153,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         notes: "",
         surfaces: [],
         distances: [],
+        field_positions: [],
       });
       setBreedSelections([]);
       setMaxedStats({
@@ -328,6 +336,15 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       surfaces: checked
         ? [...prev.surfaces, surfaceValue]
         : prev.surfaces.filter(surf => surf !== surfaceValue)
+    }));
+  };
+
+  const handleFieldPositionChange = (positionValue: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      field_positions: checked
+        ? [...prev.field_positions, positionValue]
+        : prev.field_positions.filter(pos => pos !== positionValue)
     }));
   };
 
@@ -516,6 +533,29 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
                 className="text-sm font-normal cursor-pointer"
               >
                 {surface.label}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Preferred Field Position (Flat Racing)</Label>
+        <div className="flex flex-wrap gap-4">
+          {fieldPositionOptions.map((position) => (
+            <div key={position.value} className="flex items-center space-x-2">
+              <Checkbox
+                id={position.value}
+                checked={formData.field_positions.includes(position.value)}
+                onCheckedChange={(checked) => 
+                  handleFieldPositionChange(position.value, checked as boolean)
+                }
+              />
+              <Label 
+                htmlFor={position.value}
+                className="text-sm font-normal cursor-pointer"
+              >
+                {position.label}
               </Label>
             </div>
           ))}
