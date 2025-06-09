@@ -27,6 +27,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     acceleration: "",
     agility: "",
     jump: "",
+    diet_speed: "",
+    diet_sprint_energy: "",
+    diet_acceleration: "",
+    diet_agility: "",
+    diet_jump: "",
     notes: "",
   });
 
@@ -69,6 +74,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         acceleration: "",
         agility: "",
         jump: "",
+        diet_speed: "",
+        diet_sprint_energy: "",
+        diet_acceleration: "",
+        diet_agility: "",
+        diet_jump: "",
         notes: "",
       });
       onSuccess?.();
@@ -96,6 +106,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       acceleration: formData.acceleration ? parseInt(formData.acceleration) : null,
       agility: formData.agility ? parseInt(formData.agility) : null,
       jump: formData.jump ? parseInt(formData.jump) : null,
+      diet_speed: formData.diet_speed ? parseInt(formData.diet_speed) : null,
+      diet_sprint_energy: formData.diet_sprint_energy ? parseInt(formData.diet_sprint_energy) : null,
+      diet_acceleration: formData.diet_acceleration ? parseInt(formData.diet_acceleration) : null,
+      diet_agility: formData.diet_agility ? parseInt(formData.diet_agility) : null,
+      diet_jump: formData.diet_jump ? parseInt(formData.diet_jump) : null,
       notes: formData.notes || null,
     };
 
@@ -231,6 +246,77 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               value={formData.jump}
               onChange={(e) => handleInputChange("jump", e.target.value)}
               placeholder="1-300"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-gray-900">Diet Plans (1-5)</h3>
+        <p className="text-sm text-gray-600">Extra points added to stats when racing on preferred surface</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="diet_speed">Diet Speed</Label>
+            <Input
+              id="diet_speed"
+              type="number"
+              min="1"
+              max="5"
+              value={formData.diet_speed}
+              onChange={(e) => handleInputChange("diet_speed", e.target.value)}
+              placeholder="1-5"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_sprint_energy">Diet Sprint Energy</Label>
+            <Input
+              id="diet_sprint_energy"
+              type="number"
+              min="1"
+              max="5"
+              value={formData.diet_sprint_energy}
+              onChange={(e) => handleInputChange("diet_sprint_energy", e.target.value)}
+              placeholder="1-5"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_acceleration">Diet Acceleration</Label>
+            <Input
+              id="diet_acceleration"
+              type="number"
+              min="1"
+              max="5"
+              value={formData.diet_acceleration}
+              onChange={(e) => handleInputChange("diet_acceleration", e.target.value)}
+              placeholder="1-5"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_agility">Diet Agility</Label>
+            <Input
+              id="diet_agility"
+              type="number"
+              min="1"
+              max="5"
+              value={formData.diet_agility}
+              onChange={(e) => handleInputChange("diet_agility", e.target.value)}
+              placeholder="1-5"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="diet_jump">Diet Jump</Label>
+            <Input
+              id="diet_jump"
+              type="number"
+              min="1"
+              max="5"
+              value={formData.diet_jump}
+              onChange={(e) => handleInputChange("diet_jump", e.target.value)}
+              placeholder="1-5"
             />
           </div>
         </div>

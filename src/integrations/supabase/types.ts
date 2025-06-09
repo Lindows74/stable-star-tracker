@@ -194,6 +194,11 @@ export type Database = {
           agility: number | null
           category: string | null
           created_at: string
+          diet_acceleration: number | null
+          diet_agility: number | null
+          diet_jump: number | null
+          diet_speed: number | null
+          diet_sprint_energy: number | null
           id: number
           jump: number | null
           name: string
@@ -209,6 +214,11 @@ export type Database = {
           agility?: number | null
           category?: string | null
           created_at?: string
+          diet_acceleration?: number | null
+          diet_agility?: number | null
+          diet_jump?: number | null
+          diet_speed?: number | null
+          diet_sprint_energy?: number | null
           id?: number
           jump?: number | null
           name: string
@@ -224,6 +234,11 @@ export type Database = {
           agility?: number | null
           category?: string | null
           created_at?: string
+          diet_acceleration?: number | null
+          diet_agility?: number | null
+          diet_jump?: number | null
+          diet_speed?: number | null
+          diet_sprint_energy?: number | null
           id?: number
           jump?: number | null
           name?: string

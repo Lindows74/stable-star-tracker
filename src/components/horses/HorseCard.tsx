@@ -40,11 +40,11 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   };
 
   const stats = [
-    { name: "Speed", value: horse.speed },
-    { name: "Sprint Energy", value: horse.sprint_energy },
-    { name: "Acceleration", value: horse.acceleration },
-    { name: "Agility", value: horse.agility },
-    { name: "Jump", value: horse.jump },
+    { name: "Speed", value: horse.speed, dietValue: horse.diet_speed },
+    { name: "Sprint Energy", value: horse.sprint_energy, dietValue: horse.diet_sprint_energy },
+    { name: "Acceleration", value: horse.acceleration, dietValue: horse.diet_acceleration },
+    { name: "Agility", value: horse.agility, dietValue: horse.diet_agility },
+    { name: "Jump", value: horse.jump, dietValue: horse.diet_jump },
   ];
 
   const categories = parseCategories(horse.category);
@@ -84,9 +84,16 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <div key={stat.name} className="space-y-1">
               <div className="flex justify-between text-xs">
                 <span className="text-gray-600">{stat.name}</span>
-                <span className="font-medium text-gray-900">
-                  {stat.value || 0}/300
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-gray-900">
+                    {stat.value || 0}/300
+                  </span>
+                  {stat.dietValue && (
+                    <Badge variant="secondary" className="text-xs px-1 py-0">
+                      +{stat.dietValue} diet
+                    </Badge>
+                  )}
+                </div>
               </div>
               <Progress
                 value={((stat.value || 0) / 300) * 100}
