@@ -9,6 +9,8 @@ interface DistanceSectionProps {
 }
 
 const distanceOptions = [
+  { value: "800", label: "800m" },
+  { value: "900", label: "900m" },
   { value: "1000", label: "1000m" },
   { value: "1200", label: "1200m" },
   { value: "1400", label: "1400m" },
@@ -17,7 +19,8 @@ const distanceOptions = [
   { value: "2000", label: "2000m" },
   { value: "2200", label: "2200m" },
   { value: "2400", label: "2400m" },
-  { value: "2500", label: "2500m" },
+  { value: "2600", label: "2600m" },
+  { value: "2800", label: "2800m" },
   { value: "3000", label: "3000m" },
   { value: "3200", label: "3200m" },
 ];
@@ -35,7 +38,7 @@ export const DistanceSection = ({ watch, setValue }: DistanceSectionProps) => {
   return (
     <div className="space-y-3">
       <Label>Preferred Distances *</Label>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
         {distanceOptions.map((distance) => (
           <div key={distance.value} className="flex items-center space-x-2">
             <Checkbox

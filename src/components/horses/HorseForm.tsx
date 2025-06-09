@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -136,6 +135,57 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
+      // Insert surfaces
+      if (form.getValues("preferred_surfaces").length > 0) {
+        const surfaceInserts = form.getValues("preferred_surfaces").map((surface) => ({
+          horse_id: horse.id,
+          surface,
+        }));
+
+        const { error: surfaceError } = await supabase
+          .from("horse_surfaces")
+          .insert(surfaceInserts);
+
+        if (surfaceError) {
+          console.error("Error creating horse surfaces:", surfaceError);
+          throw surfaceError;
+        }
+      }
+
+      // Insert distances
+      if (form.getValues("preferred_distances").length > 0) {
+        const distanceInserts = form.getValues("preferred_distances").map((distance) => ({
+          horse_id: horse.id,
+          distance,
+        }));
+
+        const { error: distanceError } = await supabase
+          .from("horse_distances")
+          .insert(distanceInserts);
+
+        if (distanceError) {
+          console.error("Error creating horse distances:", distanceError);
+          throw distanceError;
+        }
+      }
+
+      // Insert positions
+      if (form.getValues("field_positions").length > 0) {
+        const positionInserts = form.getValues("field_positions").map((position) => ({
+          horse_id: horse.id,
+          position,
+        }));
+
+        const { error: positionError } = await supabase
+          .from("horse_positions")
+          .insert(positionInserts);
+
+        if (positionError) {
+          console.error("Error creating horse positions:", positionError);
+          throw positionError;
+        }
+      }
+
       // Insert traits if any exist
       if (selectedTraits.length > 0) {
         console.log("Attempting to insert traits:", selectedTraits);
@@ -152,16 +202,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
         if (traitError) {
           console.error("Error inserting traits:", traitError);
-          // Show a specific error message for RLS issues but don't fail the entire creation
-          if (traitError.code === "42501") {
-            toast({
-              title: "Warning",
-              description: "Horse created successfully, but traits could not be saved due to database permissions.",
-              variant: "destructive",
-            });
-          } else {
-            throw traitError;
-          }
+          throw traitError;
         }
       }
 
