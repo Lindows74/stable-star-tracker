@@ -9,8 +9,8 @@ interface HorseCardProps {
 }
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
-  const getCategoryColor = (category: string | null) => {
-    switch (category) {
+  const getCategoryColor = (category: string) => {
+    switch (category.trim()) {
       case "flat_racing":
         return "bg-blue-100 text-blue-800";
       case "steeplechase":
@@ -30,6 +30,15 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     return "bg-blue-100 text-blue-800";
   };
 
+  const formatCategoryName = (category: string) => {
+    return category.replace("_", " ").toUpperCase();
+  };
+
+  const parseCategories = (categoryString: string | null) => {
+    if (!categoryString) return [];
+    return categoryString.split(", ").filter(cat => cat.trim());
+  };
+
   const stats = [
     { name: "Speed", value: horse.speed },
     { name: "Sprint Energy", value: horse.sprint_energy },
@@ -37,6 +46,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     { name: "Agility", value: horse.agility },
     { name: "Jump", value: horse.jump },
   ];
+
+  const categories = parseCategories(horse.category);
 
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
@@ -52,10 +63,17 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
           )}
         </div>
         
-        {horse.category && (
-          <Badge className={`w-fit text-xs ${getCategoryColor(horse.category)}`}>
-            {horse.category.replace("_", " ").toUpperCase()}
-          </Badge>
+        {categories.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {categories.map((category, index) => (
+              <Badge 
+                key={index} 
+                className={`text-xs ${getCategoryColor(category)}`}
+              >
+                {formatCategoryName(category)}
+              </Badge>
+            ))}
+          </div>
         )}
       </CardHeader>
 

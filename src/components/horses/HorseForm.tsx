@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import type { TablesInsert } from "@/integrations/supabase/types";
 
@@ -20,7 +20,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   
   const [formData, setFormData] = useState({
     name: "",
-    category: "",
+    categories: [] as string[],
     tier: "",
     speed: "",
     sprint_energy: "",
@@ -29,6 +29,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     jump: "",
     notes: "",
   });
+
+  const categoryOptions = [
+    { value: "flat_racing", label: "Flat Racing" },
+    { value: "steeplechase", label: "Steeplechase" },
+    { value: "cross_country", label: "Cross Country" },
+  ];
 
   const createHorseMutation = useMutation({
     mutationFn: async (horseData: TablesInsert<"horses">) => {
@@ -56,7 +62,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       });
       setFormData({
         name: "",
-        category: "",
+        categories: [],
         tier: "",
         speed: "",
         sprint_energy: "",
@@ -83,7 +89,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     const horseData: TablesInsert<"horses"> = {
       user_id: "00000000-0000-0000-0000-000000000000", // Temporary placeholder
       name: formData.name,
-      category: formData.category || null,
+      category: formData.categories.length > 0 ? formData.categories.join(", ") : null,
       tier: formData.tier ? parseInt(formData.tier) : null,
       speed: formData.speed ? parseInt(formData.speed) : null,
       sprint_energy: formData.sprint_energy ? parseInt(formData.sprint_energy) : null,
@@ -98,6 +104,15 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleCategoryChange = (categoryValue: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      categories: checked
+        ? [...prev.categories, categoryValue]
+        : prev.categories.filter(cat => cat !== categoryValue)
+    }));
   };
 
   return (
@@ -115,20 +130,6 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="category">Racing Category</Label>
-          <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select category" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="flat_racing">Flat Racing</SelectItem>
-              <SelectItem value="steeplechase">Steeplechase</SelectItem>
-              <SelectItem value="cross_country">Cross Country</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
           <Label htmlFor="tier">Tier (1-10)</Label>
           <Input
             id="tier"
@@ -139,6 +140,29 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
             onChange={(e) => handleInputChange("tier", e.target.value)}
             placeholder="Enter tier"
           />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Racing Categories</Label>
+        <div className="flex flex-wrap gap-4">
+          {categoryOptions.map((category) => (
+            <div key={category.value} className="flex items-center space-x-2">
+              <Checkbox
+                id={category.value}
+                checked={formData.categories.includes(category.value)}
+                onCheckedChange={(checked) => 
+                  handleCategoryChange(category.value, checked as boolean)
+                }
+              />
+              <Label 
+                htmlFor={category.value}
+                className="text-sm font-normal cursor-pointer"
+              >
+                {category.label}
+              </Label>
+            </div>
+          ))}
         </div>
       </div>
 
