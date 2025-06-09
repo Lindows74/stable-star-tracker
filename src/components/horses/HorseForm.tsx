@@ -75,11 +75,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Knabstrupper"
   ];
 
-  // Updated category options to match database enum exactly
+  // Updated category options to include misc and match database constraint exactly
   const categoryOptions = [
     { value: "flat racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
     { value: "cross country", label: "Cross Country" },
+    { value: "misc", label: "Misc" },
   ];
 
   const surfaceOptions = [
