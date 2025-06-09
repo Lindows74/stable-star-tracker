@@ -323,7 +323,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                   <FormField
                     key={stat.name}
                     control={form.control}
-                    name={stat.name as keyof z.infer<typeof formSchema>}
+                    name={stat.name as "speed" | "sprint_energy" | "acceleration" | "agility" | "jump"}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{stat.label}</FormLabel>
@@ -332,8 +332,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                             type="number" 
                             min="0" 
                             max="300" 
-                            {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === 'number' ? field.value.toString() : ""}
                             onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                           />
                         </FormControl>
@@ -358,7 +357,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                   <FormField
                     key={stat.name}
                     control={form.control}
-                    name={stat.name as keyof z.infer<typeof formSchema>}
+                    name={stat.name as "diet_speed" | "diet_sprint_energy" | "diet_acceleration" | "diet_agility" | "diet_jump"}
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>{stat.label}</FormLabel>
@@ -367,8 +366,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                             type="number" 
                             min="0" 
                             max="50" 
-                            {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === 'number' ? field.value.toString() : ""}
                             onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
                           />
                         </FormControl>
@@ -393,12 +391,12 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                   <FormField
                     key={stat.name}
                     control={form.control}
-                    name={stat.name as keyof z.infer<typeof formSchema>}
+                    name={stat.name as "max_speed" | "max_sprint_energy" | "max_acceleration" | "max_agility" | "max_jump"}
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                         <FormControl>
                           <Checkbox
-                            checked={field.value || false}
+                            checked={typeof field.value === 'boolean' ? field.value : false}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
