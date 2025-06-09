@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { MaxTrainingForm } from "./MaxTrainingForm";
 import { HorseEditForm } from "./HorseEditForm";
+import { TraitBadge } from "./TraitBadge";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Settings, Edit, Trash2 } from "lucide-react";
@@ -201,13 +202,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                   <h5 className="text-xs font-medium text-gray-600 mb-1">Traits:</h5>
                   <div className="flex flex-wrap gap-1">
                     {traits.map((trait, index) => (
-                      <Badge 
-                        key={index} 
-                        variant="secondary"
-                        className="text-xs bg-amber-100 text-amber-800"
-                      >
-                        {trait}
-                      </Badge>
+                      <TraitBadge key={index} traitName={trait} />
                     ))}
                   </div>
                 </div>
