@@ -14,12 +14,15 @@ const queryClient = new QueryClient();
 const App = () => {
   console.log('App.tsx: App component rendering...');
   
+  // Set basename for GitHub Pages deployment
+  const basename = import.meta.env.PROD ? '/stable-star-tracker' : '';
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={basename}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="*" element={<NotFound />} />
