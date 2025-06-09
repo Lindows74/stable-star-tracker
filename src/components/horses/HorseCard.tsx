@@ -1,4 +1,5 @@
 
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,28 +19,28 @@ const getCategoryColor = (category: string) => {
   
   switch (normalizedCategory) {
     case "flatracing":
-      return "!bg-red-100 !text-red-800 !border-red-200";
+      return { backgroundColor: '#fef2f2', color: '#991b1b', borderColor: '#fecaca' };
     case "steeplechase":
-      return "!bg-blue-100 !text-blue-800 !border-blue-200";
+      return { backgroundColor: '#dbeafe', color: '#1e40af', borderColor: '#bfdbfe' };
     case "crosscountry":
-      return "!bg-green-100 !text-green-800 !border-green-200";
+      return { backgroundColor: '#dcfce7', color: '#166534', borderColor: '#bbf7d0' };
     case "misc":
-      return "!bg-yellow-100 !text-yellow-800 !border-yellow-200";
+      return { backgroundColor: '#fefce8', color: '#a16207', borderColor: '#fde68a' };
     case "sprinter":
-      return "!bg-red-100 !text-red-800 !border-red-200";
+      return { backgroundColor: '#fef2f2', color: '#991b1b', borderColor: '#fecaca' };
     case "miler":
-      return "!bg-blue-100 !text-blue-800 !border-blue-200";
+      return { backgroundColor: '#dbeafe', color: '#1e40af', borderColor: '#bfdbfe' };
     case "classic":
-      return "!bg-green-100 !text-green-800 !border-green-200";
+      return { backgroundColor: '#dcfce7', color: '#166534', borderColor: '#bbf7d0' };
     case "dirt":
-      return "!bg-yellow-100 !text-yellow-800 !border-yellow-200";
+      return { backgroundColor: '#fefce8', color: '#a16207', borderColor: '#fde68a' };
     case "turf":
-      return "!bg-purple-100 !text-purple-800 !border-purple-200";
+      return { backgroundColor: '#faf5ff', color: '#7c2d12', borderColor: '#e9d5ff' };
     case "synthetic":
-      return "!bg-orange-100 !text-orange-800 !border-orange-200";
+      return { backgroundColor: '#fff7ed', color: '#c2410c', borderColor: '#fed7aa' };
     default:
       console.log('Unknown category, using default:', category);
-      return "!bg-gray-100 !text-gray-800 !border-gray-200";
+      return { backgroundColor: '#f3f4f6', color: '#374151', borderColor: '#d1d5db' };
   }
 };
 
@@ -149,13 +150,14 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm font-medium">Categories:</span>
               {horse.horse_categories.map((cat: any, index: number) => {
-                const colorClasses = getCategoryColor(cat.category);
-                console.log('Applied color classes for', cat.category, ':', colorClasses);
+                const colorStyles = getCategoryColor(cat.category);
+                console.log('Applied color styles for', cat.category, ':', colorStyles);
                 return (
                   <Badge 
                     key={index} 
                     variant="outline" 
-                    className={`text-xs ${colorClasses}`}
+                    className="text-xs border"
+                    style={colorStyles}
                   >
                     {cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </Badge>
@@ -228,3 +230,4 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     </Card>
   );
 };
+
