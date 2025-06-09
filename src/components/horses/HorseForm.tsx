@@ -75,12 +75,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Knabstrupper"
   ];
 
-  // Updated to match database enum values exactly
+  // Updated category options to match database enum exactly
   const categoryOptions = [
-    { value: "flat_racing", label: "Flat Racing" },
+    { value: "flat racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
-    { value: "cross_country", label: "Cross Country" },
-    { value: "misc", label: "Misc" },
+    { value: "cross country", label: "Cross Country" },
   ];
 
   const surfaceOptions = [
@@ -321,6 +320,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       notes: formData.notes.trim() || null,
     };
 
+    console.log("Submitting horse data:", horseData);
     createHorseMutation.mutate(horseData);
   };
 
