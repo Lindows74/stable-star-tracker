@@ -63,23 +63,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Thoroughbred",
     "Arabian",
     "Quarter Horse",
-    "Standardbred",
-    "Appaloosa",
-    "Paint Horse",
-    "Morgan",
-    "Tennessee Walking Horse",
-    "Andalusian",
-    "Friesian",
-    "Clydesdale",
-    "Percheron",
-    "Belgian",
-    "Shire",
-    "Irish Sport Horse",
-    "Warmblood",
-    "Mustang",
-    "Icelandic Horse",
-    "Paso Fino",
-    "Saddlebred"
+    "Standardbred"
   ];
 
   const categoryOptions = [
