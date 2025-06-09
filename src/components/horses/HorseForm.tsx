@@ -5,7 +5,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -103,10 +103,37 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const [showDietPlans, setShowDietPlans] = useState(false);
   const [showMaxTraining, setShowMaxTraining] = useState(false);
 
+  // Fetch existing horse names for duplicate validation
+  const { data: existingHorses } = useQuery({
+    queryKey: ["horses", "names"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("horses")
+        .select("name");
+
+      if (error) {
+        console.error("Error fetching horse names:", error);
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
   const createHorseMutation = useMutation({
     mutationFn: async (horseData: TablesInsert<"horses">) => {
       console.log("Creating horse with data:", horseData);
       
+      // Check for duplicate name
+      const horseName = horseData.name?.toLowerCase().trim();
+      const duplicateExists = existingHorses?.some(
+        horse => horse.name.toLowerCase().trim() === horseName
+      );
+
+      if (duplicateExists) {
+        throw new Error(`A horse with the name "${horseData.name}" already exists. Please choose a different name.`);
+      }
+
       const { data: horse, error } = await supabase
         .from("horses")
         .insert(horseData)
@@ -268,6 +295,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["horses"] });
+      queryClient.invalidateQueries({ queryKey: ["horses", "names"] });
       toast({
         title: "Success!",
         description: "Horse created successfully",
@@ -284,7 +312,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       console.error("Error creating horse:", error);
       toast({
         title: "Error",
-        description: "Failed to create horse. Please try again.",
+        description: error.message || "Failed to create horse. Please try again.",
         variant: "destructive",
       });
     },
