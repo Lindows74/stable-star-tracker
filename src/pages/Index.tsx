@@ -6,8 +6,14 @@ import { HorseList } from "@/components/horses/HorseList";
 import { HorseForm } from "@/components/horses/HorseForm";
 import { Plus } from "lucide-react";
 
+console.log('Index.tsx: Component loading...');
+
 const Index = () => {
+  console.log('Index.tsx: Index component rendering...');
+  
   const [showForm, setShowForm] = useState(false);
+
+  console.log('Index.tsx: showForm state:', showForm);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
@@ -17,7 +23,10 @@ const Index = () => {
           <p className="text-xl text-gray-600 mb-6">Manage your racing horses and track their performance</p>
           
           <Button 
-            onClick={() => setShowForm(!showForm)} 
+            onClick={() => {
+              console.log('Index.tsx: Add Horse button clicked, current showForm:', showForm);
+              setShowForm(!showForm);
+            }} 
             className="bg-green-600 hover:bg-green-700"
             size="lg"
           >
@@ -33,7 +42,10 @@ const Index = () => {
               <CardDescription>Enter your horse's details and racing stats</CardDescription>
             </CardHeader>
             <CardContent>
-              <HorseForm onSuccess={() => setShowForm(false)} />
+              <HorseForm onSuccess={() => {
+                console.log('Index.tsx: HorseForm success callback');
+                setShowForm(false);
+              }} />
             </CardContent>
           </Card>
         )}
@@ -43,5 +55,7 @@ const Index = () => {
     </div>
   );
 };
+
+console.log('Index.tsx: Index component defined');
 
 export default Index;
