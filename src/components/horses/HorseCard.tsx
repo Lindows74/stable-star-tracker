@@ -109,7 +109,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-900">
-                    {stat.value || 0}/300
+                    {stat.value || 0}
                   </span>
                   {stat.dietValue && (
                     <Badge variant="secondary" className="text-xs px-1 py-0">
