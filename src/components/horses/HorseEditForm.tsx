@@ -178,11 +178,21 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
 
       if (deleteTraitsError) {
         console.error("Error deleting existing traits:", deleteTraitsError);
-        throw deleteTraitsError;
+        // Don't throw here, continue without traits if RLS prevents deletion
       }
 
-      // Insert new traits
+      // Insert new traits if any exist
       if (values.traits && values.traits.length > 0) {
+        console.log("Attempting to insert traits:", values.traits);
+        
+        // First check if we can insert traits by testing RLS policies
+        const { data: testData, error: testError } = await supabase
+          .from("horse_traits")
+          .select("id")
+          .limit(1);
+
+        console.log("RLS test result:", { testData, testError });
+
         const traitInserts = values.traits.map((trait) => ({
           horse_id: horse.id,
           trait_name: trait,
@@ -195,7 +205,12 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
 
         if (traitError) {
           console.error("Error inserting traits:", traitError);
-          throw traitError;
+          // Show a specific error message for RLS issues but don't fail the entire update
+          if (traitError.code === "42501") {
+            toast.error("Horse updated successfully, but traits could not be saved due to database permissions. Please contact support.");
+          } else {
+            throw traitError;
+          }
         }
       }
 

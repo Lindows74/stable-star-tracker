@@ -31,7 +31,6 @@ const TRAIT_CATEGORIES = {
     "Top Endurance"
   ],
   "Distance Specialization": [
-    "Marathon Master",
     "Mid Dash",
     "Mid Miracle",
     "Short Star"
