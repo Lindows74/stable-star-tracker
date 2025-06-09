@@ -11,6 +11,21 @@ interface HorseCardProps {
   horse: any;
 }
 
+const getCategoryColor = (category: string) => {
+  switch (category) {
+    case "flat_racing":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "steeplechase":
+      return "bg-purple-100 text-purple-800 border-purple-200";
+    case "cross_country":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "misc":
+      return "bg-gray-100 text-gray-800 border-gray-200";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
+  }
+};
+
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -115,8 +130,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm font-medium">Categories:</span>
               {horse.horse_categories.map((cat: any, index: number) => (
-                <Badge key={index} variant="outline" className="text-xs">
-                  {cat.category}
+                <Badge key={index} variant="outline" className={`text-xs ${getCategoryColor(cat.category)}`}>
+                  {cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
               ))}
             </div>
