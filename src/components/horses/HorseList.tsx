@@ -9,13 +9,14 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Horse = Tables<"horses"> & {
   horse_categories?: { category: string }[];
+  horse_traits?: { trait_name: string }[];
 };
 
 export const HorseList = () => {
   const { data: horses, isLoading, error } = useQuery({
     queryKey: ["horses"],
     queryFn: async () => {
-      console.log("Fetching horses with categories...");
+      console.log("Fetching horses with categories and traits...");
       
       // First get all horses
       const { data: horsesData, error: horsesError } = await supabase
@@ -28,9 +29,10 @@ export const HorseList = () => {
         throw horsesError;
       }
 
-      // Then get categories for each horse
-      const horsesWithCategories = await Promise.all(
+      // Then get categories and traits for each horse
+      const horsesWithCategoriesAndTraits = await Promise.all(
         horsesData.map(async (horse) => {
+          // Fetch categories
           const { data: categories, error: categoriesError } = await supabase
             .from("horse_categories")
             .select("category")
@@ -38,15 +40,30 @@ export const HorseList = () => {
 
           if (categoriesError) {
             console.error("Error fetching categories for horse:", horse.id, categoriesError);
-            return { ...horse, horse_categories: [] };
           }
 
-          return { ...horse, horse_categories: categories };
+          // Fetch traits
+          const { data: traits, error: traitsError } = await supabase
+            .from("horse_traits")
+            .select("trait_name")
+            .eq("horse_id", horse.id);
+
+          if (traitsError) {
+            console.error("Error fetching traits for horse:", horse.id, traitsError);
+          }
+
+          console.log(`Horse ${horse.name} has ${traits?.length || 0} traits:`, traits);
+
+          return {
+            ...horse,
+            horse_categories: categories || [],
+            horse_traits: traits || []
+          };
         })
       );
       
-      console.log("Fetched horses with categories:", horsesWithCategories);
-      return horsesWithCategories as Horse[];
+      console.log("Fetched horses with categories and traits:", horsesWithCategoriesAndTraits);
+      return horsesWithCategoriesAndTraits as Horse[];
     },
   });
 
