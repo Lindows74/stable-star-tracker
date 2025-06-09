@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -27,6 +28,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   
   const [formData, setFormData] = useState({
     name: "",
+    gender: "",
     categories: [] as string[],
     tier: "",
     speed: "",
@@ -124,6 +126,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       });
       setFormData({
         name: "",
+        gender: "",
         categories: [],
         tier: "",
         speed: "",
@@ -173,10 +176,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       return;
     }
 
-    if (breedSelections.length === 0) {
+    if (!formData.gender) {
       toast({
         title: "Error",
-        description: "At least one breed must be selected.",
+        description: "Gender (Mare or Stallion) must be selected.",
         variant: "destructive",
       });
       return;
@@ -392,6 +395,24 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
             required
           />
         </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Gender *</Label>
+        <RadioGroup 
+          value={formData.gender} 
+          onValueChange={(value) => handleInputChange("gender", value)}
+          className="flex space-x-6"
+        >
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="mare" id="mare" />
+            <Label htmlFor="mare" className="cursor-pointer">Mare</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <RadioGroupItem value="stallion" id="stallion" />
+            <Label htmlFor="stallion" className="cursor-pointer">Stallion</Label>
+          </div>
+        </RadioGroup>
       </div>
 
       <div className="space-y-3">
