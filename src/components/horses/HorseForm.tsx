@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -416,14 +417,14 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
       <div className="space-y-3">
         <Label>Horse Breeds * (Total must equal 100%)</Label>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {breedOptions.map((breed) => {
             const isSelected = breedSelections.some(b => b.breed === breed);
             const selectedBreed = breedSelections.find(b => b.breed === breed);
             
             return (
               <div key={breed} className="border rounded-lg p-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-3">
                     <Checkbox
                       id={breed}
@@ -439,22 +440,22 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
                       {breed}
                     </Label>
                   </div>
-                  {isSelected && (
-                    <div className="flex items-center space-x-2">
-                      <Input
-                        type="number"
-                        min="0"
-                        max="100"
-                        step="0.1"
-                        placeholder="Enter %"
-                        value={selectedBreed?.percentage || ""}
-                        onChange={(e) => handleBreedPercentageChange(breed, e.target.value)}
-                        className="w-24"
-                      />
-                      <span className="text-sm text-gray-500">%</span>
-                    </div>
-                  )}
                 </div>
+                {isSelected && (
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      type="number"
+                      min="0"
+                      max="100"
+                      step="0.1"
+                      placeholder="Enter %"
+                      value={selectedBreed?.percentage || ""}
+                      onChange={(e) => handleBreedPercentageChange(breed, e.target.value)}
+                      className="w-full"
+                    />
+                    <span className="text-sm text-gray-500">%</span>
+                  </div>
+                )}
               </div>
             );
           })}
