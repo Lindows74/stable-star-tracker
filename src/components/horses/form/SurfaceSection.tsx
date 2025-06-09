@@ -9,10 +9,12 @@ interface SurfaceSectionProps {
 }
 
 const surfaceOptions = [
-  { value: "turf", label: "Turf" },
-  { value: "dirt", label: "Dirt" },
-  { value: "synthetic", label: "Synthetic" },
-  { value: "sand", label: "Sand" },
+  { value: "very_hard", label: "Very Hard" },
+  { value: "hard", label: "Hard" },
+  { value: "firm", label: "Firm" },
+  { value: "medium", label: "Medium" },
+  { value: "soft", label: "Soft" },
+  { value: "very_soft", label: "Very Soft" },
 ];
 
 export const SurfaceSection = ({ watch, setValue }: SurfaceSectionProps) => {

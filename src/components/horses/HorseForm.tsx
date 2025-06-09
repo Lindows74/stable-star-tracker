@@ -135,11 +135,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
-      // Insert surfaces
+      // Insert surfaces with proper typing
       if (form.getValues("preferred_surfaces").length > 0) {
         const surfaceInserts = form.getValues("preferred_surfaces").map((surface) => ({
           horse_id: horse.id,
-          surface,
+          surface: surface as "very_hard" | "hard" | "firm" | "medium" | "soft" | "very_soft",
         }));
 
         const { error: surfaceError } = await supabase
@@ -152,11 +152,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
-      // Insert distances
+      // Insert distances with proper typing
       if (form.getValues("preferred_distances").length > 0) {
         const distanceInserts = form.getValues("preferred_distances").map((distance) => ({
           horse_id: horse.id,
-          distance,
+          distance: distance as "800" | "900" | "1000" | "1200" | "1400" | "1600" | "1800" | "2000" | "2200" | "2400" | "2600" | "2800" | "3000" | "3200",
         }));
 
         const { error: distanceError } = await supabase
@@ -169,11 +169,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
-      // Insert positions
+      // Insert positions with proper typing
       if (form.getValues("field_positions").length > 0) {
         const positionInserts = form.getValues("field_positions").map((position) => ({
           horse_id: horse.id,
-          position,
+          position: position as "front" | "middle" | "back",
         }));
 
         const { error: positionError } = await supabase
@@ -183,6 +183,59 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         if (positionError) {
           console.error("Error creating horse positions:", positionError);
           throw positionError;
+        }
+      }
+
+      // Handle breeding data
+      if (breedSelections.length > 0) {
+        console.log("Processing breeding data:", breedSelections);
+        
+        for (const breedSelection of breedSelections) {
+          if (breedSelection.breed && breedSelection.percentage > 0) {
+            // First, get or create the breed
+            let { data: existingBreed, error: breedFetchError } = await supabase
+              .from("breeds")
+              .select("id")
+              .eq("name", breedSelection.breed)
+              .single();
+
+            let breedId: number;
+
+            if (breedFetchError && breedFetchError.code === 'PGRST116') {
+              // Breed doesn't exist, create it
+              const { data: newBreed, error: breedCreateError } = await supabase
+                .from("breeds")
+                .insert({ name: breedSelection.breed })
+                .select("id")
+                .single();
+
+              if (breedCreateError) {
+                console.error("Error creating breed:", breedCreateError);
+                throw breedCreateError;
+              }
+
+              breedId = newBreed.id;
+            } else if (breedFetchError) {
+              console.error("Error fetching breed:", breedFetchError);
+              throw breedFetchError;
+            } else {
+              breedId = existingBreed.id;
+            }
+
+            // Insert the breeding relationship
+            const { error: breedingError } = await supabase
+              .from("horse_breeding")
+              .insert({
+                horse_id: horse.id,
+                breed_id: breedId,
+                percentage: breedSelection.percentage,
+              });
+
+            if (breedingError) {
+              console.error("Error creating horse breeding:", breedingError);
+              throw breedingError;
+            }
+          }
         }
       }
 

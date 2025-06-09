@@ -9,10 +9,9 @@ interface PositionSectionProps {
 }
 
 const positionOptions = [
-  { value: "front_runner", label: "Front Runner" },
-  { value: "close_to_pace", label: "Close to Pace" },
-  { value: "mid_pack", label: "Mid Pack" },
-  { value: "closer", label: "Closer" },
+  { value: "front", label: "Front" },
+  { value: "middle", label: "Middle" },
+  { value: "back", label: "Back" },
 ];
 
 export const PositionSection = ({ watch, setValue }: PositionSectionProps) => {
@@ -28,7 +27,7 @@ export const PositionSection = ({ watch, setValue }: PositionSectionProps) => {
   return (
     <div className="space-y-3">
       <Label>Field Positions *</Label>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {positionOptions.map((position) => (
           <div key={position.value} className="flex items-center space-x-2">
             <Checkbox
