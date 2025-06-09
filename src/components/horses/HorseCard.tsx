@@ -2,6 +2,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { MaxTrainingForm } from "./MaxTrainingForm";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Settings } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface HorseCardProps {
@@ -9,6 +13,8 @@ interface HorseCardProps {
 }
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
+  const [showMaxTraining, setShowMaxTraining] = useState(false);
+
   const getCategoryColor = (category: string) => {
     switch (category.trim()) {
       case "flat_racing":
@@ -40,11 +46,11 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   };
 
   const stats = [
-    { name: "Speed", value: horse.speed, dietValue: horse.diet_speed },
-    { name: "Sprint Energy", value: horse.sprint_energy, dietValue: horse.diet_sprint_energy },
-    { name: "Acceleration", value: horse.acceleration, dietValue: horse.diet_acceleration },
-    { name: "Agility", value: horse.agility, dietValue: horse.diet_agility },
-    { name: "Jump", value: horse.jump, dietValue: horse.diet_jump },
+    { name: "Speed", value: horse.speed, dietValue: horse.diet_speed, maxed: horse.max_speed },
+    { name: "Sprint Energy", value: horse.sprint_energy, dietValue: horse.diet_sprint_energy, maxed: horse.max_sprint_energy },
+    { name: "Acceleration", value: horse.acceleration, dietValue: horse.diet_acceleration, maxed: horse.max_acceleration },
+    { name: "Agility", value: horse.agility, dietValue: horse.diet_agility, maxed: horse.max_agility },
+    { name: "Jump", value: horse.jump, dietValue: horse.diet_jump, maxed: horse.max_jump },
   ];
 
   const categories = parseCategories(horse.category);
@@ -56,11 +62,21 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
           <CardTitle className="text-lg font-semibold text-gray-900">
             {horse.name}
           </CardTitle>
-          {horse.tier && (
-            <Badge className={`text-xs ${getTierColor(horse.tier)}`}>
-              Tier {horse.tier}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {horse.tier && (
+              <Badge className={`text-xs ${getTierColor(horse.tier)}`}>
+                Tier {horse.tier}
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowMaxTraining(!showMaxTraining)}
+              className="h-6 w-6"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
         
         {categories.length > 0 && (
@@ -83,7 +99,14 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
           {stats.map((stat) => (
             <div key={stat.name} className="space-y-1">
               <div className="flex justify-between text-xs">
-                <span className="text-gray-600">{stat.name}</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-600">{stat.name}</span>
+                  {stat.maxed && (
+                    <Badge variant="secondary" className="text-xs px-1 py-0 bg-green-100 text-green-800">
+                      MAX
+                    </Badge>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-gray-900">
                     {stat.value || 0}/300
@@ -102,6 +125,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             </div>
           ))}
         </div>
+
+        {showMaxTraining && <MaxTrainingForm horse={horse} />}
 
         {horse.notes && (
           <div className="pt-3 border-t border-gray-100">

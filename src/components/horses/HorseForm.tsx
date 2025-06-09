@@ -35,6 +35,14 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     notes: "",
   });
 
+  const [maxedStats, setMaxedStats] = useState({
+    speed: false,
+    sprint_energy: false,
+    acceleration: false,
+    agility: false,
+    jump: false,
+  });
+
   const categoryOptions = [
     { value: "flat_racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
@@ -81,6 +89,13 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         diet_jump: "",
         notes: "",
       });
+      setMaxedStats({
+        speed: false,
+        sprint_energy: false,
+        acceleration: false,
+        agility: false,
+        jump: false,
+      });
       onSuccess?.();
     },
     onError: (error) => {
@@ -111,6 +126,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       diet_acceleration: formData.diet_acceleration ? parseInt(formData.diet_acceleration) : null,
       diet_agility: formData.diet_agility ? parseInt(formData.diet_agility) : null,
       diet_jump: formData.diet_jump ? parseInt(formData.diet_jump) : null,
+      max_speed: maxedStats.speed,
+      max_sprint_energy: maxedStats.sprint_energy,
+      max_acceleration: maxedStats.acceleration,
+      max_agility: maxedStats.agility,
+      max_jump: maxedStats.jump,
       notes: formData.notes || null,
     };
 
@@ -129,6 +149,31 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         : prev.categories.filter(cat => cat !== categoryValue)
     }));
   };
+
+  const handleMaxStatChange = (stat: keyof typeof maxedStats, checked: boolean) => {
+    setMaxedStats(prev => ({ ...prev, [stat]: checked }));
+  };
+
+  const handleCheckAllMax = (checked: boolean) => {
+    setMaxedStats({
+      speed: checked,
+      sprint_energy: checked,
+      acceleration: checked,
+      agility: checked,
+      jump: checked,
+    });
+  };
+
+  const allMaxed = Object.values(maxedStats).every(Boolean);
+  const someMaxed = Object.values(maxedStats).some(Boolean);
+
+  const maxStatOptions = [
+    { key: "speed" as const, label: "Speed" },
+    { key: "sprint_energy" as const, label: "Sprint Energy" },
+    { key: "acceleration" as const, label: "Acceleration" },
+    { key: "agility" as const, label: "Agility" },
+    { key: "jump" as const, label: "Jump" },
+  ];
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -319,6 +364,48 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               placeholder="1-5"
             />
           </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium text-gray-900">Max Training Status</h3>
+        <p className="text-sm text-gray-600">Mark which stats have been trained to maximum potential</p>
+        
+        <div className="flex items-center space-x-2 pb-2 border-b">
+          <Checkbox
+            id="check-all-max"
+            checked={allMaxed}
+            ref={(el) => {
+              if (el) el.indeterminate = someMaxed && !allMaxed;
+            }}
+            onCheckedChange={handleCheckAllMax}
+          />
+          <Label 
+            htmlFor="check-all-max"
+            className="font-medium cursor-pointer"
+          >
+            Mark All Stats as MAX
+          </Label>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {maxStatOptions.map((stat) => (
+            <div key={stat.key} className="flex items-center space-x-2">
+              <Checkbox
+                id={`max-${stat.key}`}
+                checked={maxedStats[stat.key]}
+                onCheckedChange={(checked) => 
+                  handleMaxStatChange(stat.key, checked as boolean)
+                }
+              />
+              <Label 
+                htmlFor={`max-${stat.key}`}
+                className="cursor-pointer"
+              >
+                Max {stat.label}
+              </Label>
+            </div>
+          ))}
         </div>
       </div>
 
