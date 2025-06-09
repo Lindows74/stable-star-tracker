@@ -36,7 +36,45 @@ export const HorseList = () => {
       }
 
       console.log("HorseList: Horses fetched successfully:", data);
-      return data;
+      
+      // Sort horses by total stats (base + diet bonus) in descending order
+      const sortedData = data?.sort((a, b) => {
+        const aTotalSpeed = (a.speed || 0) + (a.diet_speed || 0);
+        const bTotalSpeed = (b.speed || 0) + (b.diet_speed || 0);
+        
+        if (aTotalSpeed !== bTotalSpeed) {
+          return bTotalSpeed - aTotalSpeed; // Speed: high to low
+        }
+        
+        const aTotalSprintEnergy = (a.sprint_energy || 0) + (a.diet_sprint_energy || 0);
+        const bTotalSprintEnergy = (b.sprint_energy || 0) + (b.diet_sprint_energy || 0);
+        
+        if (aTotalSprintEnergy !== bTotalSprintEnergy) {
+          return bTotalSprintEnergy - aTotalSprintEnergy; // Sprint Energy: high to low
+        }
+        
+        const aTotalAcceleration = (a.acceleration || 0) + (a.diet_acceleration || 0);
+        const bTotalAcceleration = (b.acceleration || 0) + (b.diet_acceleration || 0);
+        
+        if (aTotalAcceleration !== bTotalAcceleration) {
+          return bTotalAcceleration - aTotalAcceleration; // Acceleration: high to low
+        }
+        
+        const aTotalAgility = (a.agility || 0) + (a.diet_agility || 0);
+        const bTotalAgility = (b.agility || 0) + (b.diet_agility || 0);
+        
+        if (aTotalAgility !== bTotalAgility) {
+          return bTotalAgility - aTotalAgility; // Agility: high to low
+        }
+        
+        const aTotalJump = (a.jump || 0) + (a.diet_jump || 0);
+        const bTotalJump = (b.jump || 0) + (b.diet_jump || 0);
+        
+        return bTotalJump - aTotalJump; // Jump: high to low
+      });
+
+      console.log("HorseList: Horses sorted by stats:", sortedData);
+      return sortedData;
     },
   });
 
