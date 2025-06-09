@@ -60,10 +60,15 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const [showMaxTraining, setShowMaxTraining] = useState(false);
 
   const breedOptions = [
-    "Thoroughbred",
     "Arabian",
+    "Thoroughbred", 
+    "Mustang",
     "Quarter Horse",
-    "Standardbred"
+    "Selle Francais",
+    "Appaloosa",
+    "Akhal-Teke",
+    "Anglo-Arab",
+    "Knabstrupper"
   ];
 
   const categoryOptions = [
