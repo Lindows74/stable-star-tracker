@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -18,73 +17,46 @@ const TRAIT_CATEGORIES = {
     "Blazing Hoof",
     "Blazing Hoof Pro",
     "Fast Draw",
-    "Fast Draw Pro",
     "Flash Ignite",
     "Flash Ignite Pro",
     "Fleet Dash",
     "Fleet Dash Pro",
     "Lightning Bolt",
-    "Lightning Bolt Pro",
     "Quick Gallop",
-    "Quick Gallop Pro",
     "Swift Trot",
-    "Swift Trot Pro",
-    "Thundering Hooves",
-    "Thundering Hooves Pro"
+    "Thundering Hooves"
   ],
   "Endurance & Stamina": [
     "Endurance Charger",
-    "Endurance Charger Pro",
     "Energy Saver",
-    "Energy Saver Pro",
     "Marathon Master",
-    "Marathon Master Pro",
     "Marathon Trotter",
-    "Marathon Trotter Pro",
-    "Top Endurance",
-    "Top Endurance Pro"
+    "Top Endurance"
   ],
   "Distance Specialization": [
     "Mid Dash",
-    "Mid Dash Pro",
     "Mid Miracle",
-    "Mid Miracle Pro",
-    "Short Star",
-    "Short Star Pro"
+    "Short Star"
   ],
   "Terrain & Surface": [
     "Granite Gallop",
-    "Granite Gallop Pro",
     "Hard N' Fast",
-    "Hard N' Fast Pro",
     "Meadow Runner",
-    "Meadow Runner Pro",
     "Meadowstride",
-    "Meadowstride Pro",
     "River Rider",
-    "River Rider Pro",
     "Steady Strider",
-    "Steady Strider Pro",
-    "Swampy Strider",
-    "Swampy Strider Pro"
+    "Swampy Strider"
   ],
   "Jumping & Agility": [
     "Leaping Lancer",
-    "Leaping Lancer Pro",
     "Leaping Star",
-    "Leaping Star Pro",
-    "Perfect Step",
-    "Perfect Step Pro"
+    "Perfect Step"
   ],
   "Special Abilities": [
     "Elite Lineage",
-    "Elite Lineage Pro",
     "Thrifty Spender",
-    "Thrifty Spender Pro",
     "To the Moon",
-    "To the Moon Pro",
-    "Top Student",
-    "Top Student Pro"
+    "Top Student"
   ]
 };
 
