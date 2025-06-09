@@ -11,15 +11,52 @@ interface TraitSelectorProps {
   onTraitsChange: (traits: string[]) => void;
 }
 
-const AVAILABLE_TRAITS = [
-  "Blazing Hoof", "To the Moon", "Fleet Dash", "Flash Ignite", "Agile Arrow",
-  "Quick Gallop", "Swift Trot", "Steady Strider", "Meadow Runner", "Endurance Charger",
-  "Marathon Trotter", "Short Star", "Mid Miracle", "Marathon Master", "Swampy Strider",
-  "Mid Dash", "Granite Gallop", "Energy Saver", "Lightning Bolt", "Top Endurance",
-  "Thundering Hooves", "Hard N' Fast", "Fast Draw", "River Rider", "Meadowstride",
-  "Perfect Step", "Leaping Star", "Leaping Lancer", "Thrifty Spender", "Elite Lineage",
-  "Top Student"
-];
+const TRAIT_CATEGORIES = {
+  "Speed & Acceleration": [
+    "Agile Arrow",
+    "Blazing Hoof",
+    "Fast Draw",
+    "Flash Ignite",
+    "Fleet Dash",
+    "Lightning Bolt",
+    "Quick Gallop",
+    "Swift Trot",
+    "Thundering Hooves"
+  ],
+  "Endurance & Stamina": [
+    "Endurance Charger",
+    "Energy Saver",
+    "Marathon Master",
+    "Marathon Trotter",
+    "Top Endurance"
+  ],
+  "Distance Specialization": [
+    "Marathon Master",
+    "Mid Dash",
+    "Mid Miracle",
+    "Short Star"
+  ],
+  "Terrain & Surface": [
+    "Granite Gallop",
+    "Hard N' Fast",
+    "Meadow Runner",
+    "Meadowstride",
+    "River Rider",
+    "Steady Strider",
+    "Swampy Strider"
+  ],
+  "Jumping & Agility": [
+    "Leaping Lancer",
+    "Leaping Star",
+    "Perfect Step"
+  ],
+  "Special Abilities": [
+    "Elite Lineage",
+    "Thrifty Spender",
+    "To the Moon",
+    "Top Student"
+  ]
+};
 
 export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
   const handleAddTrait = (trait: string) => {
@@ -80,14 +117,21 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
             <SelectTrigger>
               <SelectValue placeholder="Select a trait to add..." />
             </SelectTrigger>
-            <SelectContent>
-              {AVAILABLE_TRAITS
-                .filter(trait => !selectedTraits.includes(trait))
-                .map((trait) => (
-                  <SelectItem key={trait} value={trait}>
-                    {trait}
-                  </SelectItem>
-                ))}
+            <SelectContent className="max-h-80">
+              {Object.entries(TRAIT_CATEGORIES).map(([category, traits]) => (
+                <div key={category}>
+                  <div className="px-2 py-1.5 text-sm font-semibold text-gray-900 bg-gray-50 border-b">
+                    {category}
+                  </div>
+                  {traits
+                    .filter(trait => !selectedTraits.includes(trait))
+                    .map((trait) => (
+                      <SelectItem key={trait} value={trait} className="pl-4">
+                        {trait}
+                      </SelectItem>
+                    ))}
+                </div>
+              ))}
             </SelectContent>
           </Select>
         </div>
