@@ -63,17 +63,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Quarter Horse",
     "Standardbred",
     "Paint Horse",
-    "Appaloosa",
-    "Mustang",
-    "Friesian",
-    "Clydesdale",
-    "Shire",
-    "Percheron",
-    "Belgian",
-    "Andalusian",
-    "Lusitano",
-    "Warmblood",
-    "Other"
+    "Appaloosa"
   ];
 
   const categoryOptions = [
@@ -405,45 +395,52 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       </div>
 
       <div className="space-y-3">
-        <Label>Breeds * (Total must equal 100%)</Label>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Label>Horse Breeds * (Total must equal 100%)</Label>
+        <div className="space-y-3">
           {breedOptions.map((breed) => {
             const isSelected = breedSelections.some(b => b.breed === breed);
             const selectedBreed = breedSelections.find(b => b.breed === breed);
             
             return (
-              <div key={breed} className="flex items-center space-x-2">
-                <Checkbox
-                  id={breed}
-                  checked={isSelected}
-                  onCheckedChange={(checked) => 
-                    handleBreedChange(breed, checked as boolean)
-                  }
-                />
-                <Label 
-                  htmlFor={breed}
-                  className="text-sm font-normal cursor-pointer flex-1"
-                >
-                  {breed}
-                </Label>
-                {isSelected && (
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    placeholder="%"
-                    value={selectedBreed?.percentage || ""}
-                    onChange={(e) => handleBreedPercentageChange(breed, e.target.value)}
-                    className="w-20"
-                  />
-                )}
+              <div key={breed} className="border rounded-lg p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Checkbox
+                      id={breed}
+                      checked={isSelected}
+                      onCheckedChange={(checked) => 
+                        handleBreedChange(breed, checked as boolean)
+                      }
+                    />
+                    <Label 
+                      htmlFor={breed}
+                      className="text-sm font-medium cursor-pointer"
+                    >
+                      {breed}
+                    </Label>
+                  </div>
+                  {isSelected && (
+                    <div className="flex items-center space-x-2">
+                      <Input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        placeholder="Enter %"
+                        value={selectedBreed?.percentage || ""}
+                        onChange={(e) => handleBreedPercentageChange(breed, e.target.value)}
+                        className="w-24"
+                      />
+                      <span className="text-sm text-gray-500">%</span>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
         </div>
         {breedSelections.length > 0 && (
-          <div className="text-sm text-gray-600">
+          <div className="text-sm font-medium">
             Total: {getTotalPercentage().toFixed(1)}%
             {Math.abs(getTotalPercentage() - 100) > 0.01 && (
               <span className="text-red-500 ml-2">
