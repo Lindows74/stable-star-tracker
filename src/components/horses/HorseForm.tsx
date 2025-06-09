@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -118,6 +119,8 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         throw error;
       }
 
+      console.log("Horse created successfully:", horse);
+
       // Insert categories
       if (form.getValues("categories").length > 0) {
         const categoryInserts = form.getValues("categories").map((category) => ({
@@ -125,6 +128,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
           category,
         }));
 
+        console.log("Inserting categories:", categoryInserts);
         const { error: categoryError } = await supabase
           .from("horse_categories")
           .insert(categoryInserts);
@@ -135,13 +139,14 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
-      // Insert surfaces with proper typing
+      // Insert surfaces
       if (form.getValues("preferred_surfaces").length > 0) {
         const surfaceInserts = form.getValues("preferred_surfaces").map((surface) => ({
           horse_id: horse.id,
           surface: surface as "very_hard" | "hard" | "firm" | "medium" | "soft" | "very_soft",
         }));
 
+        console.log("Inserting surfaces:", surfaceInserts);
         const { error: surfaceError } = await supabase
           .from("horse_surfaces")
           .insert(surfaceInserts);
@@ -152,13 +157,14 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
-      // Insert distances with proper typing
+      // Insert distances
       if (form.getValues("preferred_distances").length > 0) {
         const distanceInserts = form.getValues("preferred_distances").map((distance) => ({
           horse_id: horse.id,
           distance: distance as "800" | "900" | "1000" | "1200" | "1400" | "1600" | "1800" | "2000" | "2200" | "2400" | "2600" | "2800" | "3000" | "3200",
         }));
 
+        console.log("Inserting distances:", distanceInserts);
         const { error: distanceError } = await supabase
           .from("horse_distances")
           .insert(distanceInserts);
@@ -169,13 +175,14 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         }
       }
 
-      // Insert positions with proper typing
+      // Insert positions
       if (form.getValues("field_positions").length > 0) {
         const positionInserts = form.getValues("field_positions").map((position) => ({
           horse_id: horse.id,
           position: position as "front" | "middle" | "back",
         }));
 
+        console.log("Inserting positions:", positionInserts);
         const { error: positionError } = await supabase
           .from("horse_positions")
           .insert(positionInserts);
@@ -192,17 +199,16 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         
         for (const breedSelection of breedSelections) {
           if (breedSelection.breed && breedSelection.percentage > 0) {
-            // First, get or create the breed
             let { data: existingBreed, error: breedFetchError } = await supabase
               .from("breeds")
               .select("id")
               .eq("name", breedSelection.breed)
-              .single();
+              .maybeSingle();
 
             let breedId: number;
 
-            if (breedFetchError && breedFetchError.code === 'PGRST116') {
-              // Breed doesn't exist, create it
+            if (!existingBreed) {
+              console.log("Creating new breed:", breedSelection.breed);
               const { data: newBreed, error: breedCreateError } = await supabase
                 .from("breeds")
                 .insert({ name: breedSelection.breed })
@@ -222,7 +228,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               breedId = existingBreed.id;
             }
 
-            // Insert the breeding relationship
+            console.log("Inserting breeding relationship:", { horse_id: horse.id, breed_id: breedId, percentage: breedSelection.percentage });
             const { error: breedingError } = await supabase
               .from("horse_breeding")
               .insert({
@@ -241,7 +247,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
       // Insert traits if any exist
       if (selectedTraits.length > 0) {
-        console.log("Attempting to insert traits:", selectedTraits);
+        console.log("Inserting traits:", selectedTraits);
         
         const traitInserts = selectedTraits.map((trait) => ({
           horse_id: horse.id,
@@ -269,30 +275,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       });
       
       // Reset form
-      form.reset({
-        name: "",
-        tier: undefined,
-        speed: undefined,
-        sprint_energy: undefined,
-        acceleration: undefined,
-        agility: undefined,
-        jump: undefined,
-        diet_speed: undefined,
-        diet_sprint_energy: undefined,
-        diet_acceleration: undefined,
-        diet_agility: undefined,
-        diet_jump: undefined,
-        max_speed: false,
-        max_sprint_energy: false,
-        max_acceleration: false,
-        max_agility: false,
-        max_jump: false,
-        notes: "",
-        categories: [],
-        preferred_surfaces: [],
-        preferred_distances: [],
-        field_positions: [],
-      });
+      form.reset();
       setBreedSelections([]);
       setSelectedTraits([]);
       
