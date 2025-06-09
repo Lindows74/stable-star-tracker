@@ -9,7 +9,233 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      breeds: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      horse_breeding: {
+        Row: {
+          breed_id: number
+          created_at: string
+          horse_id: number
+          id: number
+          percentage: number
+        }
+        Insert: {
+          breed_id: number
+          created_at?: string
+          horse_id: number
+          id?: number
+          percentage: number
+        }
+        Update: {
+          breed_id?: number
+          created_at?: string
+          horse_id?: number
+          id?: number
+          percentage?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_breeding_breed_id_fkey"
+            columns: ["breed_id"]
+            isOneToOne: false
+            referencedRelation: "breeds"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "horse_breeding_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horse_distances: {
+        Row: {
+          created_at: string
+          distance: Database["public"]["Enums"]["distance_type"]
+          horse_id: number
+          id: number
+        }
+        Insert: {
+          created_at?: string
+          distance: Database["public"]["Enums"]["distance_type"]
+          horse_id: number
+          id?: number
+        }
+        Update: {
+          created_at?: string
+          distance?: Database["public"]["Enums"]["distance_type"]
+          horse_id?: number
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_distances_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horse_positions: {
+        Row: {
+          created_at: string
+          horse_id: number
+          id: number
+          position: Database["public"]["Enums"]["position_type"]
+        }
+        Insert: {
+          created_at?: string
+          horse_id: number
+          id?: number
+          position: Database["public"]["Enums"]["position_type"]
+        }
+        Update: {
+          created_at?: string
+          horse_id?: number
+          id?: number
+          position?: Database["public"]["Enums"]["position_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_positions_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horse_surfaces: {
+        Row: {
+          created_at: string
+          horse_id: number
+          id: number
+          surface: Database["public"]["Enums"]["surface_type"]
+        }
+        Insert: {
+          created_at?: string
+          horse_id: number
+          id?: number
+          surface: Database["public"]["Enums"]["surface_type"]
+        }
+        Update: {
+          created_at?: string
+          horse_id?: number
+          id?: number
+          surface?: Database["public"]["Enums"]["surface_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_surfaces_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horse_traits: {
+        Row: {
+          created_at: string
+          horse_id: number
+          id: number
+          trait_category: Database["public"]["Enums"]["trait_category_type"]
+          trait_name: string
+          trait_value: string | null
+        }
+        Insert: {
+          created_at?: string
+          horse_id: number
+          id?: number
+          trait_category: Database["public"]["Enums"]["trait_category_type"]
+          trait_name: string
+          trait_value?: string | null
+        }
+        Update: {
+          created_at?: string
+          horse_id?: number
+          id?: number
+          trait_category?: Database["public"]["Enums"]["trait_category_type"]
+          trait_name?: string
+          trait_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_traits_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horses: {
+        Row: {
+          acceleration: number | null
+          agility: number | null
+          category: string | null
+          created_at: string
+          id: number
+          jump: number | null
+          name: string
+          notes: string | null
+          speed: number | null
+          sprint_energy: number | null
+          tier: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          acceleration?: number | null
+          agility?: number | null
+          category?: string | null
+          created_at?: string
+          id?: number
+          jump?: number | null
+          name: string
+          notes?: string | null
+          speed?: number | null
+          sprint_energy?: number | null
+          tier?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          acceleration?: number | null
+          agility?: number | null
+          category?: string | null
+          created_at?: string
+          id?: number
+          jump?: number | null
+          name?: string
+          notes?: string | null
+          speed?: number | null
+          sprint_energy?: number | null
+          tier?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +244,35 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      distance_type:
+        | "800"
+        | "900"
+        | "1000"
+        | "1200"
+        | "1400"
+        | "1600"
+        | "1800"
+        | "2000"
+        | "2200"
+        | "2400"
+        | "2600"
+        | "2800"
+        | "3000"
+        | "3200"
+      position_type: "front" | "middle" | "back"
+      surface_type:
+        | "very_hard"
+        | "hard"
+        | "firm"
+        | "medium"
+        | "soft"
+        | "very_soft"
+      trait_category_type:
+        | "multi_modes"
+        | "flat_racing"
+        | "steeplechase"
+        | "cross_country"
+        | "misc"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +387,39 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      distance_type: [
+        "800",
+        "900",
+        "1000",
+        "1200",
+        "1400",
+        "1600",
+        "1800",
+        "2000",
+        "2200",
+        "2400",
+        "2600",
+        "2800",
+        "3000",
+        "3200",
+      ],
+      position_type: ["front", "middle", "back"],
+      surface_type: [
+        "very_hard",
+        "hard",
+        "firm",
+        "medium",
+        "soft",
+        "very_soft",
+      ],
+      trait_category_type: [
+        "multi_modes",
+        "flat_racing",
+        "steeplechase",
+        "cross_country",
+        "misc",
+      ],
+    },
   },
 } as const

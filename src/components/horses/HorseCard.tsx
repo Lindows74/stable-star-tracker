@@ -1,0 +1,89 @@
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import type { Tables } from "@/integrations/supabase/types";
+
+interface HorseCardProps {
+  horse: Tables<"horses">;
+}
+
+export const HorseCard = ({ horse }: HorseCardProps) => {
+  const getCategoryColor = (category: string | null) => {
+    switch (category) {
+      case "flat_racing":
+        return "bg-blue-100 text-blue-800";
+      case "steeplechase":
+        return "bg-green-100 text-green-800";
+      case "cross_country":
+        return "bg-orange-100 text-orange-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getTierColor = (tier: number | null) => {
+    if (!tier) return "bg-gray-100 text-gray-800";
+    if (tier >= 8) return "bg-purple-100 text-purple-800";
+    if (tier >= 6) return "bg-yellow-100 text-yellow-800";
+    if (tier >= 4) return "bg-green-100 text-green-800";
+    return "bg-blue-100 text-blue-800";
+  };
+
+  const stats = [
+    { name: "Speed", value: horse.speed },
+    { name: "Sprint Energy", value: horse.sprint_energy },
+    { name: "Acceleration", value: horse.acceleration },
+    { name: "Agility", value: horse.agility },
+    { name: "Jump", value: horse.jump },
+  ];
+
+  return (
+    <Card className="hover:shadow-lg transition-shadow duration-200">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between">
+          <CardTitle className="text-lg font-semibold text-gray-900">
+            {horse.name}
+          </CardTitle>
+          {horse.tier && (
+            <Badge className={`text-xs ${getTierColor(horse.tier)}`}>
+              Tier {horse.tier}
+            </Badge>
+          )}
+        </div>
+        
+        {horse.category && (
+          <Badge className={`w-fit text-xs ${getCategoryColor(horse.category)}`}>
+            {horse.category.replace("_", " ").toUpperCase()}
+          </Badge>
+        )}
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium text-gray-700">Racing Stats</h4>
+          {stats.map((stat) => (
+            <div key={stat.name} className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-600">{stat.name}</span>
+                <span className="font-medium text-gray-900">
+                  {stat.value || 0}/300
+                </span>
+              </div>
+              <Progress
+                value={((stat.value || 0) / 300) * 100}
+                className="h-2"
+              />
+            </div>
+          ))}
+        </div>
+
+        {horse.notes && (
+          <div className="pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-600 italic">{horse.notes}</p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
