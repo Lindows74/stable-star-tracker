@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,6 +66,60 @@ export const HorseList = () => {
     },
   });
 
+  // Sort horses by stats (speed > sprint > acceleration > agility > jump)
+  const sortHorsesByStats = (horses: Horse[]) => {
+    return horses.sort((a, b) => {
+      const getTotalStat = (horse: Horse, stat: keyof Horse, dietStat: keyof Horse) => {
+        return ((horse[stat] as number) || 0) + ((horse[dietStat] as number) || 0);
+      };
+
+      // Compare speed first
+      const aSpeed = getTotalStat(a, 'speed', 'diet_speed');
+      const bSpeed = getTotalStat(b, 'speed', 'diet_speed');
+      if (aSpeed !== bSpeed) return bSpeed - aSpeed;
+
+      // If speed is equal, compare sprint energy
+      const aSprint = getTotalStat(a, 'sprint_energy', 'diet_sprint_energy');
+      const bSprint = getTotalStat(b, 'sprint_energy', 'diet_sprint_energy');
+      if (aSprint !== bSprint) return bSprint - aSprint;
+
+      // If sprint is equal, compare acceleration
+      const aAccel = getTotalStat(a, 'acceleration', 'diet_acceleration');
+      const bAccel = getTotalStat(b, 'acceleration', 'diet_acceleration');
+      if (aAccel !== bAccel) return bAccel - aAccel;
+
+      // If acceleration is equal, compare agility
+      const aAgility = getTotalStat(a, 'agility', 'diet_agility');
+      const bAgility = getTotalStat(b, 'agility', 'diet_agility');
+      if (aAgility !== bAgility) return bAgility - aAgility;
+
+      // Finally compare jump
+      const aJump = getTotalStat(a, 'jump', 'diet_jump');
+      const bJump = getTotalStat(b, 'jump', 'diet_jump');
+      return bJump - aJump;
+    });
+  };
+
+  // Group horses by tier
+  const groupHorsesByTier = (horses: Horse[]) => {
+    const grouped: { [key: number]: Horse[] } = {};
+    
+    horses.forEach(horse => {
+      const tier = horse.tier || 0; // Default to tier 0 if no tier
+      if (!grouped[tier]) {
+        grouped[tier] = [];
+      }
+      grouped[tier].push(horse);
+    });
+
+    // Sort horses within each tier by stats
+    Object.keys(grouped).forEach(tier => {
+      grouped[parseInt(tier)] = sortHorsesByStats(grouped[parseInt(tier)]);
+    });
+
+    return grouped;
+  };
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -109,8 +162,19 @@ export const HorseList = () => {
     );
   }
 
+  const groupedHorses = groupHorsesByTier(horses);
+  const tiers = Object.keys(groupedHorses).map(Number).sort((a, b) => b - a); // Sort tiers from highest to lowest
+
+  const getTierColor = (tier: number) => {
+    if (tier >= 8) return "bg-purple-100 text-purple-800 border-purple-200";
+    if (tier >= 6) return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    if (tier >= 4) return "bg-green-100 text-green-800 border-green-200";
+    if (tier >= 1) return "bg-blue-100 text-blue-800 border-blue-200";
+    return "bg-gray-100 text-gray-800 border-gray-200";
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">Your Horses</h2>
         <Badge variant="secondary" className="text-sm">
@@ -118,11 +182,24 @@ export const HorseList = () => {
         </Badge>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {horses.map((horse) => (
-          <HorseCard key={horse.id} horse={horse} />
-        ))}
-      </div>
+      {tiers.map(tier => (
+        <div key={tier} className="space-y-4">
+          <div className="flex items-center gap-4">
+            <h3 className="text-xl font-semibold text-gray-800">
+              {tier === 0 ? "No Tier" : `Tier ${tier}`}
+            </h3>
+            <Badge className={`${getTierColor(tier)} border`}>
+              {groupedHorses[tier].length} horse{groupedHorses[tier].length !== 1 ? "s" : ""}
+            </Badge>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {groupedHorses[tier].map((horse) => (
+              <HorseCard key={horse.id} horse={horse} />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
