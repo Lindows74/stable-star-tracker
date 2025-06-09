@@ -40,6 +40,8 @@ const getTraitCategoryColor = (category: string) => {
 export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
   const traitInfo = getTraitInfo(traitName);
   const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category) : "bg-gray-100 text-gray-800 border-gray-200";
+  const isProTrait = traitName.includes("Pro");
+  const borderClass = isProTrait ? "border-4 border-yellow-400" : "border";
 
   return (
     <TooltipProvider>
@@ -49,7 +51,7 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
             <TooltipTrigger asChild>
               <Badge 
                 variant="secondary"
-                className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
+                className={`flex items-center gap-1 text-xs ${borderClass} cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
               >
                 {traitName}
               </Badge>
