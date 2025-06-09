@@ -1,11 +1,11 @@
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 interface PositionSectionProps {
-  watch: UseFormWatch<any>;
-  setValue: UseFormSetValue<any>;
+  control: Control<any>;
 }
 
 const positionOptions = [
@@ -14,8 +14,13 @@ const positionOptions = [
   { value: "back", label: "Back" },
 ];
 
-export const PositionSection = ({ watch, setValue }: PositionSectionProps) => {
-  const selectedPositions = watch("field_positions") || [];
+export const PositionSection = ({ control }: PositionSectionProps) => {
+  const { setValue } = useFormContext();
+  const selectedPositions = useWatch({
+    control,
+    name: "field_positions",
+    defaultValue: []
+  });
 
   const togglePosition = (position: string) => {
     const updated = selectedPositions.includes(position)

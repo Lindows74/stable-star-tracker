@@ -1,11 +1,11 @@
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 interface SurfaceSectionProps {
-  watch: UseFormWatch<any>;
-  setValue: UseFormSetValue<any>;
+  control: Control<any>;
 }
 
 const surfaceOptions = [
@@ -17,8 +17,13 @@ const surfaceOptions = [
   { value: "very_soft", label: "Very Soft" },
 ];
 
-export const SurfaceSection = ({ watch, setValue }: SurfaceSectionProps) => {
-  const selectedSurfaces = watch("preferred_surfaces") || [];
+export const SurfaceSection = ({ control }: SurfaceSectionProps) => {
+  const { setValue } = useFormContext();
+  const selectedSurfaces = useWatch({
+    control,
+    name: "preferred_surfaces",
+    defaultValue: []
+  });
 
   const toggleSurface = (surface: string) => {
     const updated = selectedSurfaces.includes(surface)

@@ -369,11 +369,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
           </CollapsibleContent>
         </Collapsible>
 
-        <SurfaceSection watch={form.watch} setValue={form.setValue} />
+        <SurfaceSection control={form.control} />
 
-        <DistanceSection watch={form.watch} setValue={form.setValue} />
+        <DistanceSection control={form.control} />
 
-        <PositionSection watch={form.watch} setValue={form.setValue} />
+        <PositionSection control={form.control} />
 
         <FormField
           control={form.control}

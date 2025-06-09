@@ -1,11 +1,11 @@
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 
 interface DistanceSectionProps {
-  watch: UseFormWatch<any>;
-  setValue: UseFormSetValue<any>;
+  control: Control<any>;
 }
 
 const distanceOptions = [
@@ -25,8 +25,13 @@ const distanceOptions = [
   { value: "3200", label: "3200m" },
 ];
 
-export const DistanceSection = ({ watch, setValue }: DistanceSectionProps) => {
-  const selectedDistances = watch("preferred_distances") || [];
+export const DistanceSection = ({ control }: DistanceSectionProps) => {
+  const { setValue } = useFormContext();
+  const selectedDistances = useWatch({
+    control,
+    name: "preferred_distances",
+    defaultValue: []
+  });
 
   const toggleDistance = (distance: string) => {
     const updated = selectedDistances.includes(distance)
