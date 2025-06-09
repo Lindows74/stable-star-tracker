@@ -18,7 +18,11 @@ interface TraitBadgeProps {
   traitName: string;
 }
 
-const getTraitCategoryColor = (category: string) => {
+const getTraitCategoryColor = (category: string, isPro?: boolean) => {
+  if (isPro) {
+    return "bg-gradient-to-r from-yellow-200 to-orange-200 text-orange-900 border-2 border-yellow-400 font-bold shadow-lg";
+  }
+  
   switch (category) {
     case "Speed & Acceleration":
       return "bg-red-100 text-red-800 border-red-200";
@@ -39,9 +43,7 @@ const getTraitCategoryColor = (category: string) => {
 
 export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
   const traitInfo = getTraitInfo(traitName);
-  const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category) : "bg-gray-100 text-gray-800 border-gray-200";
-  const isProTrait = traitName.includes("Pro");
-  const borderClass = isProTrait ? "border-4 border-yellow-400" : "border";
+  const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category, traitInfo.isPro) : "bg-gray-100 text-gray-800 border-gray-200";
 
   return (
     <TooltipProvider>
@@ -51,13 +53,16 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
             <TooltipTrigger asChild>
               <Badge 
                 variant="secondary"
-                className={`flex items-center gap-1 text-xs ${borderClass} cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
+                className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
               >
+                {traitInfo?.isPro && <span className="text-xs">⭐</span>}
                 {traitName}
               </Badge>
             </TooltipTrigger>
             <TooltipContent>
-              <p className="text-xs">Right-click for trait details</p>
+              <p className="text-xs">
+                {traitInfo?.isPro ? "Pro Trait - " : ""}Right-click for trait details
+              </p>
             </TooltipContent>
           </Tooltip>
         </ContextMenuTrigger>
@@ -65,6 +70,7 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
         <ContextMenuContent className="w-64">
           <ContextMenuItem disabled className="flex-col items-start space-y-1">
             <div className="flex items-center gap-2 font-medium">
+              {traitInfo?.isPro && <span className="text-yellow-600">⭐ PRO</span>}
               {traitName}
             </div>
             {traitInfo && (
