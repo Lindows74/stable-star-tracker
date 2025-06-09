@@ -32,7 +32,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
-    categories: [] as string[],
+    category: "", // Changed from categories array to single category string
     tier: "",
     speed: "",
     sprint_energy: "",
@@ -75,6 +75,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Knabstrupper"
   ];
 
+  // Updated to match database enum values exactly
   const categoryOptions = [
     { value: "flat_racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
@@ -142,7 +143,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       setFormData({
         name: "",
         gender: "",
-        categories: [],
+        category: "",
         tier: "",
         speed: "",
         sprint_energy: "",
@@ -182,7 +183,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation for required fields
+    // Enhanced validation for required fields
     if (!formData.name.trim()) {
       toast({
         title: "Error",
@@ -227,10 +228,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       }
     }
 
-    if (formData.categories.length === 0) {
+    if (!formData.category) {
       toast({
         title: "Error",
-        description: "At least one racing category must be selected.",
+        description: "A racing category must be selected.",
         variant: "destructive",
       });
       return;
@@ -254,11 +255,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       return;
     }
 
-    // Validate racing stats
+    // Validate racing stats with proper bounds checking
     const requiredStats = ['speed', 'sprint_energy', 'acceleration', 'agility', 'jump'];
     for (const stat of requiredStats) {
       const value = formData[stat as keyof typeof formData] as string;
-      if (!value || parseInt(value) < 1 || parseInt(value) > 300) {
+      const numValue = parseInt(value);
+      if (!value || isNaN(numValue) || numValue < 1 || numValue > 300) {
         toast({
           title: "Error",
           description: `${stat.replace('_', ' ')} must be between 1 and 300.`,
@@ -268,7 +270,9 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       }
     }
 
-    if (!formData.tier || parseInt(formData.tier) < 1 || parseInt(formData.tier) > 10) {
+    // Validate tier
+    const tierValue = parseInt(formData.tier);
+    if (!formData.tier || isNaN(tierValue) || tierValue < 1 || tierValue > 10) {
       toast({
         title: "Error",
         description: "Tier must be between 1 and 10.",
@@ -276,17 +280,34 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       });
       return;
     }
+
+    // Validate diet values if provided
+    const dietStats = ['diet_speed', 'diet_sprint_energy', 'diet_acceleration', 'diet_agility', 'diet_jump'];
+    for (const stat of dietStats) {
+      const value = formData[stat as keyof typeof formData] as string;
+      if (value) {
+        const numValue = parseInt(value);
+        if (isNaN(numValue) || numValue < 1 || numValue > 5) {
+          toast({
+            title: "Error",
+            description: `${stat.replace('diet_', '').replace('_', ' ')} diet value must be between 1 and 5.`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+    }
     
     const horseData: TablesInsert<"horses"> = {
       user_id: PERSONAL_USER_ID,
-      name: formData.name,
-      category: formData.categories.length > 0 ? formData.categories.join(", ") : null,
-      tier: formData.tier ? parseInt(formData.tier) : null,
-      speed: formData.speed ? parseInt(formData.speed) : null,
-      sprint_energy: formData.sprint_energy ? parseInt(formData.sprint_energy) : null,
-      acceleration: formData.acceleration ? parseInt(formData.acceleration) : null,
-      agility: formData.agility ? parseInt(formData.agility) : null,
-      jump: formData.jump ? parseInt(formData.jump) : null,
+      name: formData.name.trim(),
+      category: formData.category || null, // Single category, not comma-separated
+      tier: tierValue,
+      speed: parseInt(formData.speed),
+      sprint_energy: parseInt(formData.sprint_energy),
+      acceleration: parseInt(formData.acceleration),
+      agility: parseInt(formData.agility),
+      jump: parseInt(formData.jump),
       diet_speed: formData.diet_speed ? parseInt(formData.diet_speed) : null,
       diet_sprint_energy: formData.diet_sprint_energy ? parseInt(formData.diet_sprint_energy) : null,
       diet_acceleration: formData.diet_acceleration ? parseInt(formData.diet_acceleration) : null,
@@ -297,7 +318,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       max_acceleration: maxedStats.acceleration,
       max_agility: maxedStats.agility,
       max_jump: maxedStats.jump,
-      notes: formData.notes || null,
+      notes: formData.notes.trim() || null,
     };
 
     createHorseMutation.mutate(horseData);
@@ -325,12 +346,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     );
   };
 
-  const handleCategoryChange = (categoryValue: string, checked: boolean) => {
+  const handleCategoryChange = (categoryValue: string) => {
     setFormData(prev => ({
       ...prev,
-      categories: checked
-        ? [...prev.categories, categoryValue]
-        : prev.categories.filter(cat => cat !== categoryValue)
+      category: categoryValue
     }));
   };
 
@@ -498,17 +517,15 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       </div>
 
       <div className="space-y-3">
-        <Label>Racing Categories *</Label>
-        <div className="flex flex-wrap gap-4">
+        <Label>Racing Category *</Label>
+        <RadioGroup 
+          value={formData.category} 
+          onValueChange={handleCategoryChange}
+          className="flex flex-wrap gap-4"
+        >
           {categoryOptions.map((category) => (
             <div key={category.value} className="flex items-center space-x-2">
-              <Checkbox
-                id={category.value}
-                checked={formData.categories.includes(category.value)}
-                onCheckedChange={(checked) => 
-                  handleCategoryChange(category.value, checked as boolean)
-                }
-              />
+              <RadioGroupItem value={category.value} id={category.value} />
               <Label 
                 htmlFor={category.value}
                 className="text-sm font-normal cursor-pointer"
@@ -517,7 +534,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               </Label>
             </div>
           ))}
-        </div>
+        </RadioGroup>
       </div>
 
       <div className="space-y-3">
