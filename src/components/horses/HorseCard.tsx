@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,28 +18,28 @@ const getCategoryColor = (category: string) => {
   
   switch (normalizedCategory) {
     case "flatracing":
-      return "bg-red-100 text-red-800 border-red-200";
+      return "!bg-red-100 !text-red-800 !border-red-200";
     case "steeplechase":
-      return "bg-blue-100 text-blue-800 border-blue-200";
+      return "!bg-blue-100 !text-blue-800 !border-blue-200";
     case "crosscountry":
-      return "bg-green-100 text-green-800 border-green-200";
+      return "!bg-green-100 !text-green-800 !border-green-200";
     case "misc":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      return "!bg-yellow-100 !text-yellow-800 !border-yellow-200";
     case "sprinter":
-      return "bg-red-100 text-red-800 border-red-200";
+      return "!bg-red-100 !text-red-800 !border-red-200";
     case "miler":
-      return "bg-blue-100 text-blue-800 border-blue-200";
+      return "!bg-blue-100 !text-blue-800 !border-blue-200";
     case "classic":
-      return "bg-green-100 text-green-800 border-green-200";
+      return "!bg-green-100 !text-green-800 !border-green-200";
     case "dirt":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      return "!bg-yellow-100 !text-yellow-800 !border-yellow-200";
     case "turf":
-      return "bg-purple-100 text-purple-800 border-purple-200";
+      return "!bg-purple-100 !text-purple-800 !border-purple-200";
     case "synthetic":
-      return "bg-orange-100 text-orange-800 border-orange-200";
+      return "!bg-orange-100 !text-orange-800 !border-orange-200";
     default:
       console.log('Unknown category, using default:', category);
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "!bg-gray-100 !text-gray-800 !border-gray-200";
   }
 };
 
@@ -151,12 +152,13 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 const colorClasses = getCategoryColor(cat.category);
                 console.log('Applied color classes for', cat.category, ':', colorClasses);
                 return (
-                  <span 
+                  <Badge 
                     key={index} 
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses}`}
+                    variant="outline" 
+                    className={`text-xs ${colorClasses}`}
                   >
                     {cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                  </span>
+                  </Badge>
                 );
               })}
             </div>
