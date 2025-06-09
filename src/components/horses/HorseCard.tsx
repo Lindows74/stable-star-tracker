@@ -23,6 +23,13 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     );
   }
 
+  // Calculate total stats (base + diet bonus)
+  const totalSpeed = (horse.speed || 0) + (horse.diet_speed || 0);
+  const totalSprintEnergy = (horse.sprint_energy || 0) + (horse.diet_sprint_energy || 0);
+  const totalAcceleration = (horse.acceleration || 0) + (horse.diet_acceleration || 0);
+  const totalAgility = (horse.agility || 0) + (horse.diet_agility || 0);
+  const totalJump = (horse.jump || 0) + (horse.diet_jump || 0);
+
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
@@ -44,7 +51,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
       </CardHeader>
       <CardContent className="pt-0">
         <div className="flex flex-wrap gap-6">
-          {/* Basic Stats */}
+          {/* Basic Stats with Diet Plans */}
           <div className="flex-1 min-w-48">
             {horse.tier && (
               <div className="flex items-center gap-2 mb-2">
@@ -54,27 +61,38 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             )}
             
             <div className="grid grid-cols-2 gap-1 text-sm">
-              {horse.speed && <div>Speed: {horse.speed}</div>}
-              {horse.sprint_energy && <div>Sprint: {horse.sprint_energy}</div>}
-              {horse.acceleration && <div>Accel: {horse.acceleration}</div>}
-              {horse.agility && <div>Agility: {horse.agility}</div>}
-              {horse.jump && <div>Jump: {horse.jump}</div>}
+              {horse.speed !== null && horse.speed !== undefined && (
+                <div>
+                  Speed: {totalSpeed}
+                  {horse.diet_speed && <span className="text-green-600"> (+{horse.diet_speed})</span>}
+                </div>
+              )}
+              {horse.sprint_energy !== null && horse.sprint_energy !== undefined && (
+                <div>
+                  Sprint Energy: {totalSprintEnergy}
+                  {horse.diet_sprint_energy && <span className="text-green-600"> (+{horse.diet_sprint_energy})</span>}
+                </div>
+              )}
+              {horse.acceleration !== null && horse.acceleration !== undefined && (
+                <div>
+                  Acceleration: {totalAcceleration}
+                  {horse.diet_acceleration && <span className="text-green-600"> (+{horse.diet_acceleration})</span>}
+                </div>
+              )}
+              {horse.agility !== null && horse.agility !== undefined && (
+                <div>
+                  Agility: {totalAgility}
+                  {horse.diet_agility && <span className="text-green-600"> (+{horse.diet_agility})</span>}
+                </div>
+              )}
+              {horse.jump !== null && horse.jump !== undefined && (
+                <div>
+                  Jump: {totalJump}
+                  {horse.diet_jump && <span className="text-green-600"> (+{horse.diet_jump})</span>}
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Diet Plans */}
-          {(horse.diet_speed || horse.diet_sprint_energy || horse.diet_acceleration || horse.diet_agility || horse.diet_jump) && (
-            <div className="flex-1 min-w-48">
-              <span className="text-sm font-medium text-green-700">Diet Bonuses:</span>
-              <div className="grid grid-cols-2 gap-1 text-sm text-green-600">
-                {horse.diet_speed && <div>Speed: +{horse.diet_speed}</div>}
-                {horse.diet_sprint_energy && <div>Sprint: +{horse.diet_sprint_energy}</div>}
-                {horse.diet_acceleration && <div>Accel: +{horse.diet_acceleration}</div>}
-                {horse.diet_agility && <div>Agility: +{horse.diet_agility}</div>}
-                {horse.diet_jump && <div>Jump: +{horse.diet_jump}</div>}
-              </div>
-            </div>
-          )}
 
           {/* Max Training */}
           {(horse.max_speed || horse.max_sprint_energy || horse.max_acceleration || horse.max_agility || horse.max_jump) && (
@@ -82,8 +100,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               <span className="text-sm font-medium text-blue-700">Max Training:</span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {horse.max_speed && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Speed</Badge>}
-                {horse.max_sprint_energy && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Sprint</Badge>}
-                {horse.max_acceleration && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Accel</Badge>}
+                {horse.max_sprint_energy && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Sprint Energy</Badge>}
+                {horse.max_acceleration && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Acceleration</Badge>}
                 {horse.max_agility && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Agility</Badge>}
                 {horse.max_jump && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Jump</Badge>}
               </div>
