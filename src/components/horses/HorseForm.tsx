@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -64,7 +63,23 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Thoroughbred",
     "Arabian",
     "Quarter Horse",
-    "Standardbred"
+    "Standardbred",
+    "Appaloosa",
+    "Paint Horse",
+    "Morgan",
+    "Tennessee Walking Horse",
+    "Andalusian",
+    "Friesian",
+    "Clydesdale",
+    "Percheron",
+    "Belgian",
+    "Shire",
+    "Irish Sport Horse",
+    "Warmblood",
+    "Mustang",
+    "Icelandic Horse",
+    "Paso Fino",
+    "Saddlebred"
   ];
 
   const categoryOptions = [
