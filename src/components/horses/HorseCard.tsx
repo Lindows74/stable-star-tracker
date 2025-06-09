@@ -9,7 +9,9 @@ import { Settings } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 interface HorseCardProps {
-  horse: Tables<"horses">;
+  horse: Tables<"horses"> & {
+    horse_categories?: { category: string }[];
+  };
 }
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
@@ -23,6 +25,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         return "bg-green-100 text-green-800";
       case "cross_country":
         return "bg-orange-100 text-orange-800";
+      case "misc":
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
@@ -40,12 +44,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     return category.replace("_", " ").toUpperCase();
   };
 
-  const parseCategories = (categoryString: string | null) => {
-    if (!categoryString) return [];
-    return categoryString.split(", ").filter(cat => cat.trim());
-  };
-
-  const categories = parseCategories(horse.category);
+  // Get categories from the new horse_categories relationship
+  const categories = horse.horse_categories?.map(hc => hc.category) || [];
 
   const stats = [
     { 

@@ -32,7 +32,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
-    category: "", // Changed from categories array to single category string
+    categories: [] as string[], // Changed to array for multiple categories
     tier: "",
     speed: "",
     sprint_energy: "",
@@ -75,11 +75,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     "Knabstrupper"
   ];
 
-  // Updated category options to include misc and match database constraint exactly
+  // Updated category options to support multiple selection
   const categoryOptions = [
-    { value: "flat racing", label: "Flat Racing" },
+    { value: "flat_racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
-    { value: "cross country", label: "Cross Country" },
+    { value: "cross_country", label: "Cross Country" },
     { value: "misc", label: "Misc" },
   ];
 
@@ -119,19 +119,37 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     mutationFn: async (horseData: TablesInsert<"horses">) => {
       console.log("Creating horse with data:", horseData);
       
-      const { data, error } = await supabase
+      // Create the horse first
+      const { data: horse, error: horseError } = await supabase
         .from("horses")
         .insert([horseData])
         .select()
         .single();
 
-      if (error) {
-        console.error("Error creating horse:", error);
-        throw error;
+      if (horseError) {
+        console.error("Error creating horse:", horseError);
+        throw horseError;
       }
 
-      console.log("Created horse:", data);
-      return data;
+      // Then create the category entries
+      if (formData.categories.length > 0) {
+        const categoryData = formData.categories.map(category => ({
+          horse_id: horse.id,
+          category: category
+        }));
+
+        const { error: categoryError } = await supabase
+          .from("horse_categories")
+          .insert(categoryData);
+
+        if (categoryError) {
+          console.error("Error creating horse categories:", categoryError);
+          throw categoryError;
+        }
+      }
+
+      console.log("Created horse with categories:", horse);
+      return horse;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["horses"] });
@@ -143,7 +161,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       setFormData({
         name: "",
         gender: "",
-        category: "",
+        categories: [],
         tier: "",
         speed: "",
         sprint_energy: "",
@@ -228,28 +246,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       }
     }
 
-    if (!formData.category) {
+    if (formData.categories.length === 0) {
       toast({
         title: "Error",
-        description: "A racing category must be selected.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.surfaces.length === 0) {
-      toast({
-        title: "Error",
-        description: "At least one preferred surface must be selected.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (formData.distances.length === 0) {
-      toast({
-        title: "Error",
-        description: "At least one preferred distance must be selected.",
+        description: "At least one racing category must be selected.",
         variant: "destructive",
       });
       return;
@@ -311,7 +311,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     const horseData: TablesInsert<"horses"> = {
       user_id: PERSONAL_USER_ID,
       name: formData.name.trim(),
-      category: formData.category || null, // Single category, not comma-separated
+      category: null, // We don't use this field anymore, categories are stored in horse_categories table
       tier: tierValue,
       speed: clampStat(finalSpeed),
       sprint_energy: clampStat(finalSprintEnergy),
@@ -331,7 +331,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       notes: formData.notes.trim() || null,
     };
 
-    console.log("Submitting horse data with diet bonuses applied:", horseData);
+    console.log("Submitting horse data with multiple categories:", horseData, formData.categories);
     createHorseMutation.mutate(horseData);
   };
 
@@ -357,10 +357,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     );
   };
 
-  const handleCategoryChange = (categoryValue: string) => {
+  const handleCategoryChange = (categoryValue: string, checked: boolean) => {
     setFormData(prev => ({
       ...prev,
-      category: categoryValue
+      categories: checked
+        ? [...prev.categories, categoryValue]
+        : prev.categories.filter(cat => cat !== categoryValue)
     }));
   };
 
@@ -528,15 +530,17 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       </div>
 
       <div className="space-y-3">
-        <Label>Racing Category *</Label>
-        <RadioGroup 
-          value={formData.category} 
-          onValueChange={handleCategoryChange}
-          className="flex flex-wrap gap-4"
-        >
+        <Label>Racing Categories * (Select all that apply)</Label>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {categoryOptions.map((category) => (
             <div key={category.value} className="flex items-center space-x-2">
-              <RadioGroupItem value={category.value} id={category.value} />
+              <Checkbox
+                id={category.value}
+                checked={formData.categories.includes(category.value)}
+                onCheckedChange={(checked) => 
+                  handleCategoryChange(category.value, checked as boolean)
+                }
+              />
               <Label 
                 htmlFor={category.value}
                 className="text-sm font-normal cursor-pointer"
@@ -545,7 +549,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               </Label>
             </div>
           ))}
-        </RadioGroup>
+        </div>
+        {formData.categories.length > 0 && (
+          <div className="text-sm text-gray-600">
+            Selected: {formData.categories.length} categor{formData.categories.length === 1 ? 'y' : 'ies'}
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">

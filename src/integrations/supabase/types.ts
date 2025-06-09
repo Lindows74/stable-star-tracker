@@ -66,6 +66,35 @@ export type Database = {
           },
         ]
       }
+      horse_categories: {
+        Row: {
+          category: string
+          created_at: string
+          horse_id: number
+          id: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          horse_id: number
+          id?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          horse_id?: number
+          id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horse_categories_horse_id_fkey"
+            columns: ["horse_id"]
+            isOneToOne: false
+            referencedRelation: "horses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       horse_distances: {
         Row: {
           created_at: string

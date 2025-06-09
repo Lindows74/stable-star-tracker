@@ -7,25 +7,46 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { HorseCard } from "./HorseCard";
 import type { Tables } from "@/integrations/supabase/types";
 
-type Horse = Tables<"horses">;
+type Horse = Tables<"horses"> & {
+  horse_categories?: { category: string }[];
+};
 
 export const HorseList = () => {
   const { data: horses, isLoading, error } = useQuery({
     queryKey: ["horses"],
     queryFn: async () => {
-      console.log("Fetching horses...");
-      const { data, error } = await supabase
+      console.log("Fetching horses with categories...");
+      
+      // First get all horses
+      const { data: horsesData, error: horsesError } = await supabase
         .from("horses")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching horses:", error);
-        throw error;
+      if (horsesError) {
+        console.error("Error fetching horses:", horsesError);
+        throw horsesError;
       }
+
+      // Then get categories for each horse
+      const horsesWithCategories = await Promise.all(
+        horsesData.map(async (horse) => {
+          const { data: categories, error: categoriesError } = await supabase
+            .from("horse_categories")
+            .select("category")
+            .eq("horse_id", horse.id);
+
+          if (categoriesError) {
+            console.error("Error fetching categories for horse:", horse.id, categoriesError);
+            return { ...horse, horse_categories: [] };
+          }
+
+          return { ...horse, horse_categories: categories };
+        })
+      );
       
-      console.log("Fetched horses:", data);
-      return data as Horse[];
+      console.log("Fetched horses with categories:", horsesWithCategories);
+      return horsesWithCategories as Horse[];
     },
   });
 
