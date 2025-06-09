@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TraitSelector } from "./TraitSelector";
 import type { TablesInsert } from "@/integrations/supabase/types";
 
 interface HorseFormProps {
@@ -51,6 +52,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   });
 
   const [breedSelections, setBreedSelections] = useState<BreedSelection[]>([]);
+  const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
 
   const [maxedStats, setMaxedStats] = useState({
     speed: false,
@@ -62,18 +64,6 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
   const [showDietPlans, setShowDietPlans] = useState(false);
   const [showMaxTraining, setShowMaxTraining] = useState(false);
-
-  const breedOptions = [
-    "Arabian",
-    "Thoroughbred", 
-    "Mustang",
-    "Quarter Horse",
-    "Selle Francais",
-    "Appaloosa",
-    "Akhal-Teke",
-    "Anglo-Arab",
-    "Knabstrupper"
-  ];
 
   // Updated category options to support multiple selection
   const categoryOptions = [
@@ -115,6 +105,18 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     { value: "3200", label: "3200m" },
   ];
 
+  const breedOptions = [
+    "Arabian",
+    "Thoroughbred", 
+    "Mustang",
+    "Quarter Horse",
+    "Selle Francais",
+    "Appaloosa",
+    "Akhal-Teke",
+    "Anglo-Arab",
+    "Knabstrupper"
+  ];
+
   const createHorseMutation = useMutation({
     mutationFn: async (horseData: TablesInsert<"horses">) => {
       console.log("Creating horse with data:", horseData);
@@ -145,6 +147,35 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         if (categoryError) {
           console.error("Error creating horse categories:", categoryError);
           throw categoryError;
+        }
+      }
+
+      // Insert traits if any exist
+      if (selectedTraits.length > 0) {
+        console.log("Attempting to insert traits:", selectedTraits);
+        
+        const traitInserts = selectedTraits.map((trait) => ({
+          horse_id: horse.id,
+          trait_name: trait,
+          trait_category: "misc" as const,
+        }));
+
+        const { error: traitError } = await supabase
+          .from("horse_traits")
+          .insert(traitInserts);
+
+        if (traitError) {
+          console.error("Error inserting traits:", traitError);
+          // Show a specific error message for RLS issues but don't fail the entire creation
+          if (traitError.code === "42501") {
+            toast({
+              title: "Warning",
+              description: "Horse created successfully, but traits could not be saved due to database permissions.",
+              variant: "destructive",
+            });
+          } else {
+            throw traitError;
+          }
         }
       }
 
@@ -179,6 +210,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         field_positions: [],
       });
       setBreedSelections([]);
+      setSelectedTraits([]);
       setMaxedStats({
         speed: false,
         sprint_energy: false,
@@ -556,6 +588,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
           </div>
         )}
       </div>
+
+      <TraitSelector 
+        selectedTraits={selectedTraits} 
+        onTraitsChange={setSelectedTraits}
+      />
 
       <div className="space-y-3">
         <Label>Preferred Surfaces *</Label>
