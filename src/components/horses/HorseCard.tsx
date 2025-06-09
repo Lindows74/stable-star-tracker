@@ -46,11 +46,11 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   };
 
   const stats = [
-    { name: "Speed", value: horse.speed, dietValue: horse.diet_speed, maxed: horse.max_speed },
-    { name: "Sprint Energy", value: horse.sprint_energy, dietValue: horse.diet_sprint_energy, maxed: horse.max_sprint_energy },
-    { name: "Acceleration", value: horse.acceleration, dietValue: horse.diet_acceleration, maxed: horse.max_acceleration },
-    { name: "Agility", value: horse.agility, dietValue: horse.diet_agility, maxed: horse.max_agility },
-    { name: "Jump", value: horse.jump, dietValue: horse.diet_jump, maxed: horse.max_jump },
+    { name: "Speed", value: horse.speed, dietValue: horse.diet_speed, maxed: horse.max_speed || false },
+    { name: "Sprint Energy", value: horse.sprint_energy, dietValue: horse.diet_sprint_energy, maxed: horse.max_sprint_energy || false },
+    { name: "Acceleration", value: horse.acceleration, dietValue: horse.diet_acceleration, maxed: horse.max_acceleration || false },
+    { name: "Agility", value: horse.agility, dietValue: horse.diet_agility, maxed: horse.max_agility || false },
+    { name: "Jump", value: horse.jump, dietValue: horse.diet_jump, maxed: horse.max_jump || false },
   ];
 
   const categories = parseCategories(horse.category);

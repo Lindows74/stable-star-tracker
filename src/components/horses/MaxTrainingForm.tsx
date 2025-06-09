@@ -107,10 +107,8 @@ export const MaxTrainingForm = ({ horse }: MaxTrainingFormProps) => {
           <Checkbox
             id="check-all"
             checked={allChecked}
-            ref={(el) => {
-              if (el) el.indeterminate = someChecked && !allChecked;
-            }}
             onCheckedChange={handleCheckAll}
+            className={someChecked && !allChecked ? "opacity-50" : ""}
           />
           <Label 
             htmlFor="check-all"

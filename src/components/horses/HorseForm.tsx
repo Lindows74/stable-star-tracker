@@ -375,10 +375,8 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
           <Checkbox
             id="check-all-max"
             checked={allMaxed}
-            ref={(el) => {
-              if (el) el.indeterminate = someMaxed && !allMaxed;
-            }}
             onCheckedChange={handleCheckAllMax}
+            className={someMaxed && !allMaxed ? "opacity-50" : ""}
           />
           <Label 
             htmlFor="check-all-max"

@@ -201,6 +201,11 @@ export type Database = {
           diet_sprint_energy: number | null
           id: number
           jump: number | null
+          max_acceleration: boolean | null
+          max_agility: boolean | null
+          max_jump: boolean | null
+          max_speed: boolean | null
+          max_sprint_energy: boolean | null
           name: string
           notes: string | null
           speed: number | null
@@ -221,6 +226,11 @@ export type Database = {
           diet_sprint_energy?: number | null
           id?: number
           jump?: number | null
+          max_acceleration?: boolean | null
+          max_agility?: boolean | null
+          max_jump?: boolean | null
+          max_speed?: boolean | null
+          max_sprint_energy?: boolean | null
           name: string
           notes?: string | null
           speed?: number | null
@@ -241,6 +251,11 @@ export type Database = {
           diet_sprint_energy?: number | null
           id?: number
           jump?: number | null
+          max_acceleration?: boolean | null
+          max_agility?: boolean | null
+          max_jump?: boolean | null
+          max_speed?: boolean | null
+          max_sprint_energy?: boolean | null
           name?: string
           notes?: string | null
           speed?: number | null
