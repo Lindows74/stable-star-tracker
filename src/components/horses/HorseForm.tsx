@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -149,6 +148,52 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Validation for required fields
+    if (!formData.name.trim()) {
+      toast({
+        title: "Error",
+        description: "Horse name is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.breed.trim()) {
+      toast({
+        title: "Error",
+        description: "Breed is required.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.categories.length === 0) {
+      toast({
+        title: "Error",
+        description: "At least one racing category must be selected.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.surfaces.length === 0) {
+      toast({
+        title: "Error",
+        description: "At least one preferred surface must be selected.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (formData.distances.length === 0) {
+      toast({
+        title: "Error",
+        description: "At least one preferred distance must be selected.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     const horseData: TablesInsert<"horses"> = {
       user_id: "00000000-0000-0000-0000-000000000000", // Temporary placeholder
       name: formData.name,
@@ -246,17 +291,18 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="breed">Breed</Label>
+          <Label htmlFor="breed">Breed *</Label>
           <Input
             id="breed"
             value={formData.breed}
             onChange={(e) => handleInputChange("breed", e.target.value)}
             placeholder="Enter breed"
+            required
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="tier">Tier (1-10)</Label>
+          <Label htmlFor="tier">Tier (1-10) *</Label>
           <Input
             id="tier"
             type="number"
@@ -265,12 +311,13 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
             value={formData.tier}
             onChange={(e) => handleInputChange("tier", e.target.value)}
             placeholder="Enter tier"
+            required
           />
         </div>
       </div>
 
       <div className="space-y-3">
-        <Label>Racing Categories</Label>
+        <Label>Racing Categories *</Label>
         <div className="flex flex-wrap gap-4">
           {categoryOptions.map((category) => (
             <div key={category.value} className="flex items-center space-x-2">
@@ -293,7 +340,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       </div>
 
       <div className="space-y-3">
-        <Label>Preferred Surfaces</Label>
+        <Label>Preferred Surfaces *</Label>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {surfaceOptions.map((surface) => (
             <div key={surface.value} className="flex items-center space-x-2">
@@ -316,7 +363,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       </div>
 
       <div className="space-y-3">
-        <Label>Preferred Distances</Label>
+        <Label>Preferred Distances *</Label>
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {distanceOptions.map((distance) => (
             <div key={distance.value} className="flex items-center space-x-2">
@@ -339,10 +386,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Racing Stats (1-300)</h3>
+        <h3 className="text-lg font-medium text-gray-900">Racing Stats (1-300) *</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="speed">Speed</Label>
+            <Label htmlFor="speed">Speed *</Label>
             <Input
               id="speed"
               type="number"
@@ -351,11 +398,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               value={formData.speed}
               onChange={(e) => handleInputChange("speed", e.target.value)}
               placeholder="1-300"
+              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sprint_energy">Sprint Energy</Label>
+            <Label htmlFor="sprint_energy">Sprint Energy *</Label>
             <Input
               id="sprint_energy"
               type="number"
@@ -364,11 +412,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               value={formData.sprint_energy}
               onChange={(e) => handleInputChange("sprint_energy", e.target.value)}
               placeholder="1-300"
+              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="acceleration">Acceleration</Label>
+            <Label htmlFor="acceleration">Acceleration *</Label>
             <Input
               id="acceleration"
               type="number"
@@ -377,11 +426,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               value={formData.acceleration}
               onChange={(e) => handleInputChange("acceleration", e.target.value)}
               placeholder="1-300"
+              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="agility">Agility</Label>
+            <Label htmlFor="agility">Agility *</Label>
             <Input
               id="agility"
               type="number"
@@ -390,11 +440,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               value={formData.agility}
               onChange={(e) => handleInputChange("agility", e.target.value)}
               placeholder="1-300"
+              required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="jump">Jump</Label>
+            <Label htmlFor="jump">Jump *</Label>
             <Input
               id="jump"
               type="number"
@@ -403,6 +454,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
               value={formData.jump}
               onChange={(e) => handleInputChange("jump", e.target.value)}
               placeholder="1-300"
+              required
             />
           </div>
         </div>
