@@ -11,7 +11,17 @@ interface HorseCardProps {
 }
 
 const getCategoryColor = (category: string) => {
-  switch (category.toLowerCase()) {
+  const normalizedCategory = category.toLowerCase().replace(/[_\s]/g, '');
+  
+  switch (normalizedCategory) {
+    case "flatracing":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "steeplechase":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "crosscountry":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "misc":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
     case "sprinter":
       return "bg-red-100 text-red-800 border-red-200";
     case "miler":
@@ -25,6 +35,7 @@ const getCategoryColor = (category: string) => {
     case "synthetic":
       return "bg-orange-100 text-orange-800 border-orange-200";
     default:
+      console.log('Unknown category:', category); // Debug log to see what categories we're getting
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
 };
