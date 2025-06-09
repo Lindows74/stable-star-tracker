@@ -16,6 +16,11 @@ interface HorseFormProps {
   onSuccess?: () => void;
 }
 
+interface BreedSelection {
+  breed: string;
+  percentage: string;
+}
+
 export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -35,10 +40,11 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     diet_agility: "",
     diet_jump: "",
     notes: "",
-    breed: "",
     surfaces: [] as string[],
     distances: [] as string[],
   });
+
+  const [breedSelections, setBreedSelections] = useState<BreedSelection[]>([]);
 
   const [maxedStats, setMaxedStats] = useState({
     speed: false,
@@ -50,6 +56,25 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
   const [showDietPlans, setShowDietPlans] = useState(false);
   const [showMaxTraining, setShowMaxTraining] = useState(false);
+
+  const breedOptions = [
+    "Thoroughbred",
+    "Arabian",
+    "Quarter Horse",
+    "Standardbred",
+    "Paint Horse",
+    "Appaloosa",
+    "Mustang",
+    "Friesian",
+    "Clydesdale",
+    "Shire",
+    "Percheron",
+    "Belgian",
+    "Andalusian",
+    "Lusitano",
+    "Warmblood",
+    "Other"
+  ];
 
   const categoryOptions = [
     { value: "flat_racing", label: "Flat Racing" },
@@ -122,10 +147,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         diet_agility: "",
         diet_jump: "",
         notes: "",
-        breed: "",
         surfaces: [],
         distances: [],
       });
+      setBreedSelections([]);
       setMaxedStats({
         speed: false,
         sprint_energy: false,
@@ -158,13 +183,39 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       return;
     }
 
-    if (!formData.breed.trim()) {
+    if (breedSelections.length === 0) {
       toast({
         title: "Error",
-        description: "Breed is required.",
+        description: "At least one breed must be selected.",
         variant: "destructive",
       });
       return;
+    }
+
+    // Validate breed percentages
+    const totalPercentage = breedSelections.reduce((sum, breed) => {
+      const percentage = parseFloat(breed.percentage) || 0;
+      return sum + percentage;
+    }, 0);
+
+    if (Math.abs(totalPercentage - 100) > 0.01) {
+      toast({
+        title: "Error",
+        description: "Breed percentages must add up to 100%.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    for (const breed of breedSelections) {
+      if (!breed.percentage || parseFloat(breed.percentage) <= 0) {
+        toast({
+          title: "Error",
+          description: "All selected breeds must have a percentage greater than 0.",
+          variant: "destructive",
+        });
+        return;
+      }
     }
 
     if (formData.categories.length === 0) {
@@ -189,6 +240,29 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       toast({
         title: "Error",
         description: "At least one preferred distance must be selected.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate racing stats
+    const requiredStats = ['speed', 'sprint_energy', 'acceleration', 'agility', 'jump'];
+    for (const stat of requiredStats) {
+      const value = formData[stat as keyof typeof formData] as string;
+      if (!value || parseInt(value) < 1 || parseInt(value) > 300) {
+        toast({
+          title: "Error",
+          description: `${stat.replace('_', ' ')} must be between 1 and 300.`,
+          variant: "destructive",
+        });
+        return;
+      }
+    }
+
+    if (!formData.tier || parseInt(formData.tier) < 1 || parseInt(formData.tier) > 10) {
+      toast({
+        title: "Error",
+        description: "Tier must be between 1 and 10.",
         variant: "destructive",
       });
       return;
@@ -222,6 +296,24 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleBreedChange = (breedName: string, checked: boolean) => {
+    if (checked) {
+      setBreedSelections(prev => [...prev, { breed: breedName, percentage: "" }]);
+    } else {
+      setBreedSelections(prev => prev.filter(breed => breed.breed !== breedName));
+    }
+  };
+
+  const handleBreedPercentageChange = (breedName: string, percentage: string) => {
+    setBreedSelections(prev => 
+      prev.map(breed => 
+        breed.breed === breedName 
+          ? { ...breed, percentage }
+          : breed
+      )
+    );
   };
 
   const handleCategoryChange = (categoryValue: string, checked: boolean) => {
@@ -276,6 +368,13 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     { key: "jump" as const, label: "Jump" },
   ];
 
+  const getTotalPercentage = () => {
+    return breedSelections.reduce((sum, breed) => {
+      const percentage = parseFloat(breed.percentage) || 0;
+      return sum + percentage;
+    }, 0);
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -286,17 +385,6 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
             value={formData.name}
             onChange={(e) => handleInputChange("name", e.target.value)}
             placeholder="Enter horse name"
-            required
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="breed">Breed *</Label>
-          <Input
-            id="breed"
-            value={formData.breed}
-            onChange={(e) => handleInputChange("breed", e.target.value)}
-            placeholder="Enter breed"
             required
           />
         </div>
@@ -314,6 +402,56 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
             required
           />
         </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Breeds * (Total must equal 100%)</Label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {breedOptions.map((breed) => {
+            const isSelected = breedSelections.some(b => b.breed === breed);
+            const selectedBreed = breedSelections.find(b => b.breed === breed);
+            
+            return (
+              <div key={breed} className="flex items-center space-x-2">
+                <Checkbox
+                  id={breed}
+                  checked={isSelected}
+                  onCheckedChange={(checked) => 
+                    handleBreedChange(breed, checked as boolean)
+                  }
+                />
+                <Label 
+                  htmlFor={breed}
+                  className="text-sm font-normal cursor-pointer flex-1"
+                >
+                  {breed}
+                </Label>
+                {isSelected && (
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    placeholder="%"
+                    value={selectedBreed?.percentage || ""}
+                    onChange={(e) => handleBreedPercentageChange(breed, e.target.value)}
+                    className="w-20"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {breedSelections.length > 0 && (
+          <div className="text-sm text-gray-600">
+            Total: {getTotalPercentage().toFixed(1)}%
+            {Math.abs(getTotalPercentage() - 100) > 0.01 && (
+              <span className="text-red-500 ml-2">
+                (Must equal 100%)
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="space-y-3">
