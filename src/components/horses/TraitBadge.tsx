@@ -18,8 +18,28 @@ interface TraitBadgeProps {
   traitName: string;
 }
 
+const getTraitCategoryColor = (category: string) => {
+  switch (category) {
+    case "Speed & Acceleration":
+      return "bg-red-100 text-red-800 border-red-200";
+    case "Endurance & Stamina":
+      return "bg-blue-100 text-blue-800 border-blue-200";
+    case "Distance Specialization":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "Terrain & Surface":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    case "Jumping & Agility":
+      return "bg-purple-100 text-purple-800 border-purple-200";
+    case "Special Abilities":
+      return "bg-orange-100 text-orange-800 border-orange-200";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200";
+  }
+};
+
 export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
   const traitInfo = getTraitInfo(traitName);
+  const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category) : "bg-gray-100 text-gray-800 border-gray-200";
 
   return (
     <TooltipProvider>
@@ -29,7 +49,7 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
             <TooltipTrigger asChild>
               <Badge 
                 variant="secondary"
-                className="flex items-center gap-1 text-xs bg-amber-100 text-amber-800 cursor-pointer hover:bg-amber-200 transition-colors"
+                className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
               >
                 {traitName}
               </Badge>
