@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -44,47 +45,40 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     return categoryString.split(", ").filter(cat => cat.trim());
   };
 
-  const isStarsRisk = categories.some(cat => cat.trim().toLowerCase() === "stars_risk");
+  const categories = parseCategories(horse.category);
 
   const stats = [
     { 
       name: "Speed", 
       value: horse.speed, 
       dietValue: horse.diet_speed, 
-      maxed: horse.max_speed || false,
-      bonusValue: isStarsRisk ? 5 : 0
+      maxed: horse.max_speed || false
     },
     { 
       name: "Sprint Energy", 
       value: horse.sprint_energy, 
       dietValue: horse.diet_sprint_energy, 
-      maxed: horse.max_sprint_energy || false,
-      bonusValue: isStarsRisk ? 5 : 0
+      maxed: horse.max_sprint_energy || false
     },
     { 
       name: "Acceleration", 
       value: horse.acceleration, 
       dietValue: horse.diet_acceleration, 
-      maxed: horse.max_acceleration || false,
-      bonusValue: isStarsRisk ? 5 : 0
+      maxed: horse.max_acceleration || false
     },
     { 
       name: "Agility", 
       value: horse.agility, 
       dietValue: horse.diet_agility, 
-      maxed: horse.max_agility || false,
-      bonusValue: 0
+      maxed: horse.max_agility || false
     },
     { 
       name: "Jump", 
       value: horse.jump, 
       dietValue: horse.diet_jump, 
-      maxed: horse.max_jump || false,
-      bonusValue: 0
+      maxed: horse.max_jump || false
     },
   ];
-
-  const categories = parseCategories(horse.category);
 
   return (
     <Card className="hover:shadow-lg transition-shadow duration-200">
@@ -128,7 +122,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         <div className="space-y-3">
           <h4 className="text-sm font-medium text-gray-700">Racing Stats</h4>
           {stats.map((stat) => {
-            const totalValue = (stat.value || 0) + (stat.dietValue || 0) + stat.bonusValue;
+            const totalValue = (stat.value || 0) + (stat.dietValue || 0);
             
             return (
               <div key={stat.name} className="space-y-1">
@@ -148,11 +142,6 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                     {stat.dietValue && (
                       <Badge variant="secondary" className="text-xs px-1 py-0">
                         +{stat.dietValue} diet
-                      </Badge>
-                    )}
-                    {stat.bonusValue > 0 && (
-                      <Badge variant="secondary" className="text-xs px-1 py-0 bg-blue-100 text-blue-800">
-                        +{stat.bonusValue} Stars Risk
                       </Badge>
                     )}
                   </div>
