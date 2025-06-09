@@ -1,0 +1,54 @@
+
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { UseFormSetValue, UseFormWatch } from "react-hook-form";
+
+interface DistanceSectionProps {
+  watch: UseFormWatch<any>;
+  setValue: UseFormSetValue<any>;
+}
+
+const distanceOptions = [
+  { value: "1000", label: "1000m" },
+  { value: "1200", label: "1200m" },
+  { value: "1400", label: "1400m" },
+  { value: "1600", label: "1600m" },
+  { value: "1800", label: "1800m" },
+  { value: "2000", label: "2000m" },
+  { value: "2200", label: "2200m" },
+  { value: "2400", label: "2400m" },
+  { value: "2500", label: "2500m" },
+  { value: "3000", label: "3000m" },
+  { value: "3200", label: "3200m" },
+];
+
+export const DistanceSection = ({ watch, setValue }: DistanceSectionProps) => {
+  const selectedDistances = watch("preferred_distances") || [];
+
+  const toggleDistance = (distance: string) => {
+    const updated = selectedDistances.includes(distance)
+      ? selectedDistances.filter((d: string) => d !== distance)
+      : [...selectedDistances, distance];
+    setValue("preferred_distances", updated);
+  };
+
+  return (
+    <div className="space-y-3">
+      <Label>Preferred Distances *</Label>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {distanceOptions.map((distance) => (
+          <div key={distance.value} className="flex items-center space-x-2">
+            <Checkbox
+              id={distance.value}
+              checked={selectedDistances.includes(distance.value)}
+              onCheckedChange={() => toggleDistance(distance.value)}
+            />
+            <Label htmlFor={distance.value} className="text-sm font-normal">
+              {distance.label}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
