@@ -14,46 +14,77 @@ interface TraitSelectorProps {
 const TRAIT_CATEGORIES = {
   "Speed & Acceleration": [
     "Agile Arrow",
+    "Agile Arrow Pro",
     "Blazing Hoof",
+    "Blazing Hoof Pro",
     "Fast Draw",
+    "Fast Draw Pro",
     "Flash Ignite",
+    "Flash Ignite Pro",
     "Fleet Dash",
+    "Fleet Dash Pro",
     "Lightning Bolt",
+    "Lightning Bolt Pro",
     "Quick Gallop",
+    "Quick Gallop Pro",
     "Swift Trot",
-    "Thundering Hooves"
+    "Swift Trot Pro",
+    "Thundering Hooves",
+    "Thundering Hooves Pro"
   ],
   "Endurance & Stamina": [
     "Endurance Charger",
+    "Endurance Charger Pro",
     "Energy Saver",
+    "Energy Saver Pro",
     "Marathon Master",
+    "Marathon Master Pro",
     "Marathon Trotter",
-    "Top Endurance"
+    "Marathon Trotter Pro",
+    "Top Endurance",
+    "Top Endurance Pro"
   ],
   "Distance Specialization": [
     "Mid Dash",
+    "Mid Dash Pro",
     "Mid Miracle",
-    "Short Star"
+    "Mid Miracle Pro",
+    "Short Star",
+    "Short Star Pro"
   ],
   "Terrain & Surface": [
     "Granite Gallop",
+    "Granite Gallop Pro",
     "Hard N' Fast",
+    "Hard N' Fast Pro",
     "Meadow Runner",
+    "Meadow Runner Pro",
     "Meadowstride",
+    "Meadowstride Pro",
     "River Rider",
+    "River Rider Pro",
     "Steady Strider",
-    "Swampy Strider"
+    "Steady Strider Pro",
+    "Swampy Strider",
+    "Swampy Strider Pro"
   ],
   "Jumping & Agility": [
     "Leaping Lancer",
+    "Leaping Lancer Pro",
     "Leaping Star",
-    "Perfect Step"
+    "Leaping Star Pro",
+    "Perfect Step",
+    "Perfect Step Pro"
   ],
   "Special Abilities": [
     "Elite Lineage",
+    "Elite Lineage Pro",
     "Thrifty Spender",
+    "Thrifty Spender Pro",
     "To the Moon",
-    "Top Student"
+    "To the Moon Pro",
+    "Top Student",
+    "Top Student Pro"
   ]
 };
 
