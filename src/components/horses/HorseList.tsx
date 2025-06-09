@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -109,9 +108,12 @@ export const HorseList = () => {
   const filterHorsesByCategory = (horses: Horse[]) => {
     if (categoryFilter === "all") return horses;
     
-    return horses.filter(horse => 
-      horse.horse_categories?.some(cat => cat.category === categoryFilter)
-    );
+    return horses.filter(horse => {
+      // Include horses that have the selected category OR have "misc" category
+      return horse.horse_categories?.some(cat => 
+        cat.category === categoryFilter || cat.category === "misc"
+      );
+    });
   };
 
   // Group horses by tier
