@@ -20,7 +20,7 @@ interface TraitBadgeProps {
 
 const getTraitCategoryColor = (category: string, isPro?: boolean) => {
   if (isPro) {
-    return "bg-gradient-to-r from-yellow-200 to-orange-200 text-orange-900 border-2 border-yellow-400 font-bold shadow-lg";
+    return "bg-gradient-to-r from-yellow-300 to-orange-300 text-orange-900 border-2 border-yellow-500 font-bold shadow-lg";
   }
   
   switch (category) {
@@ -45,6 +45,12 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
   const traitInfo = getTraitInfo(traitName);
   const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category, traitInfo.isPro) : "bg-gray-100 text-gray-800 border-gray-200";
 
+  console.log(`TraitBadge for "${traitName}":`, {
+    traitInfo,
+    isPro: traitInfo?.isPro,
+    colorClass
+  });
+
   return (
     <TooltipProvider>
       <ContextMenu>
@@ -55,13 +61,13 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
                 variant="secondary"
                 className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
               >
-                {traitInfo?.isPro && <span className="text-xs">⭐</span>}
+                {traitInfo?.isPro && <span className="text-xs font-bold">⭐</span>}
                 {traitName}
               </Badge>
             </TooltipTrigger>
             <TooltipContent>
               <p className="text-xs">
-                {traitInfo?.isPro ? "Pro Trait - " : ""}Right-click for trait details
+                {traitInfo?.isPro ? "PRO TRAIT - " : ""}Right-click for trait details
               </p>
             </TooltipContent>
           </Tooltip>
@@ -70,7 +76,7 @@ export const TraitBadge = ({ traitName }: TraitBadgeProps) => {
         <ContextMenuContent className="w-64">
           <ContextMenuItem disabled className="flex-col items-start space-y-1">
             <div className="flex items-center gap-2 font-medium">
-              {traitInfo?.isPro && <span className="text-yellow-600">⭐ PRO</span>}
+              {traitInfo?.isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
               {traitName}
             </div>
             {traitInfo && (
