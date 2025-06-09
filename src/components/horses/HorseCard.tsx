@@ -11,7 +11,9 @@ interface HorseCardProps {
 }
 
 const getCategoryColor = (category: string) => {
+  console.log('Category received:', category, 'Type:', typeof category);
   const normalizedCategory = category.toLowerCase().replace(/[_\s]/g, '');
+  console.log('Normalized category:', normalizedCategory);
   
   switch (normalizedCategory) {
     case "flatracing":
@@ -35,13 +37,15 @@ const getCategoryColor = (category: string) => {
     case "synthetic":
       return "bg-orange-100 text-orange-800 border-orange-200";
     default:
-      console.log('Unknown category:', category); // Debug log to see what categories we're getting
+      console.log('Unknown category, using default:', category);
       return "bg-gray-100 text-gray-800 border-gray-200";
   }
 };
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  
+  console.log('Horse categories:', horse.horse_categories);
 
   if (isEditing) {
     return (
@@ -143,15 +147,18 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
           {horse.horse_categories && horse.horse_categories.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
               <span className="text-sm font-medium">Categories:</span>
-              {horse.horse_categories.map((cat: any, index: number) => (
-                <Badge 
-                  key={index} 
-                  variant="outline" 
-                  className={`text-xs ${getCategoryColor(cat.category)}`}
-                >
-                  {cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                </Badge>
-              ))}
+              {horse.horse_categories.map((cat: any, index: number) => {
+                const colorClasses = getCategoryColor(cat.category);
+                console.log('Applied color classes for', cat.category, ':', colorClasses);
+                return (
+                  <span 
+                    key={index} 
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colorClasses}`}
+                  >
+                    {cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                  </span>
+                );
+              })}
             </div>
           )}
 
