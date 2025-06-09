@@ -421,7 +421,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
       <div className="space-y-3">
         <Label>Horse Breeds * (Total must equal 100%)</Label>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {breedOptions.map((breed) => {
             const isSelected = breedSelections.some(b => b.breed === breed);
             const selectedBreed = breedSelections.find(b => b.breed === breed);
