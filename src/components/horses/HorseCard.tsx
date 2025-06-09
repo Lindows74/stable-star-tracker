@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -137,7 +136,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 <Badge 
                   key={index} 
                   variant="outline" 
-                  className={`text-xs border ${getCategoryColor(cat.category)}`}
+                  className={`text-xs ${getCategoryColor(cat.category)}`}
                 >
                   {cat.category.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                 </Badge>
