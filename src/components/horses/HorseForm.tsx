@@ -115,9 +115,22 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     mutationFn: async (horseData: TablesInsert<"horses">) => {
       console.log("Creating horse with data:", horseData);
       
+      // Get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error("You must be logged in to add a horse");
+      }
+
+      // Update the horse data with the actual user ID
+      const horseDataWithUserId = {
+        ...horseData,
+        user_id: user.id
+      };
+      
       const { data, error } = await supabase
         .from("horses")
-        .insert([horseData])
+        .insert([horseDataWithUserId])
         .select()
         .single();
 
@@ -135,6 +148,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         title: "Success!",
         description: "Horse has been added successfully.",
       });
+      // ... keep existing code (reset form data)
       setFormData({
         name: "",
         gender: "",
@@ -169,7 +183,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       console.error("Mutation error:", error);
       toast({
         title: "Error",
-        description: "Failed to add horse. Please try again.",
+        description: error.message || "Failed to add horse. Please try again.",
         variant: "destructive",
       });
     },
@@ -274,7 +288,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     }
     
     const horseData: TablesInsert<"horses"> = {
-      user_id: "00000000-0000-0000-0000-000000000000", // Temporary placeholder
+      // Remove the hardcoded user_id since we'll set it in the mutation
       name: formData.name,
       category: formData.categories.length > 0 ? formData.categories.join(", ") : null,
       tier: formData.tier ? parseInt(formData.tier) : null,
