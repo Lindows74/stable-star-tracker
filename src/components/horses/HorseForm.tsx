@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { TablesInsert } from "@/integrations/supabase/types";
 
@@ -33,6 +36,9 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     diet_agility: "",
     diet_jump: "",
     notes: "",
+    breed: "",
+    surfaces: [] as string[],
+    distances: [] as string[],
   });
 
   const [maxedStats, setMaxedStats] = useState({
@@ -43,10 +49,39 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     jump: false,
   });
 
+  const [showDietPlans, setShowDietPlans] = useState(false);
+  const [showMaxTraining, setShowMaxTraining] = useState(false);
+
   const categoryOptions = [
     { value: "flat_racing", label: "Flat Racing" },
     { value: "steeplechase", label: "Steeplechase" },
     { value: "cross_country", label: "Cross Country" },
+  ];
+
+  const surfaceOptions = [
+    { value: "very_hard", label: "Very Hard" },
+    { value: "hard", label: "Hard" },
+    { value: "firm", label: "Firm" },
+    { value: "medium", label: "Medium" },
+    { value: "soft", label: "Soft" },
+    { value: "very_soft", label: "Very Soft" },
+  ];
+
+  const distanceOptions = [
+    { value: "800", label: "800m" },
+    { value: "900", label: "900m" },
+    { value: "1000", label: "1000m" },
+    { value: "1200", label: "1200m" },
+    { value: "1400", label: "1400m" },
+    { value: "1600", label: "1600m" },
+    { value: "1800", label: "1800m" },
+    { value: "2000", label: "2000m" },
+    { value: "2200", label: "2200m" },
+    { value: "2400", label: "2400m" },
+    { value: "2600", label: "2600m" },
+    { value: "2800", label: "2800m" },
+    { value: "3000", label: "3000m" },
+    { value: "3200", label: "3200m" },
   ];
 
   const createHorseMutation = useMutation({
@@ -88,6 +123,9 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         diet_agility: "",
         diet_jump: "",
         notes: "",
+        breed: "",
+        surfaces: [],
+        distances: [],
       });
       setMaxedStats({
         speed: false,
@@ -150,6 +188,24 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     }));
   };
 
+  const handleSurfaceChange = (surfaceValue: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      surfaces: checked
+        ? [...prev.surfaces, surfaceValue]
+        : prev.surfaces.filter(surf => surf !== surfaceValue)
+    }));
+  };
+
+  const handleDistanceChange = (distanceValue: string, checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      distances: checked
+        ? [...prev.distances, distanceValue]
+        : prev.distances.filter(dist => dist !== distanceValue)
+    }));
+  };
+
   const handleMaxStatChange = (stat: keyof typeof maxedStats, checked: boolean) => {
     setMaxedStats(prev => ({ ...prev, [stat]: checked }));
   };
@@ -190,6 +246,16 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         </div>
 
         <div className="space-y-2">
+          <Label htmlFor="breed">Breed</Label>
+          <Input
+            id="breed"
+            value={formData.breed}
+            onChange={(e) => handleInputChange("breed", e.target.value)}
+            placeholder="Enter breed"
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="tier">Tier (1-10)</Label>
           <Input
             id="tier"
@@ -220,6 +286,52 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
                 className="text-sm font-normal cursor-pointer"
               >
                 {category.label}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Preferred Surfaces</Label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {surfaceOptions.map((surface) => (
+            <div key={surface.value} className="flex items-center space-x-2">
+              <Checkbox
+                id={surface.value}
+                checked={formData.surfaces.includes(surface.value)}
+                onCheckedChange={(checked) => 
+                  handleSurfaceChange(surface.value, checked as boolean)
+                }
+              />
+              <Label 
+                htmlFor={surface.value}
+                className="text-sm font-normal cursor-pointer"
+              >
+                {surface.label}
+              </Label>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <Label>Preferred Distances</Label>
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+          {distanceOptions.map((distance) => (
+            <div key={distance.value} className="flex items-center space-x-2">
+              <Checkbox
+                id={distance.value}
+                checked={formData.distances.includes(distance.value)}
+                onCheckedChange={(checked) => 
+                  handleDistanceChange(distance.value, checked as boolean)
+                }
+              />
+              <Label 
+                htmlFor={distance.value}
+                className="text-sm font-normal cursor-pointer"
+              >
+                {distance.label}
               </Label>
             </div>
           ))}
@@ -296,116 +408,145 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         </div>
       </div>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Diet Plans (1-5)</h3>
-        <p className="text-sm text-gray-600">Extra points added to stats when racing on preferred surface</p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="diet_speed">Diet Speed</Label>
-            <Input
-              id="diet_speed"
-              type="number"
-              min="1"
-              max="5"
-              value={formData.diet_speed}
-              onChange={(e) => handleInputChange("diet_speed", e.target.value)}
-              placeholder="1-5"
-            />
-          </div>
+      <Card className="border-dashed">
+        <Collapsible open={showDietPlans} onOpenChange={setShowDietPlans}>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg">Diet Plans (Optional)</CardTitle>
+                  <p className="text-sm text-gray-600">Extra points added to stats when racing on preferred surface</p>
+                </div>
+                {showDietPlans ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="diet_speed">Diet Speed</Label>
+                  <Input
+                    id="diet_speed"
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={formData.diet_speed}
+                    onChange={(e) => handleInputChange("diet_speed", e.target.value)}
+                    placeholder="1-5"
+                  />
+                </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="diet_sprint_energy">Diet Sprint Energy</Label>
-            <Input
-              id="diet_sprint_energy"
-              type="number"
-              min="1"
-              max="5"
-              value={formData.diet_sprint_energy}
-              onChange={(e) => handleInputChange("diet_sprint_energy", e.target.value)}
-              placeholder="1-5"
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="diet_sprint_energy">Diet Sprint Energy</Label>
+                  <Input
+                    id="diet_sprint_energy"
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={formData.diet_sprint_energy}
+                    onChange={(e) => handleInputChange("diet_sprint_energy", e.target.value)}
+                    placeholder="1-5"
+                  />
+                </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="diet_acceleration">Diet Acceleration</Label>
-            <Input
-              id="diet_acceleration"
-              type="number"
-              min="1"
-              max="5"
-              value={formData.diet_acceleration}
-              onChange={(e) => handleInputChange("diet_acceleration", e.target.value)}
-              placeholder="1-5"
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="diet_acceleration">Diet Acceleration</Label>
+                  <Input
+                    id="diet_acceleration"
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={formData.diet_acceleration}
+                    onChange={(e) => handleInputChange("diet_acceleration", e.target.value)}
+                    placeholder="1-5"
+                  />
+                </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="diet_agility">Diet Agility</Label>
-            <Input
-              id="diet_agility"
-              type="number"
-              min="1"
-              max="5"
-              value={formData.diet_agility}
-              onChange={(e) => handleInputChange("diet_agility", e.target.value)}
-              placeholder="1-5"
-            />
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="diet_agility">Diet Agility</Label>
+                  <Input
+                    id="diet_agility"
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={formData.diet_agility}
+                    onChange={(e) => handleInputChange("diet_agility", e.target.value)}
+                    placeholder="1-5"
+                  />
+                </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="diet_jump">Diet Jump</Label>
-            <Input
-              id="diet_jump"
-              type="number"
-              min="1"
-              max="5"
-              value={formData.diet_jump}
-              onChange={(e) => handleInputChange("diet_jump", e.target.value)}
-              placeholder="1-5"
-            />
-          </div>
-        </div>
-      </div>
+                <div className="space-y-2">
+                  <Label htmlFor="diet_jump">Diet Jump</Label>
+                  <Input
+                    id="diet_jump"
+                    type="number"
+                    min="1"
+                    max="5"
+                    value={formData.diet_jump}
+                    onChange={(e) => handleInputChange("diet_jump", e.target.value)}
+                    placeholder="1-5"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
 
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Max Training Status</h3>
-        <p className="text-sm text-gray-600">Mark which stats have been trained to maximum potential</p>
-        
-        <div className="flex items-center space-x-2 pb-2 border-b">
-          <Checkbox
-            id="check-all-max"
-            checked={allMaxed}
-            onCheckedChange={handleCheckAllMax}
-            className={someMaxed && !allMaxed ? "opacity-50" : ""}
-          />
-          <Label 
-            htmlFor="check-all-max"
-            className="font-medium cursor-pointer"
-          >
-            Mark All Stats as MAX
-          </Label>
-        </div>
+      <Card className="border-dashed">
+        <Collapsible open={showMaxTraining} onOpenChange={setShowMaxTraining}>
+          <CollapsibleTrigger asChild>
+            <CardHeader className="cursor-pointer hover:bg-gray-50 transition-colors">
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-lg">Max Training Status (Optional)</CardTitle>
+                  <p className="text-sm text-gray-600">Mark which stats have been trained to maximum potential</p>
+                </div>
+                {showMaxTraining ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+              </div>
+            </CardHeader>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="pt-0 space-y-4">
+              <div className="flex items-center space-x-2 pb-2 border-b">
+                <Checkbox
+                  id="check-all-max"
+                  checked={allMaxed}
+                  onCheckedChange={handleCheckAllMax}
+                  className={someMaxed && !allMaxed ? "opacity-50" : ""}
+                />
+                <Label 
+                  htmlFor="check-all-max"
+                  className="font-medium cursor-pointer"
+                >
+                  Mark All Stats as MAX
+                </Label>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {maxStatOptions.map((stat) => (
-            <div key={stat.key} className="flex items-center space-x-2">
-              <Checkbox
-                id={`max-${stat.key}`}
-                checked={maxedStats[stat.key]}
-                onCheckedChange={(checked) => 
-                  handleMaxStatChange(stat.key, checked as boolean)
-                }
-              />
-              <Label 
-                htmlFor={`max-${stat.key}`}
-                className="cursor-pointer"
-              >
-                Max {stat.label}
-              </Label>
-            </div>
-          ))}
-        </div>
-      </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {maxStatOptions.map((stat) => (
+                  <div key={stat.key} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`max-${stat.key}`}
+                      checked={maxedStats[stat.key]}
+                      onCheckedChange={(checked) => 
+                        handleMaxStatChange(stat.key, checked as boolean)
+                      }
+                    />
+                    <Label 
+                      htmlFor={`max-${stat.key}`}
+                      className="cursor-pointer"
+                    >
+                      Max {stat.label}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </CollapsibleContent>
+        </Collapsible>
+      </Card>
 
       <div className="space-y-2">
         <Label htmlFor="notes">Notes</Label>
