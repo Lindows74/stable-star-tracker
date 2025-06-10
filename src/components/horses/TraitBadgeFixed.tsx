@@ -98,7 +98,7 @@ const getCategoryColor = (category: string) => {
 
 export const TraitBadgeFixed = ({ traitName }: TraitBadgeProps) => {
   const traitInfo = traitDatabase[traitName as keyof typeof traitDatabase];
-  const isPro = traitInfo?.isPro;
+  const isPro = traitInfo && 'isPro' in traitInfo ? traitInfo.isPro : false;
   
   console.log(`TraitBadge for "${traitName}":`, {
     traitInfo,
