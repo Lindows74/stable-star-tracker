@@ -10,7 +10,19 @@ interface TraitBadgeProps {
   traitName: string;
 }
 
-const traitDatabase = {
+interface BaseTrait {
+  icon: any;
+  description: string;
+  category: string;
+}
+
+interface ProTrait extends BaseTrait {
+  isPro: true;
+}
+
+type TraitInfo = BaseTrait | ProTrait;
+
+const traitDatabase: Record<string, TraitInfo> = {
   // Speed & Acceleration
   "Lightning Bolt": {
     icon: Zap,
@@ -97,8 +109,8 @@ const getCategoryColor = (category: string) => {
 };
 
 export const TraitBadgeFixed = ({ traitName }: TraitBadgeProps) => {
-  const traitInfo = traitDatabase[traitName as keyof typeof traitDatabase];
-  const isPro = traitInfo && 'isPro' in traitInfo ? traitInfo.isPro : false;
+  const traitInfo = traitDatabase[traitName];
+  const isPro = traitInfo && 'isPro' in traitInfo && traitInfo.isPro;
   
   console.log(`TraitBadge for "${traitName}":`, {
     traitInfo,
