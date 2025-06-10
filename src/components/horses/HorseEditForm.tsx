@@ -16,6 +16,9 @@ import { TraitSelector } from "./TraitSelector";
 import { StatSection } from "./StatSection";
 import { CategorySelector } from "./CategorySelector";
 import { MaxTrainingCheckboxes } from "./MaxTrainingCheckboxes";
+import { DistanceSection } from "./form/DistanceSection";
+import { SurfaceSection } from "./form/SurfaceSection";
+import { PositionSection } from "./form/PositionSection";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -38,12 +41,18 @@ const formSchema = z.object({
   notes: z.string().optional(),
   categories: z.array(z.string()).min(1, "At least one category is required"),
   traits: z.array(z.string()).max(5, "Maximum 5 traits allowed").optional(),
+  preferred_distances: z.array(z.string()).min(1, "At least one distance is required"),
+  preferred_surfaces: z.array(z.string()).min(1, "At least one surface is required"),
+  field_positions: z.array(z.string()).min(1, "At least one position is required"),
 });
 
 interface HorseEditFormProps {
   horse: Tables<"horses"> & {
     horse_categories?: { category: string }[];
     horse_traits?: { trait_name: string }[];
+    horse_distances?: { distance: string }[];
+    horse_surfaces?: { surface: string }[];
+    horse_positions?: { position: string }[];
   };
   onCancel: () => void;
 }
@@ -92,6 +101,9 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       notes: horse.notes || "",
       categories: horse.horse_categories?.map(hc => hc.category) || [],
       traits: horse.horse_traits?.map(ht => ht.trait_name) || [],
+      preferred_distances: horse.horse_distances?.map(hd => hd.distance) || [],
+      preferred_surfaces: horse.horse_surfaces?.map(hs => hs.surface) || [],
+      field_positions: horse.horse_positions?.map(hp => hp.position) || [],
     },
   });
 
@@ -170,6 +182,36 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
         }
       }
 
+      // Handle distances
+      await supabase.from("horse_distances").delete().eq("horse_id", horse.id);
+      if (values.preferred_distances.length > 0) {
+        const distanceInserts = values.preferred_distances.map((distance) => ({
+          horse_id: horse.id,
+          distance,
+        }));
+        await supabase.from("horse_distances").insert(distanceInserts);
+      }
+
+      // Handle surfaces
+      await supabase.from("horse_surfaces").delete().eq("horse_id", horse.id);
+      if (values.preferred_surfaces.length > 0) {
+        const surfaceInserts = values.preferred_surfaces.map((surface) => ({
+          horse_id: horse.id,
+          surface,
+        }));
+        await supabase.from("horse_surfaces").insert(surfaceInserts);
+      }
+
+      // Handle positions
+      await supabase.from("horse_positions").delete().eq("horse_id", horse.id);
+      if (values.field_positions.length > 0) {
+        const positionInserts = values.field_positions.map((position) => ({
+          horse_id: horse.id,
+          position,
+        }));
+        await supabase.from("horse_positions").insert(positionInserts);
+      }
+
       // Delete existing traits
       const { error: deleteTraitsError } = await supabase
         .from("horse_traits")
@@ -178,21 +220,12 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
 
       if (deleteTraitsError) {
         console.error("Error deleting existing traits:", deleteTraitsError);
-        // Don't throw here, continue without traits if RLS prevents deletion
       }
 
       // Insert new traits if any exist
       if (values.traits && values.traits.length > 0) {
         console.log("Attempting to insert traits:", values.traits);
         
-        // First check if we can insert traits by testing RLS policies
-        const { data: testData, error: testError } = await supabase
-          .from("horse_traits")
-          .select("id")
-          .limit(1);
-
-        console.log("RLS test result:", { testData, testError });
-
         const traitInserts = values.traits.map((trait) => ({
           horse_id: horse.id,
           trait_name: trait,
@@ -205,7 +238,6 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
 
         if (traitError) {
           console.error("Error inserting traits:", traitError);
-          // Show a specific error message for RLS issues but don't fail the entire update
           if (traitError.code === "42501") {
             toast.error("Horse updated successfully, but traits could not be saved due to database permissions. Please contact support.");
           } else {
@@ -290,6 +322,13 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
             />
 
             <MaxTrainingCheckboxes control={form.control} />
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Racing Preferences</h3>
+              <DistanceSection control={form.control} />
+              <SurfaceSection control={form.control} />
+              <PositionSection control={form.control} />
+            </div>
 
             <FormField
               control={form.control}
