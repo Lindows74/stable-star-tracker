@@ -46,7 +46,19 @@ const getCategoryColor = (category: string) => {
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   
-  console.log('Horse data in card:', horse);
+  console.log('HorseCard: Rendering card for horse:', horse?.name, 'ID:', horse?.id);
+
+  // Safety check
+  if (!horse) {
+    console.error('HorseCard: No horse data provided');
+    return (
+      <Card className="hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <p className="text-red-500">Error: No horse data</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   if (isEditing) {
     return (

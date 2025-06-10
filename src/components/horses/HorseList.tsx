@@ -11,37 +11,52 @@ export const HorseList = () => {
     queryFn: async () => {
       console.log("HorseList: Fetching horses...");
       
-      const { data, error } = await supabase
-        .from("horses")
-        .select(`
-          *,
-          horse_categories(category),
-          horse_surfaces(surface),
-          horse_distances(distance),
-          horse_positions(position),
-          horse_breeding(
-            percentage,
-            breeds(name)
-          ),
-          horse_traits(
-            trait_name,
-            trait_value,
-            trait_category
-          )
-        `)
-        .order("created_at", { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from("horses")
+          .select(`
+            *,
+            horse_categories(category),
+            horse_surfaces(surface),
+            horse_distances(distance),
+            horse_positions(position),
+            horse_breeding(
+              percentage,
+              breeds(name)
+            ),
+            horse_traits(
+              trait_name,
+              trait_value,
+              trait_category
+            )
+          `)
+          .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("HorseList: Error fetching horses:", error);
-        throw error;
+        if (error) {
+          console.error("HorseList: Supabase error:", error);
+          throw error;
+        }
+
+        console.log("HorseList: Raw data from Supabase:", data);
+        
+        if (!data) {
+          console.log("HorseList: No data returned");
+          return [];
+        }
+
+        console.log("HorseList: Number of horses fetched:", data.length);
+        return data;
+      } catch (err) {
+        console.error("HorseList: Catch block error:", err);
+        throw err;
       }
-
-      console.log("HorseList: Horses loaded:", data);
-      return data;
     },
   });
 
+  console.log("HorseList: Component render - isLoading:", isLoading, "error:", error, "horses:", horses);
+
   if (isLoading) {
+    console.log("HorseList: Rendering loading state");
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[...Array(6)].map((_, i) => (
@@ -52,17 +67,18 @@ export const HorseList = () => {
   }
 
   if (error) {
-    console.error("HorseList: Render error:", error);
+    console.error("HorseList: Rendering error state:", error);
     return (
       <Alert variant="destructive">
         <AlertDescription>
-          Failed to load horses. Please try again later.
+          Failed to load horses. Please try again later. Error: {error.message}
         </AlertDescription>
       </Alert>
     );
   }
 
   if (!horses || horses.length === 0) {
+    console.log("HorseList: Rendering empty state");
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">No horses yet</h3>
@@ -71,11 +87,13 @@ export const HorseList = () => {
     );
   }
 
+  console.log("HorseList: Rendering horses, count:", horses.length);
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {horses.map((horse) => (
-        <HorseCard key={horse.id} horse={horse} />
-      ))}
+      {horses.map((horse, index) => {
+        console.log(`HorseList: Rendering horse ${index}:`, horse.name, horse.id);
+        return <HorseCard key={horse.id} horse={horse} />;
+      })}
     </div>
   );
 };
