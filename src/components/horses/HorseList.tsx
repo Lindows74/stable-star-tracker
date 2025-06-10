@@ -45,6 +45,7 @@ export const HorseList = () => {
         }
 
         console.log("HorseList: Number of horses fetched:", data.length);
+        console.log("HorseList: Sample horse data:", data[0]);
         return data;
       } catch (err) {
         console.error("HorseList: Catch block error:", err);
@@ -92,6 +93,9 @@ export const HorseList = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {horses.map((horse, index) => {
         console.log(`HorseList: Rendering horse ${index}:`, horse.name, horse.id);
+        console.log(`HorseList: Horse ${index} distances:`, horse.horse_distances);
+        console.log(`HorseList: Horse ${index} surfaces:`, horse.horse_surfaces);
+        console.log(`HorseList: Horse ${index} positions:`, horse.horse_positions);
         return <HorseCard key={horse.id} horse={horse} />;
       })}
     </div>

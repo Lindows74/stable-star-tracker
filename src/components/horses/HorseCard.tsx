@@ -47,6 +47,9 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   
   console.log('HorseCard: Rendering card for horse:', horse?.name, 'ID:', horse?.id);
+  console.log('HorseCard: Horse distances:', horse?.horse_distances);
+  console.log('HorseCard: Horse surfaces:', horse?.horse_surfaces);
+  console.log('HorseCard: Horse positions:', horse?.horse_positions);
 
   // Safety check
   if (!horse) {
@@ -157,14 +160,15 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
 
         {/* Racing Preferences - Compact Section */}
         {(horse.horse_distances?.length > 0 || horse.horse_surfaces?.length > 0 || horse.horse_positions?.length > 0) && (
-          <div className="mt-4 p-2 bg-gray-50 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+            <div className="text-xs font-semibold text-gray-700 mb-2">Racing Preferences</div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
               {horse.horse_distances && horse.horse_distances.length > 0 && (
                 <div>
                   <span className="font-medium text-gray-700">Distances:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {horse.horse_distances.map((distance: any, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs bg-orange-100 text-orange-800">
+                      <Badge key={index} variant="outline" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
                         {distance.distance}m
                       </Badge>
                     ))}
@@ -177,8 +181,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                   <span className="font-medium text-gray-700">Surfaces:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {horse.horse_surfaces.map((surface: any, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-800">
-                        {surface.surface.replace('_', ' ')}
+                      <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">
+                        {surface.surface.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                       </Badge>
                     ))}
                   </div>
@@ -190,8 +194,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                   <span className="font-medium text-gray-700">Positions:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {horse.horse_positions.map((position: any, index: number) => (
-                      <Badge key={index} variant="outline" className="text-xs bg-gray-100 text-gray-800">
-                        {position.position}
+                      <Badge key={index} variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-200">
+                        {position.position.replace(/\b\w/g, l => l.toUpperCase())}
                       </Badge>
                     ))}
                   </div>
