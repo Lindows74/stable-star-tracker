@@ -1,53 +1,56 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HorseList } from "@/components/horses/HorseList";
 import { HorseForm } from "@/components/horses/HorseForm";
-import { Plus } from "lucide-react";
-
-console.log('Index.tsx: Component loading...');
+import { Button } from "@/components/ui/button";
+import { Search, Plus } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Index = () => {
-  console.log('Index.tsx: Index component rendering...');
-  
   const [showForm, setShowForm] = useState(false);
 
-  console.log('Index.tsx: showForm state:', showForm);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Horse Racing Manager</h1>
-          <p className="text-xl text-gray-600 mb-6">Manage your racing horses and track their performance</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Stable Star Tracker</h1>
+            <p className="text-gray-600">Manage and track your horse racing stable</p>
+          </div>
           
-          <Button 
-            onClick={() => {
-              console.log('Index.tsx: Add Horse button clicked, current showForm:', showForm);
-              setShowForm(!showForm);
-            }} 
-            className="bg-green-600 hover:bg-green-700"
-            size="lg"
-          >
-            <Plus className="mr-2 h-5 w-5" />
-            {showForm ? "Cancel" : "Add New Horse"}
-          </Button>
+          <div className="flex gap-3">
+            <Link to="/search">
+              <Button variant="outline" className="flex items-center gap-2">
+                <Search className="h-4 w-4" />
+                Search Horses
+              </Button>
+            </Link>
+            <Button 
+              onClick={() => setShowForm(!showForm)}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Add Horse
+            </Button>
+          </div>
         </div>
 
         {showForm && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Add New Horse</CardTitle>
-              <CardDescription>Enter your horse's details and racing stats</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <HorseForm onSuccess={() => {
-                console.log('Index.tsx: HorseForm success callback');
-                setShowForm(false);
-              }} />
-            </CardContent>
-          </Card>
+          <div className="mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Add New Horse</h2>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowForm(false)}
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+              </div>
+              <HorseForm onSuccess={() => setShowForm(false)} />
+            </div>
+          </div>
         )}
 
         <HorseList />
@@ -55,7 +58,5 @@ const Index = () => {
     </div>
   );
 };
-
-console.log('Index.tsx: Index component defined');
 
 export default Index;
