@@ -1,5 +1,4 @@
 
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -144,7 +143,53 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
           )}
         </div>
 
-        {/* Categories, Traits, Breeding, etc. */}
+        {/* Racing Preferences - Compact Section */}
+        {(horse.horse_distances?.length > 0 || horse.horse_surfaces?.length > 0 || horse.horse_positions?.length > 0) && (
+          <div className="mt-4 p-2 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-xs">
+              {horse.horse_distances && horse.horse_distances.length > 0 && (
+                <div>
+                  <span className="font-medium text-gray-700">Distances:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {horse.horse_distances.map((distance: any, index: number) => (
+                      <Badge key={index} variant="outline" className="text-xs bg-orange-100 text-orange-800">
+                        {distance.distance}m
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {horse.horse_surfaces && horse.horse_surfaces.length > 0 && (
+                <div>
+                  <span className="font-medium text-gray-700">Surfaces:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {horse.horse_surfaces.map((surface: any, index: number) => (
+                      <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-800">
+                        {surface.surface.replace('_', ' ')}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {horse.horse_positions && horse.horse_positions.length > 0 && (
+                <div>
+                  <span className="font-medium text-gray-700">Positions:</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {horse.horse_positions.map((position: any, index: number) => (
+                      <Badge key={index} variant="outline" className="text-xs bg-gray-100 text-gray-800">
+                        {position.position}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Categories, Traits, Breeding */}
         <div className="mt-4 space-y-2">
           {horse.horse_categories && horse.horse_categories.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
@@ -186,39 +231,6 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             </div>
           )}
 
-          {horse.horse_surfaces && horse.horse_surfaces.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium">Surfaces:</span>
-              {horse.horse_surfaces.map((surface: any, index: number) => (
-                <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-800">
-                  {surface.surface}
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {horse.horse_distances && horse.horse_distances.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium">Distances:</span>
-              {horse.horse_distances.map((distance: any, index: number) => (
-                <Badge key={index} variant="outline" className="text-xs bg-orange-100 text-orange-800">
-                  {distance.distance}m
-                </Badge>
-              ))}
-            </div>
-          )}
-
-          {horse.horse_positions && horse.horse_positions.length > 0 && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-medium">Positions:</span>
-              {horse.horse_positions.map((position: any, index: number) => (
-                <Badge key={index} variant="outline" className="text-xs bg-gray-100 text-gray-800">
-                  {position.position}
-                </Badge>
-              ))}
-            </div>
-          )}
-
           {horse.notes && (
             <div>
               <span className="text-sm font-medium">Notes:</span>
@@ -230,4 +242,3 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     </Card>
   );
 };
-
