@@ -1,7 +1,7 @@
 
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Control } from "react-hook-form";
+import { Control, useWatch } from "react-hook-form";
 
 interface MaxTrainingCheckboxesProps {
   control: Control<any>;
@@ -16,10 +16,50 @@ const MAX_TRAINING_STATS = [
 ];
 
 export const MaxTrainingCheckboxes = ({ control }: MaxTrainingCheckboxesProps) => {
+  // Watch all max training values
+  const watchedValues = useWatch({
+    control,
+    name: ["max_speed", "max_sprint_energy", "max_acceleration", "max_agility", "max_jump"]
+  });
+
+  const [maxSpeed, maxSprintEnergy, maxAcceleration, maxAgility, maxJump] = watchedValues || [];
+  
+  // Check if all stats are maxed
+  const allMaxed = maxSpeed && maxSprintEnergy && maxAcceleration && maxAgility && maxJump;
+  const someMaxed = maxSpeed || maxSprintEnergy || maxAcceleration || maxAgility || maxJump;
+
+  const handleCheckAll = (checked: boolean) => {
+    // Update all max training fields
+    control._formState.isSubmitted = false; // Reset form state to allow setValue
+    MAX_TRAINING_STATS.forEach(stat => {
+      control._subjects.values.next(); // Trigger form update
+      (control as any)._formValues[stat.name] = checked;
+      control._subjects.values.next();
+    });
+  };
+
   return (
-    <div>
-      <FormLabel className="text-base font-semibold">Max Training Achieved</FormLabel>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+    <div className="space-y-4">
+      <FormLabel className="text-base font-semibold">Max Training Status</FormLabel>
+      
+      {/* Check All Option */}
+      <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <Checkbox
+          id="check-all-max"
+          checked={allMaxed}
+          onCheckedChange={handleCheckAll}
+          className={someMaxed && !allMaxed ? "opacity-50" : ""}
+        />
+        <FormLabel 
+          htmlFor="check-all-max"
+          className="font-medium cursor-pointer text-blue-700"
+        >
+          Fully Max Trained (All Stats)
+        </FormLabel>
+      </div>
+
+      {/* Individual Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {MAX_TRAINING_STATS.map((stat) => (
           <FormField
             key={stat.name}
@@ -33,7 +73,7 @@ export const MaxTrainingCheckboxes = ({ control }: MaxTrainingCheckboxesProps) =
                     onCheckedChange={field.onChange}
                   />
                 </FormControl>
-                <FormLabel className="text-sm font-normal">
+                <FormLabel className="text-sm font-normal cursor-pointer">
                   {stat.label}
                 </FormLabel>
               </FormItem>

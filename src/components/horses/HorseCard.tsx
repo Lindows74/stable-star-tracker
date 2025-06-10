@@ -159,20 +159,6 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               )}
             </div>
           </div>
-
-          {/* Max Training */}
-          {(horse.max_speed || horse.max_sprint_energy || horse.max_acceleration || horse.max_agility || horse.max_jump) && (
-            <div className="flex-1 min-w-48">
-              <span className="text-sm font-medium text-blue-700">Max Training:</span>
-              <div className="flex flex-wrap gap-1 mt-1">
-                {horse.max_speed && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Speed</Badge>}
-                {horse.max_sprint_energy && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Sprint Energy</Badge>}
-                {horse.max_acceleration && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Acceleration</Badge>}
-                {horse.max_agility && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Agility</Badge>}
-                {horse.max_jump && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Jump</Badge>}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Racing Preferences Section */}
@@ -271,6 +257,20 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             </div>
           )}
         </div>
+
+        {/* Max Training - moved to bottom */}
+        {(horse.max_speed || horse.max_sprint_energy || horse.max_acceleration || horse.max_agility || horse.max_jump) && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <span className="text-sm font-medium text-blue-700">Max Training Achieved:</span>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {horse.max_speed && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Speed</Badge>}
+              {horse.max_sprint_energy && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Sprint Energy</Badge>}
+              {horse.max_acceleration && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Acceleration</Badge>}
+              {horse.max_agility && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Agility</Badge>}
+              {horse.max_jump && <Badge variant="outline" className="text-xs bg-blue-100 text-blue-800">Jump</Badge>}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

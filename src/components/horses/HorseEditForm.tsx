@@ -321,8 +321,6 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
               stats={DIET_STATS}
             />
 
-            <MaxTrainingCheckboxes control={form.control} />
-
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Racing Preferences</h3>
               <DistanceSection control={form.control} />
@@ -347,6 +345,9 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
                 </FormItem>
               )}
             />
+
+            {/* Max Training moved to bottom */}
+            <MaxTrainingCheckboxes control={form.control} />
 
             <div className="flex gap-4">
               <Button type="submit" disabled={isLoading} className="flex-1">
