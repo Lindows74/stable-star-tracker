@@ -50,6 +50,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   console.log('HorseCard: Horse distances:', horse?.horse_distances);
   console.log('HorseCard: Horse surfaces:', horse?.horse_surfaces);
   console.log('HorseCard: Horse positions:', horse?.horse_positions);
+  console.log('HorseCard: Full horse object:', horse);
 
   // Safety check
   if (!horse) {
@@ -78,6 +79,22 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   const totalAcceleration = (horse.acceleration || 0) + (horse.diet_acceleration || 0);
   const totalAgility = (horse.agility || 0) + (horse.diet_agility || 0);
   const totalJump = (horse.jump || 0) + (horse.diet_jump || 0);
+
+  // Check if racing preferences exist
+  const hasDistances = horse.horse_distances && Array.isArray(horse.horse_distances) && horse.horse_distances.length > 0;
+  const hasSurfaces = horse.horse_surfaces && Array.isArray(horse.horse_surfaces) && horse.horse_surfaces.length > 0;
+  const hasPositions = horse.horse_positions && Array.isArray(horse.horse_positions) && horse.horse_positions.length > 0;
+  const hasRacingPreferences = hasDistances || hasSurfaces || hasPositions;
+
+  console.log('HorseCard: Racing preferences check:', {
+    hasDistances,
+    hasSurfaces,
+    hasPositions,
+    hasRacingPreferences,
+    distancesData: horse.horse_distances,
+    surfacesData: horse.horse_surfaces,
+    positionsData: horse.horse_positions
+  });
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -158,14 +175,14 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
           )}
         </div>
 
-        {/* Racing Preferences - Compact Section */}
-        {(horse.horse_distances?.length > 0 || horse.horse_surfaces?.length > 0 || horse.horse_positions?.length > 0) && (
+        {/* Racing Preferences Section */}
+        {hasRacingPreferences && (
           <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-            <div className="text-xs font-semibold text-gray-700 mb-2">Racing Preferences</div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-              {horse.horse_distances && horse.horse_distances.length > 0 && (
+            <div className="text-sm font-semibold text-gray-700 mb-3">Racing Preferences</div>
+            <div className="space-y-3">
+              {hasDistances && (
                 <div>
-                  <span className="font-medium text-gray-700">Distances:</span>
+                  <span className="text-sm font-medium text-gray-700">Preferred Distances:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {horse.horse_distances.map((distance: any, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs bg-orange-100 text-orange-800 border-orange-200">
@@ -176,26 +193,26 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 </div>
               )}
 
-              {horse.horse_surfaces && horse.horse_surfaces.length > 0 && (
+              {hasSurfaces && (
                 <div>
-                  <span className="font-medium text-gray-700">Surfaces:</span>
+                  <span className="text-sm font-medium text-gray-700">Preferred Surfaces:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {horse.horse_surfaces.map((surface: any, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">
-                        {surface.surface.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        {surface.surface.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
                       </Badge>
                     ))}
                   </div>
                 </div>
               )}
 
-              {horse.horse_positions && horse.horse_positions.length > 0 && (
+              {hasPositions && (
                 <div>
-                  <span className="font-medium text-gray-700">Positions:</span>
+                  <span className="text-sm font-medium text-gray-700">Preferred Positions:</span>
                   <div className="flex flex-wrap gap-1 mt-1">
                     {horse.horse_positions.map((position: any, index: number) => (
                       <Badge key={index} variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-200">
-                        {position.position.replace(/\b\w/g, l => l.toUpperCase())}
+                        {position.position.replace(/\b\w/g, (l: string) => l.toUpperCase())}
                       </Badge>
                     ))}
                   </div>
