@@ -46,7 +46,7 @@ const getCategoryColor = (category: string) => {
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   
-  console.log('Horse categories:', horse.horse_categories);
+  console.log('Horse data in card:', horse);
 
   if (isEditing) {
     return (
@@ -57,7 +57,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     );
   }
 
-  // Calculate total stats (base + diet bonus)
+  // Calculate total stats (base + diet bonus) with null checks
   const totalSpeed = (horse.speed || 0) + (horse.diet_speed || 0);
   const totalSprintEnergy = (horse.sprint_energy || 0) + (horse.diet_sprint_energy || 0);
   const totalAcceleration = (horse.acceleration || 0) + (horse.diet_acceleration || 0);
@@ -68,7 +68,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between">
-          <span className="text-lg">{horse.name}</span>
+          <span className="text-lg">{horse.name || 'Unnamed Horse'}</span>
           <div className="flex gap-2">
             <Button 
               size="sm" 
