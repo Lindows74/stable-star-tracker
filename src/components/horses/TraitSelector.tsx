@@ -75,6 +75,8 @@ const TRAIT_CATEGORIES = {
 };
 
 export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
+  const [selectKey, setSelectKey] = useState(0);
+
   const handleAddTrait = (trait: string) => {
     if (selectedTraits.includes(trait)) {
       toast.error("Trait already selected");
@@ -88,6 +90,9 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
 
     const newTraits = [...selectedTraits, trait];
     onTraitsChange(newTraits);
+    
+    // Reset the select component to show placeholder again
+    setSelectKey(prev => prev + 1);
   };
 
   const handleRemoveTrait = (traitToRemove: string) => {
@@ -129,11 +134,11 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
       {/* Trait Selection Dropdown */}
       {selectedTraits.length < 5 && (
         <div className="mt-2">
-          <Select onValueChange={handleAddTrait}>
+          <Select key={selectKey} onValueChange={handleAddTrait} value="">
             <SelectTrigger>
               <SelectValue placeholder="Select a trait to add..." />
             </SelectTrigger>
-            <SelectContent className="max-h-80">
+            <SelectContent className="max-h-80 bg-white">
               {Object.entries(TRAIT_CATEGORIES).map(([category, traits]) => (
                 <div key={category}>
                   <div className="px-2 py-1.5 text-sm font-semibold text-gray-900 bg-gray-50 border-b">
