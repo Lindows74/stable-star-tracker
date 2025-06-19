@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -79,7 +78,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         </div>
         <HorseEditForm 
           horse={horse} 
-          onSuccess={() => setIsEditing(false)} 
+          onCancel={() => setIsEditing(false)} 
         />
       </div>
     );
@@ -264,8 +263,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               {horse.horse_traits.map((trait: any, idx: number) => (
                 <TraitBadge 
                   key={idx} 
-                  name={trait.trait_name} 
-                  category={trait.trait_category}
+                  traitName={trait.trait_name}
                 />
               ))}
             </div>
