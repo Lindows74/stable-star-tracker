@@ -1,3 +1,4 @@
+
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,6 +101,9 @@ export const BreedingSection = ({ breedSelections, setBreedSelections }: Breedin
             Total: {totalPercentage}%
             {totalPercentage > 100 && (
               <span className="text-red-500 ml-2">Warning: Total exceeds 100%</span>
+            )}
+            {totalPercentage === 100 && (
+              <span className="text-green-600 ml-2">✓ Perfect total</span>
             )}
           </div>
         </div>
