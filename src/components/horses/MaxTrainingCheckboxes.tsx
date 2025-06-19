@@ -29,12 +29,9 @@ export const MaxTrainingCheckboxes = ({ control }: MaxTrainingCheckboxesProps) =
   const someMaxed = maxSpeed || maxSprintEnergy || maxAcceleration || maxAgility || maxJump;
 
   const handleCheckAll = (checked: boolean) => {
-    // Update all max training fields
-    control._formState.isSubmitted = false; // Reset form state to allow setValue
+    // Update all max training fields using setValue
     MAX_TRAINING_STATS.forEach(stat => {
-      control._subjects.values.next(); // Trigger form update
-      (control as any)._formValues[stat.name] = checked;
-      control._subjects.values.next();
+      control.setValue(stat.name, checked);
     });
   };
 
