@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -103,6 +104,8 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const [showDietPlans, setShowDietPlans] = useState(false);
   const [showMaxTraining, setShowMaxTraining] = useState(false);
 
+  console.log("Current breed selections in HorseForm:", breedSelections);
+
   // Fetch existing horse names for duplicate validation
   const { data: existingHorses } = useQuery({
     queryKey: ["horses", "names"],
@@ -123,6 +126,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const createHorseMutation = useMutation({
     mutationFn: async (horseData: TablesInsert<"horses">) => {
       console.log("Creating horse with data:", horseData);
+      console.log("Breed selections to save:", breedSelections);
       
       // Check for duplicate name
       const horseName = horseData.name?.toLowerCase().trim();
@@ -320,6 +324,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Form submitted with values:", values);
+    console.log("Breed selections at submit:", breedSelections);
     
     const horseData: TablesInsert<"horses"> = {
       name: values.name,
