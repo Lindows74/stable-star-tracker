@@ -1,4 +1,3 @@
-
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,18 +15,15 @@ interface BreedingSectionProps {
 }
 
 const breedOptions = [
-  "Thoroughbred",
   "Arabian",
-  "Quarter Horse",
-  "Appaloosa",
-  "Paint Horse",
+  "Thoroughbred", 
   "Mustang",
-  "Andalusian",
-  "Friesian",
-  "Clydesdale",
-  "Shire",
-  "Anglo Arabian",
-  "Other"
+  "Quarter Horse",
+  "Selle Francais",
+  "Appaloosa",
+  "Akhal-Teke",
+  "Anglo-Arab",
+  "Knabstrupper"
 ];
 
 export const BreedingSection = ({ breedSelections, setBreedSelections }: BreedingSectionProps) => {
