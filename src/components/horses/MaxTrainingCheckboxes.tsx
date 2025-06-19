@@ -1,7 +1,7 @@
 
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Control, useWatch } from "react-hook-form";
+import { Control, useWatch, useFormContext } from "react-hook-form";
 
 interface MaxTrainingCheckboxesProps {
   control: Control<any>;
@@ -16,6 +16,8 @@ const MAX_TRAINING_STATS = [
 ];
 
 export const MaxTrainingCheckboxes = ({ control }: MaxTrainingCheckboxesProps) => {
+  const { setValue } = useFormContext();
+  
   // Watch all max training values
   const watchedValues = useWatch({
     control,
@@ -31,7 +33,7 @@ export const MaxTrainingCheckboxes = ({ control }: MaxTrainingCheckboxesProps) =
   const handleCheckAll = (checked: boolean) => {
     // Update all max training fields using setValue
     MAX_TRAINING_STATS.forEach(stat => {
-      control.setValue(stat.name, checked);
+      setValue(stat.name, checked);
     });
   };
 
