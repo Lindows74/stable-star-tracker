@@ -17,7 +17,10 @@ import {
   DollarSign, 
   Rocket, 
   GraduationCap,
-  LucideIcon
+  LucideIcon,
+  ArrowUp,
+  Shield,
+  Circle
 } from "lucide-react";
 
 interface TraitInfo {
@@ -28,94 +31,219 @@ interface TraitInfo {
 }
 
 export const TRAIT_INFO: Record<string, TraitInfo> = {
-  // Pro Traits - Superior abilities
-  "Blazing Hoof": {
+  // Pro Traits - Superior abilities (from Pro Traits image)
+  "Blazing Hoof Pro": {
     icon: Zap,
-    description: "Thoroughbred Trait: Superior Speed across all game modes",
+    description: "Superior Speed across all game modes",
     category: "Speed & Acceleration",
     isPro: true
   },
-  "To the Moon": {
-    icon: Rocket,
-    description: "Selle Français Trait: Superior Jump across all game modes",
-    category: "Jumping & Agility",
-    isPro: true
-  },
-  "Fleet Dash": {
+  "Fleet Dash Pro": {
     icon: Wind,
-    description: "Arabian Trait: Superior Sprint Energy across all game modes",
+    description: "Superior Sprint Energy across all game modes",
     category: "Endurance & Stamina",
     isPro: true
   },
-  "Flash Ignite": {
-    icon: Zap,
-    description: "Quarter Horse Trait: Superior Acceleration across all game modes",
-    category: "Speed & Acceleration",
-    isPro: true
-  },
-  "Agile Arrow": {
+  "Agile Arrow Pro": {
     icon: Target,
-    description: "Standardbred Trait: Superior Agility across all game modes",
+    description: "Superior Agility across all game modes",
     category: "Jumping & Agility",
     isPro: true
   },
+  "Flash Ignite Pro": {
+    icon: Zap,
+    description: "Superior Acceleration across all game modes",
+    category: "Speed & Acceleration",
+    isPro: true
+  },
+  "To The Moon Pro": {
+    icon: Rocket,
+    description: "Superior Jump across all game modes",
+    category: "Jumping & Agility",
+    isPro: true
+  },
+  "Endless Stride Pro": {
+    icon: Battery,
+    description: "On Flat Racing tracks of 2400m or more, gain superior acceleration and Sprint Energy lasts longer",
+    category: "Endurance & Stamina",
+    isPro: true
+  },
+  "Rolling Current Pro": {
+    icon: Waves,
+    description: "On hard surfaces recharge extra Sprint Energy when jumping and gain improved Acceleration in Cross Country races. Turns Pro if horse is 80% or higher Akhal Teke",
+    category: "Terrain & Surface",
+    isPro: true
+  },
 
-  // Breed Traits - Improved abilities
+  // General Traits (from General Traits image)
+  "Blazing Hoof": {
+    icon: Zap,
+    description: "Improved Speed across all game modes. Turns Pro if the horse is 80% Thoroughbred",
+    category: "Speed & Acceleration"
+  },
+  "Fleet Dash": {
+    icon: Wind,
+    description: "Improved Sprint Energy across all game modes. Turns Pro if the horse is 80% Arabian or Mustang",
+    category: "Endurance & Stamina"
+  },
+  "Agile Arrow": {
+    icon: Target,
+    description: "Improved Agility across all game modes. Turns Pro if the horse is 80% KS",
+    category: "Jumping & Agility"
+  },
+  "Flash Ignite": {
+    icon: Zap,
+    description: "Improved Acceleration across all game modes. Turns Pro if the horse is 80% QH",
+    category: "Speed & Acceleration"
+  },
+  "To The Moon": {
+    icon: Rocket,
+    description: "Improved Jump across all game modes. Turns Pro if the horse is 80% Selle Francais or Knabstrupper",
+    category: "Jumping & Agility"
+  },
+  "Energy Saver": {
+    icon: Battery,
+    description: "Slow Races only cost 1 Career Energy",
+    category: "Special Abilities"
+  },
+  "Endless Stride": {
+    icon: Battery,
+    description: "On Flat Racing tracks of 2400m or more, gains improved acceleration and Sprint Energy lasts longer. Turns Pro if horse is 80% or higher Akhal Teke",
+    category: "Endurance & Stamina"
+  },
+  "Rolling Current": {
+    icon: Waves,
+    description: "On hard surfaces recharge extra Sprint Energy when jumping and gain improved Acceleration in Cross Country races. Turns Pro if horse is 80% or higher Akhal Teke",
+    category: "Terrain & Surface"
+  },
+
+  // Distance Preference Traits (from Distance Preference Traits image)
   "Quick Gallop": {
     icon: Gauge,
-    description: "Extends preference range to include 800m and 900m",
+    description: "Extends preference to 800m and 900m",
     category: "Distance Specialization"
   },
   "Swift Trot": {
     icon: Wind,
-    description: "Extends preference range to include 1,000m, 1,100m, and 1,200m",
+    description: "Extends preference to 1,000m, 1,100m, and 1,200m",
     category: "Distance Specialization"
   },
   "Steady Strider": {
     icon: Footprints,
-    description: "Extends distance preference range to include 1,400m to 1,600m",
+    description: "Extends preference to 1,400m and 1,600m",
     category: "Distance Specialization"
   },
   "Meadow Runner": {
     icon: Trees,
-    description: "Extends preference range to include 1,800m, 2,000m, and 2,200m",
+    description: "Extends preference to 1,800m, 2,000m, and 2, 200m",
     category: "Distance Specialization"
   },
   "Endurance Charger": {
     icon: Battery,
-    description: "Extends preference range to include 2,400m and 2,600m",
-    category: "Endurance & Stamina"
+    description: "Extends preference to 2,400m and 2,600m",
+    category: "Distance Specialization"
   },
   "Marathon Trotter": {
     icon: Timer,
-    description: "Extends preference range to include 2,800m, 3,000m, and 3,200m",
-    category: "Endurance & Stamina"
-  },
-
-  // Exotic Traits - Special distance preferences
-  "Short Star": {
-    icon: Star,
-    description: "Extends preference range to include 800m and below",
+    description: "Extends preference to 2,800m, 3,000m, and 3,200m",
     category: "Distance Specialization"
   },
-  "Mid Miracle": {
+
+  // Surface Preference Traits (from Surface Preference Traits image)
+  "Granite Gallop": {
+    icon: Mountain,
+    description: "Extends preference to hard and very hard surfaces",
+    category: "Terrain & Surface"
+  },
+  "Mid Dash": {
+    icon: Target,
+    description: "Extends preference to firm and medium surfaces",
+    category: "Terrain & Surface"
+  },
+  "Swampy Strider": {
+    icon: Waves,
+    description: "Extends preference to soft and very soft surfaces",
+    category: "Terrain & Surface"
+  },
+
+  // Game Mode Specific Traits (from Specific Game Mode Traits image)
+  "Lightning Bolt": {
+    icon: Zap,
+    description: "Faster stamina refill rate during the final stretch in Flat Racing. Lightning Bolt can stack with Fleet Dash for even faster stamina refill during the final stretch of a race",
+    category: "Speed & Acceleration"
+  },
+  "Top Endurance": {
+    icon: Battery,
+    description: "Start with more Sprint Energy in Flat Racing",
+    category: "Endurance & Stamina"
+  },
+  "Leaping Star": {
     icon: Star,
-    description: "Extends distance preference range to include 1,400m to 2,200m",
+    description: "Max jump streak in Steeplechase. Leaping Star can stack with Leaping Lancer to get an even further increased jump streak in Steeplechase",
+    category: "Jumping & Agility"
+  },
+  "Perfect Step": {
+    icon: Footprints,
+    description: "Improved boost after a perfect jump in Steeplechase. Perfect Step can stack with Leaping Lancer to get an even greater improved boost after a perfect jump in Steeplechase",
+    category: "Jumping & Agility"
+  },
+  "River Rider": {
+    icon: Waves,
+    description: "Horse is not slowed by water in Cross Country",
+    category: "Terrain & Surface"
+  },
+  "Fast Draw": {
+    icon: Gauge,
+    description: "Increased speed boost during jumps in Cross Country",
+    category: "Speed & Acceleration"
+  },
+
+  // Castle Traits (from Castle Traits image)
+  "Hefty Shoulder": {
+    icon: Shield,
+    description: "Reduced chance to trip in Live Events",
+    category: "Special Abilities"
+  },
+  "Firm Lineage": {
+    icon: Crown,
+    description: "Trails born from this horse have 25% of their Base Stats except for A+",
+    category: "Special Abilities"
+  },
+  "Top Student": {
+    icon: GraduationCap,
+    description: "All foals bred from this horse have 20% of their possible XP but still require training",
+    category: "Special Abilities"
+  },
+
+  // Exotic Traits (from Exotic Traits image - based on orange color coding)
+  "Saxon Burst": {
+    icon: Zap,
+    description: "Can Fire Ignite traits activate before and outside, and cannot activate after 80% race completion",
+    category: "Speed & Acceleration"
+  },
+  "Saxon Soul": {
+    icon: Wind,
+    description: "Extremely calming mind can include 1,000x and above",
+    category: "Endurance & Stamina"
+  },
+  "Mid Miracle": {
+    icon: Target,
+    description: "Extremely calming mind can include 1,400m and above",
     category: "Distance Specialization"
   },
   "Marathon Master": {
-    icon: Star,
-    description: "Extends distance preference range to include 2,400m and higher",
+    icon: Timer,
+    description: "Extremely calming mind can include 2,400m and higher",
     category: "Distance Specialization"
   },
   "Thundering Hooves": {
     icon: Zap,
-    description: "Starts with full stamina bar. Extends preference range to include 2,600m and 2,800m",
+    description: "Starts with full stamina bar. Extends performance to include 2,600m and 2,800m",
     category: "Endurance & Stamina"
   },
   "Hard N' Fast": {
     icon: Mountain,
-    description: "Faster stamina refill rate during final stretch. Extends preference range to include hard and very hard surfaces",
+    description: "Faster stamina refill rate during final stretch. Extends performance to include 2,400m and higher",
     category: "Terrain & Surface"
   },
   "Meadowstride": {
@@ -128,57 +256,15 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
     description: "Max Jump streak in Steeplechase is increased by 1. Improved boost when you perform a perfect jump in Steeplechase",
     category: "Jumping & Agility"
   },
-
-  // Standard Traits
-  "Swampy Strider": {
-    icon: Waves,
-    description: "Extends preference range to include soft and very soft surfaces",
-    category: "Terrain & Surface"
-  },
-  "Mid Dash": {
-    icon: Target,
-    description: "Extends preference range to include firm and medium surfaces",
-    category: "Terrain & Surface"
-  },
-  "Granite Gallop": {
-    icon: Mountain,
-    description: "Extends preference range to include hard and very hard surfaces",
-    category: "Terrain & Surface"
-  },
-  "Energy Saver": {
-    icon: Battery,
-    description: "Slow Races only cost 1 career energy",
-    category: "Special Abilities"
-  },
-  "Lightning Bolt": {
-    icon: Zap,
-    description: "Faster stamina refill rate in Flat Racing during final stretch",
-    category: "Speed & Acceleration"
-  },
-  "Top Endurance": {
-    icon: Battery,
-    description: "Start with more Sprint Energy in Flat Racing",
-    category: "Endurance & Stamina"
-  },
-  "Fast Draw": {
-    icon: Gauge,
-    description: "Increased Speed boost during jumps in Cross Country",
-    category: "Speed & Acceleration"
-  },
-  "River Rider": {
-    icon: Waves,
-    description: "Horse is not slowed down by water in Cross Country",
-    category: "Terrain & Surface"
-  },
-  "Perfect Step": {
-    icon: Footprints,
-    description: "Improved boost when you perform a perfect jump in Steeplechase",
+  "Menace Mane": {
+    icon: Crown,
+    description: "The horse will have a baboon's living mind and agility",
     category: "Jumping & Agility"
   },
-  "Leaping Star": {
+  "Crystal Gift": {
     icon: Star,
-    description: "Max Jump streak in Steeplechase is increased by 1",
-    category: "Jumping & Agility"
+    description: "A beautiful coat reveals your horse soul like no other",
+    category: "Special Abilities"
   },
 
   // Star Club Traits - Special abilities
@@ -192,10 +278,12 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
     description: "Foals born from this horse have +1 to all Base Stats except for A+",
     category: "Special Abilities"
   },
-  "Top Student": {
-    icon: GraduationCap,
-    description: "All foals bred from this horse have 20% of their possible XP but still require training",
-    category: "Special Abilities"
+
+  // Additional Distance Traits
+  "Short Star": {
+    icon: Star,
+    description: "Extends preference range to include 800m and below",
+    category: "Distance Specialization"
   }
 };
 

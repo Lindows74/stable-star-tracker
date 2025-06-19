@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,52 +12,65 @@ interface TraitSelectorProps {
 }
 
 const TRAIT_CATEGORIES = {
-  "Speed & Acceleration": [
-    "Agile Arrow",
-    "Agile Arrow Pro",
-    "Blazing Hoof",
+  "Pro Traits": [
     "Blazing Hoof Pro",
-    "Fast Draw",
-    "Flash Ignite",
+    "Fleet Dash Pro", 
+    "Agile Arrow Pro",
     "Flash Ignite Pro",
-    "Fleet Dash",
-    "Fleet Dash Pro",
+    "To The Moon Pro",
+    "Endless Stride Pro",
+    "Rolling Current Pro"
+  ],
+  "Speed & Acceleration": [
+    "Blazing Hoof",
+    "Flash Ignite",
     "Lightning Bolt",
-    "Quick Gallop",
-    "Swift Trot",
-    "Thundering Hooves"
+    "Fast Draw",
+    "Saxon Burst"
   ],
   "Endurance & Stamina": [
-    "Endurance Charger",
+    "Fleet Dash",
     "Energy Saver",
-    "Marathon Master",
-    "Marathon Trotter",
-    "Top Endurance"
+    "Endless Stride",
+    "Top Endurance",
+    "Thundering Hooves",
+    "Saxon Soul"
   ],
   "Distance Specialization": [
-    "Mid Dash",
+    "Quick Gallop",
+    "Swift Trot",
+    "Steady Strider", 
+    "Meadow Runner",
+    "Endurance Charger",
+    "Marathon Trotter",
+    "Short Star",
     "Mid Miracle",
-    "Short Star"
+    "Marathon Master"
   ],
   "Terrain & Surface": [
     "Granite Gallop",
+    "Mid Dash",
+    "Swampy Strider",
+    "Rolling Current",
     "Hard N' Fast",
-    "Meadow Runner",
     "Meadowstride",
-    "River Rider",
-    "Steady Strider",
-    "Swampy Strider"
+    "River Rider"
   ],
   "Jumping & Agility": [
-    "Leaping Lancer",
+    "Agile Arrow",
+    "To The Moon",
     "Leaping Star",
-    "Perfect Step"
+    "Perfect Step",
+    "Leaping Lancer",
+    "Menace Mane"
   ],
   "Special Abilities": [
-    "Elite Lineage",
+    "Hefty Spender",
+    "Firm Lineage", 
+    "Top Student",
     "Thrifty Spender",
-    "To the Moon",
-    "Top Student"
+    "Elite Lineage",
+    "Crystal Gift"
   ]
 };
 
