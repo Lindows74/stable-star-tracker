@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, X, Save } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +33,8 @@ const breedOptions = [
 export const BreedingSection = ({ breedSelections, setBreedSelections }: BreedingSectionProps) => {
   const { toast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isStallion, setIsStallion] = useState(false);
+  const [isMare, setIsMare] = useState(false);
 
   const addBreedSelection = () => {
     setBreedSelections([...breedSelections, { breed: "", percentage: 0 }]);
@@ -74,6 +77,20 @@ export const BreedingSection = ({ breedSelections, setBreedSelections }: Breedin
     });
   };
 
+  const handleStallionChange = (checked: boolean) => {
+    setIsStallion(checked);
+    if (checked) {
+      setIsMare(false);
+    }
+  };
+
+  const handleMareChange = (checked: boolean) => {
+    setIsMare(checked);
+    if (checked) {
+      setIsStallion(false);
+    }
+  };
+
   const totalPercentage = breedSelections.reduce((sum, selection) => sum + (selection.percentage || 0), 0);
 
   return (
@@ -91,6 +108,29 @@ export const BreedingSection = ({ breedSelections, setBreedSelections }: Breedin
               Save Breeds
             </Button>
           )}
+        </div>
+      </div>
+
+      {/* Gender Selection */}
+      <div className="space-y-2">
+        <Label className="text-sm font-medium">Gender</Label>
+        <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="stallion"
+              checked={isStallion}
+              onCheckedChange={handleStallionChange}
+            />
+            <Label htmlFor="stallion" className="text-sm">Stallion</Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="mare"
+              checked={isMare}
+              onCheckedChange={handleMareChange}
+            />
+            <Label htmlFor="mare" className="text-sm">Mare</Label>
+          </div>
         </div>
       </div>
       
