@@ -3,7 +3,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Save } from "lucide-react";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export interface BreedSelection {
   breed: string;
@@ -28,13 +30,18 @@ const breedOptions = [
 ];
 
 export const BreedingSection = ({ breedSelections, setBreedSelections }: BreedingSectionProps) => {
+  const { toast } = useToast();
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
   const addBreedSelection = () => {
     setBreedSelections([...breedSelections, { breed: "", percentage: 0 }]);
+    setHasUnsavedChanges(true);
   };
 
   const removeBreedSelection = (index: number) => {
     const updated = breedSelections.filter((_, i) => i !== index);
     setBreedSelections(updated);
+    setHasUnsavedChanges(true);
   };
 
   const updateBreedSelection = (index: number, field: keyof BreedSelection, value: string | number) => {
@@ -42,6 +49,29 @@ export const BreedingSection = ({ breedSelections, setBreedSelections }: Breedin
       i === index ? { ...selection, [field]: value } : selection
     );
     setBreedSelections(updated);
+    setHasUnsavedChanges(true);
+  };
+
+  const saveBreedingData = () => {
+    // Validate that all breed selections have both breed and percentage
+    const incompleteSelections = breedSelections.some(selection => 
+      !selection.breed || selection.percentage <= 0
+    );
+
+    if (incompleteSelections) {
+      toast({
+        title: "Incomplete Breeding Data",
+        description: "Please ensure all breed selections have both a breed name and percentage greater than 0.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setHasUnsavedChanges(false);
+    toast({
+      title: "Breeding Data Saved",
+      description: "Breeding information will be saved when you submit the horse form.",
+    });
   };
 
   const totalPercentage = breedSelections.reduce((sum, selection) => sum + (selection.percentage || 0), 0);
@@ -50,10 +80,18 @@ export const BreedingSection = ({ breedSelections, setBreedSelections }: Breedin
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <Label>Breeding Information (Optional)</Label>
-        <Button type="button" variant="outline" size="sm" onClick={addBreedSelection}>
-          <Plus className="h-4 w-4 mr-1" />
-          Add Breed
-        </Button>
+        <div className="flex gap-2">
+          <Button type="button" variant="outline" size="sm" onClick={addBreedSelection}>
+            <Plus className="h-4 w-4 mr-1" />
+            Add Breed
+          </Button>
+          {breedSelections.length > 0 && hasUnsavedChanges && (
+            <Button type="button" variant="default" size="sm" onClick={saveBreedingData}>
+              <Save className="h-4 w-4 mr-1" />
+              Save Breeds
+            </Button>
+          )}
+        </div>
       </div>
       
       {breedSelections.length > 0 && (
@@ -104,6 +142,9 @@ export const BreedingSection = ({ breedSelections, setBreedSelections }: Breedin
             )}
             {totalPercentage === 100 && (
               <span className="text-green-600 ml-2">✓ Perfect total</span>
+            )}
+            {hasUnsavedChanges && (
+              <span className="text-orange-500 ml-2">• Unsaved changes</span>
             )}
           </div>
         </div>
