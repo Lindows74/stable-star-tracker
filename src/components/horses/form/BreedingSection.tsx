@@ -26,6 +26,7 @@ const breedOptions = [
   "Friesian",
   "Clydesdale",
   "Shire",
+  "Anglo Arabian",
   "Other"
 ];
 
