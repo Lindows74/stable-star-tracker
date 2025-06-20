@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -103,7 +102,7 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
     onTraitsChange(newTraits);
   };
 
-  // Filter traits based on search term
+  // Filter traits based on search term (case-insensitive)
   const getFilteredTraits = (traits: string[]) => {
     if (!searchTerm) return traits;
     return traits.filter(trait => 
@@ -111,7 +110,7 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
     );
   };
 
-  // Get all available traits for search
+  // Get all available traits for search (case-insensitive)
   const getAllAvailableTraits = () => {
     const allTraits: string[] = [];
     Object.values(TRAIT_CATEGORIES).forEach(categoryTraits => {
