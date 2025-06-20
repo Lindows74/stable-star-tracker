@@ -89,11 +89,15 @@ export const HorseList = () => {
         }
 
         console.log("HorseList: Number of horses fetched:", data.length);
-        console.log("HorseList: Sample horse data:", data[0]);
+        if (data.length > 0) {
+          console.log("HorseList: First horse data:", data[0]);
+          console.log("HorseList: All horse names:", data.map(h => h.name));
+        }
         
         // Sort horses by tier and stats
         const sortedHorses = sortHorses(data);
-        console.log("HorseList: Sorted horses:", sortedHorses);
+        console.log("HorseList: Sorted horses:", sortedHorses.length, "horses");
+        console.log("HorseList: Horse names after sorting:", sortedHorses.map(h => h.name));
         
         return sortedHorses;
       } catch (err) {
@@ -103,7 +107,7 @@ export const HorseList = () => {
     },
   });
 
-  console.log("HorseList: Component render - isLoading:", isLoading, "error:", error, "horses:", horses);
+  console.log("HorseList: Component render - isLoading:", isLoading, "error:", error, "horses count:", horses?.length);
 
   if (isLoading) {
     console.log("HorseList: Rendering loading state");
@@ -128,7 +132,7 @@ export const HorseList = () => {
   }
 
   if (!horses || horses.length === 0) {
-    console.log("HorseList: Rendering empty state");
+    console.log("HorseList: Rendering empty state - horses:", horses);
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">No horses yet</h3>
@@ -137,14 +141,13 @@ export const HorseList = () => {
     );
   }
 
-  console.log("HorseList: Rendering horses, count:", horses.length);
+  console.log("HorseList: About to render", horses.length, "horses");
+  console.log("HorseList: Horse names being rendered:", horses.map(h => h.name));
+  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {horses.map((horse, index) => {
-        console.log(`HorseList: Rendering horse ${index}:`, horse.name, horse.id);
-        console.log(`HorseList: Horse ${index} distances:`, horse.horse_distances);
-        console.log(`HorseList: Horse ${index} surfaces:`, horse.horse_surfaces);
-        console.log(`HorseList: Horse ${index} positions:`, horse.horse_positions);
+        console.log(`HorseList: Rendering horse ${index + 1}/${horses.length}:`, horse.name, "ID:", horse.id);
         return <HorseCard key={horse.id} horse={horse} />;
       })}
     </div>
