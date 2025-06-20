@@ -45,7 +45,6 @@ const formSchema = z.object({
   preferred_distances: z.array(z.string()).min(1, "At least one distance is required"),
   preferred_surfaces: z.array(z.string()).min(1, "At least one surface is required"),
   field_positions: z.array(z.string()).min(1, "At least one position is required"),
-  gender: z.enum(["stallion", "mare"]).optional(),
 });
 
 interface HorseEditFormProps {
@@ -110,7 +109,6 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       preferred_distances: horse.horse_distances?.map(hd => hd.distance) || [],
       preferred_surfaces: horse.horse_surfaces?.map(hs => hs.surface) || [],
       field_positions: horse.horse_positions?.map(hp => hp.position) || [],
-      gender: horse.gender as "stallion" | "mare" | undefined,
     },
   });
 
@@ -129,7 +127,6 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
     // Initialize gender
     if (horse.gender) {
       setHorseGender(horse.gender as "stallion" | "mare");
-      form.setValue("gender", horse.gender as "stallion" | "mare");
     }
   }, [horse, form]);
 
@@ -141,9 +138,9 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      console.log("Updating horse:", horse.id, values);
+      console.log("Updating horse:", horse.id, "with gender:", horseGender);
 
-      // Update horse data
+      // Update horse data including gender
       const { error: horseError } = await supabase
         .from("horses")
         .update({
@@ -176,29 +173,42 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       }
 
       // Handle breeding data
+      // Delete existing breeding records first
+      await supabase.from("horse_breeding").delete().eq("horse_id", horse.id);
+
       if (breedSelections.length > 0) {
-        // Delete existing breeding records
-        await supabase.from("horse_breeding").delete().eq("horse_id", horse.id);
-
         // Get breed IDs
-        const breedNames = breedSelections.map(bs => bs.breed);
-        const { data: breeds } = await supabase
-          .from("breeds")
-          .select("id, name")
-          .in("name", breedNames);
+        const breedNames = breedSelections.map(bs => bs.breed).filter(breed => breed !== "");
+        
+        if (breedNames.length > 0) {
+          const { data: breeds } = await supabase
+            .from("breeds")
+            .select("id, name")
+            .in("name", breedNames);
 
-        if (breeds) {
-          const breedingInserts = breedSelections.map((selection) => {
-            const breed = breeds.find(b => b.name === selection.breed);
-            return {
-              horse_id: horse.id,
-              breed_id: breed?.id,
-              percentage: selection.percentage,
-            };
-          }).filter(insert => insert.breed_id);
+          if (breeds && breeds.length > 0) {
+            const breedingInserts = breedSelections
+              .filter(selection => selection.breed !== "" && selection.percentage > 0)
+              .map((selection) => {
+                const breed = breeds.find(b => b.name === selection.breed);
+                return {
+                  horse_id: horse.id,
+                  breed_id: breed?.id,
+                  percentage: selection.percentage,
+                };
+              })
+              .filter(insert => insert.breed_id);
 
-          if (breedingInserts.length > 0) {
-            await supabase.from("horse_breeding").insert(breedingInserts);
+            if (breedingInserts.length > 0) {
+              const { error: breedingError } = await supabase
+                .from("horse_breeding")
+                .insert(breedingInserts);
+              
+              if (breedingError) {
+                console.error("Error inserting breeding data:", breedingError);
+                throw breedingError;
+              }
+            }
           }
         }
       }
