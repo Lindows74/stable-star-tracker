@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -104,11 +105,18 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="text-lg">{horse.name}</CardTitle>
-            {horse.tier && (
-              <Badge variant="secondary" className="mt-1">
-                Tier {horse.tier}
-              </Badge>
-            )}
+            <div className="flex gap-2 mt-1">
+              {horse.tier && (
+                <Badge variant="secondary">
+                  Tier {horse.tier}
+                </Badge>
+              )}
+              {horse.gender && (
+                <Badge variant="outline" className="text-xs">
+                  {horse.gender}
+                </Badge>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <Button
@@ -147,6 +155,23 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
       </CardHeader>
       
       <CardContent className="space-y-4">
+        {/* Breed Information */}
+        {horse.horse_breeding && horse.horse_breeding.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium mb-2">Breed Composition</h4>
+            <div className="space-y-1">
+              {horse.horse_breeding.map((breeding: any, idx: number) => (
+                <div key={idx} className="flex justify-between items-center text-sm">
+                  <span className="font-medium">{breeding.breeds?.name || 'Unknown Breed'}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {breeding.percentage}%
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Categories */}
         {horse.horse_categories && horse.horse_categories.length > 0 && (
           <div>
