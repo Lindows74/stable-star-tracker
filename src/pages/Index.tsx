@@ -1,13 +1,14 @@
-
 import { HorseList } from "@/components/horses/HorseList";
 import { HorseForm } from "@/components/horses/HorseForm";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Home } from "lucide-react";
+import { Search, Plus, Home, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { ExcelImporter } from "@/components/horses/ExcelImporter";
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
+  const [showImporter, setShowImporter] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -25,13 +26,23 @@ const Index = () => {
                 Search Horses
               </Link>
             </div>
-            <Button 
-              onClick={() => setShowForm(!showForm)}
-              className="flex items-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Horse
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => setShowImporter(!showImporter)}
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <Upload className="h-4 w-4" />
+                Import Excel
+              </Button>
+              <Button 
+                onClick={() => setShowForm(!showForm)}
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Add Horse
+              </Button>
+            </div>
           </div>
         </div>
       </nav>
@@ -43,6 +54,17 @@ const Index = () => {
             <p className="text-gray-600">Manage and track your horse racing stable</p>
           </div>
         </div>
+
+        {showImporter && (
+          <div className="mb-8">
+            <div className="bg-white rounded-lg shadow p-6">
+              <ExcelImporter 
+                onSuccess={() => setShowImporter(false)} 
+                onClose={() => setShowImporter(false)}
+              />
+            </div>
+          </div>
+        )}
 
         {showForm && (
           <div className="mb-8">
