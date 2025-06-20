@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -57,10 +58,7 @@ const SWEDISH_TRANSLATIONS = {
   categories: {
     "platt": "flat_racing",
     "hinderbana": "steeplechase", 
-    "terräng": "cross_country",
-    "flat racing": "flat_racing",
-    "steeplechase": "steeplechase",
-    "cross country": "cross_country"
+    "terräng": "cross_country"
   },
   surfaces: {
     "mycket hård": "very_hard",
@@ -76,29 +74,17 @@ const SWEDISH_TRANSLATIONS = {
     "mjukt/fast/medelhård/hård": "medium", // Multiple preferences -> medium
     "v mjukt/fast/medelhård": "medium",
     "mycket mjuk": "very_soft",
-    "medel": "medium",
-    "mycket hård": "very_hard",
-    "very hard": "very_hard",
-    "firm": "firm",
-    "medium": "medium",
-    "soft": "soft",
-    "very soft": "very_soft"
+    "medel": "medium"
   },
   positions: {
     "fram": "front",
     "mitten": "middle", 
-    "bak": "back",
-    "front": "front",
-    "middle": "middle",
-    "back": "back"
+    "bak": "back"
   },
   genders: {
     "hingst": "stallion",
     "sto": "mare",
-    "valack": "gelding",
-    "stallion": "stallion",
-    "mare": "mare", 
-    "gelding": "gelding"
+    "valack": "gelding"
   },
   // Common Swedish trait translations based on typical horse racing terms
   traits: {
@@ -115,8 +101,7 @@ const SWEDISH_TRANSLATIONS = {
     "gränsgalopp": "boundary_gallop",
     "mellani sport": "middle_sport",
     "maximal sport": "maximum_sport",
-    "graninglopp": "scrutiny_race",
-    "uthållig rusare": "enduring_runner"
+    "graninglopp": "scrutiny_race"
   }
 };
 
@@ -126,6 +111,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [previewData, setPreviewData] = useState<ExcelHorseRow[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [inputLanguage, setInputLanguage] = useState<"english" | "swedish">("english");
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -223,7 +209,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
   };
 
   const translateValue = (value: string, translationType: keyof typeof SWEDISH_TRANSLATIONS): string => {
-    if (!value) return value;
+    if (!value || inputLanguage === "english") return value;
     
     const translations = SWEDISH_TRANSLATIONS[translationType];
     const lowerValue = value.toLowerCase().trim();
@@ -243,8 +229,11 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     if (typeof value === "boolean") return value;
     if (typeof value === "string") {
       const lowerValue = value.toLowerCase();
-      return lowerValue === "true" || lowerValue === "1" || lowerValue === "yes" || 
-             lowerValue === "ja" || lowerValue === "sant";
+      if (inputLanguage === "swedish") {
+        return lowerValue === "true" || lowerValue === "1" || lowerValue === "yes" || 
+               lowerValue === "ja" || lowerValue === "sant";
+      }
+      return lowerValue === "true" || lowerValue === "1" || lowerValue === "yes";
     }
     return false;
   };
@@ -253,7 +242,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     if (!value) return [];
     const items = value.split(",").map(item => item.trim()).filter(item => item.length > 0);
     
-    if (translationType) {
+    if (translationType && inputLanguage === "swedish") {
       return items.map(item => translateValue(item, translationType));
     }
     
@@ -261,35 +250,40 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
   };
 
   const normalizeHorseData = (horseRow: ExcelHorseRow) => {
-    // Map Swedish column names to English equivalents
-    return {
-      name: horseRow.name || horseRow.namn,
-      tier: horseRow.tier || horseRow.rank,
-      speed: horseRow.speed || horseRow.snabbhet,
-      sprint_energy: horseRow.sprint_energy || horseRow.sprint,
-      acceleration: horseRow.acceleration,
-      agility: horseRow.agility || horseRow.rörlighet,
-      jump: horseRow.jump || horseRow.hopp,
-      diet_speed: horseRow.diet_speed,
-      diet_sprint_energy: horseRow.diet_sprint_energy,
-      diet_acceleration: horseRow.diet_acceleration,
-      diet_agility: horseRow.diet_agility,
-      diet_jump: horseRow.diet_jump,
-      max_speed: horseRow.max_speed,
-      max_sprint_energy: horseRow.max_sprint_energy,
-      max_acceleration: horseRow.max_acceleration,
-      max_agility: horseRow.max_agility,
-      max_jump: horseRow.max_jump,
-      notes: horseRow.notes,
-      gender: horseRow.gender || horseRow.kön,
-      categories: horseRow.categories,
-      preferred_surfaces: horseRow.preferred_surfaces || horseRow.underlag,
-      preferred_distances: horseRow.preferred_distances || horseRow.distans,
-      field_positions: horseRow.field_positions || horseRow.position,
-      traits: horseRow.traits,
-      breeds: horseRow.breeds,
-      breed_percentages: horseRow.breed_percentages,
-    };
+    // Map Swedish column names to English equivalents only if Swedish is selected
+    if (inputLanguage === "swedish") {
+      return {
+        name: horseRow.name || horseRow.namn,
+        tier: horseRow.tier || horseRow.rank,
+        speed: horseRow.speed || horseRow.snabbhet,
+        sprint_energy: horseRow.sprint_energy || horseRow.sprint,
+        acceleration: horseRow.acceleration,
+        agility: horseRow.agility || horseRow.rörlighet,
+        jump: horseRow.jump || horseRow.hopp,
+        diet_speed: horseRow.diet_speed,
+        diet_sprint_energy: horseRow.diet_sprint_energy,
+        diet_acceleration: horseRow.diet_acceleration,
+        diet_agility: horseRow.diet_agility,
+        diet_jump: horseRow.diet_jump,
+        max_speed: horseRow.max_speed,
+        max_sprint_energy: horseRow.max_sprint_energy,
+        max_acceleration: horseRow.max_acceleration,
+        max_agility: horseRow.max_agility,
+        max_jump: horseRow.max_jump,
+        notes: horseRow.notes,
+        gender: horseRow.gender || horseRow.kön,
+        categories: horseRow.categories,
+        preferred_surfaces: horseRow.preferred_surfaces || horseRow.underlag,
+        preferred_distances: horseRow.preferred_distances || horseRow.distans,
+        field_positions: horseRow.field_positions || horseRow.position,
+        traits: horseRow.traits,
+        breeds: horseRow.breeds,
+        breed_percentages: horseRow.breed_percentages,
+      };
+    } else {
+      // For English, use the data as-is
+      return horseRow;
+    }
   };
 
   const importHorsesMutation = useMutation({
@@ -526,6 +520,19 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
       </div>
 
       <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-medium">Input Language:</label>
+          <Select value={inputLanguage} onValueChange={(value: "english" | "swedish") => setInputLanguage(value)}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="english">English</SelectItem>
+              <SelectItem value="swedish">Swedish</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
           <div className="text-center">
             <FileSpreadsheet className="mx-auto h-12 w-12 text-gray-400" />
@@ -554,7 +561,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
         {file && (
           <div className="text-sm text-gray-600">
-            Selected file: {file.name}
+            Selected file: {file.name} | Language: {inputLanguage === "swedish" ? "Swedish" : "English"}
           </div>
         )}
 
@@ -608,15 +615,19 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
       <div className="text-xs text-gray-500 space-y-2">
         <div><strong>Supported formats:</strong> Excel (.xlsx, .xls) and CSV files</div>
-        <div><strong>Swedish translation support:</strong> Categories, surfaces, positions, genders, and traits will be automatically translated</div>
-        <div><strong>Swedish column mapping:</strong> namn→name, rank→tier, snabbhet→speed, sprint→sprint_energy, rörlighet→agility, hopp→jump, kön→gender, underlag→surfaces, distans→distances</div>
-        <div><strong>Expected columns (English or Swedish):</strong></div>
-        <div>name/namn, tier/rank, speed/snabbhet, sprint_energy/sprint, acceleration, agility/rörlighet, jump/hopp</div>
+        <div><strong>Language selection:</strong> Choose Swedish for automatic translation of categories, surfaces, positions, genders, and traits</div>
+        {inputLanguage === "swedish" && (
+          <>
+            <div><strong>Swedish column mapping:</strong> namn→name, rank→tier, snabbhet→speed, sprint→sprint_energy, rörlighet→agility, hopp→jump, kön→gender, underlag→surfaces, distans→distances</div>
+            <div><strong>Swedish examples:</strong> platt/hinderbana/terräng, v mjukt/mjukt/fast/medelhård/hård, fram/mitten/bak, hingst/sto/valack</div>
+          </>
+        )}
+        <div><strong>Expected columns:</strong></div>
+        <div>name, tier, speed, sprint_energy, acceleration, agility, jump</div>
         <div>diet_speed, diet_sprint_energy, diet_acceleration, diet_agility, diet_jump</div>
-        <div>max_speed, max_sprint_energy, max_acceleration, max_agility, max_jump (true/false/ja/sant)</div>
-        <div>notes, gender/kön, categories, preferred_surfaces/underlag, preferred_distances/distans, field_positions/position, traits (comma-separated)</div>
+        <div>max_speed, max_sprint_energy, max_acceleration, max_agility, max_jump (true/false)</div>
+        <div>notes, gender, categories, preferred_surfaces, preferred_distances, field_positions, traits (comma-separated)</div>
         <div>breeds, breed_percentages (comma-separated, matching order)</div>
-        <div><strong>Swedish examples:</strong> platt/hinderbana/terräng, v mjukt/mjukt/fast/medelhård/hård, fram/mitten/bak, hingst/sto/valack</div>
       </div>
     </div>
   );
