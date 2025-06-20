@@ -36,11 +36,11 @@ export const PositionSection = ({ control }: PositionSectionProps) => {
         {positionOptions.map((position) => (
           <div key={position.value} className="flex items-center space-x-2">
             <Checkbox
-              id={position.value}
+              id={`position-${position.value}`}
               checked={selectedPositions.includes(position.value)}
               onCheckedChange={() => togglePosition(position.value)}
             />
-            <Label htmlFor={position.value} className="text-sm font-normal">
+            <Label htmlFor={`position-${position.value}`} className="text-sm font-normal">
               {position.label}
             </Label>
           </div>

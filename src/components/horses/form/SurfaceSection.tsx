@@ -39,11 +39,11 @@ export const SurfaceSection = ({ control }: SurfaceSectionProps) => {
         {surfaceOptions.map((surface) => (
           <div key={surface.value} className="flex items-center space-x-2">
             <Checkbox
-              id={surface.value}
+              id={`surface-${surface.value}`}
               checked={selectedSurfaces.includes(surface.value)}
               onCheckedChange={() => toggleSurface(surface.value)}
             />
-            <Label htmlFor={surface.value} className="text-sm font-normal">
+            <Label htmlFor={`surface-${surface.value}`} className="text-sm font-normal">
               {surface.label}
             </Label>
           </div>

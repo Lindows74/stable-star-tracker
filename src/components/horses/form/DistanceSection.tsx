@@ -47,11 +47,11 @@ export const DistanceSection = ({ control }: DistanceSectionProps) => {
         {distanceOptions.map((distance) => (
           <div key={distance.value} className="flex items-center space-x-2">
             <Checkbox
-              id={distance.value}
+              id={`distance-${distance.value}`}
               checked={selectedDistances.includes(distance.value)}
               onCheckedChange={() => toggleDistance(distance.value)}
             />
-            <Label htmlFor={distance.value} className="text-sm font-normal">
+            <Label htmlFor={`distance-${distance.value}`} className="text-sm font-normal">
               {distance.label}
             </Label>
           </div>
