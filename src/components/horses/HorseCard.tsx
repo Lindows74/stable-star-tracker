@@ -105,36 +105,19 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     return 'bg-gray-200 border border-gray-300';
   };
 
-  // Determine gender badge color
-  const getGenderBadgeClass = (gender: string) => {
-    if (gender === 'stallion') return 'bg-blue-200 text-blue-900 border-blue-300';
-    if (gender === 'mare') return 'bg-pink-200 text-pink-900 border-pink-300';
-    return 'bg-gray-200 text-gray-900 border-gray-300';
-  };
-
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex items-center gap-2">
             <div className={`inline-block px-3 py-2 rounded-lg ${getGenderNameBackgroundClass(horse.gender || '')}`}>
               <CardTitle className="text-lg">{horse.name}</CardTitle>
             </div>
-            <div className="flex gap-2 mt-2">
-              {horse.tier && (
-                <Badge variant="secondary">
-                  Tier {horse.tier}
-                </Badge>
-              )}
-              {horse.gender && (
-                <Badge 
-                  variant="outline" 
-                  className={`text-xs ${getGenderBadgeClass(horse.gender)}`}
-                >
-                  {horse.gender === 'stallion' ? 'Stallion' : horse.gender === 'mare' ? 'Mare' : horse.gender}
-                </Badge>
-              )}
-            </div>
+            {horse.tier && (
+              <Badge variant="secondary">
+                Tier {horse.tier}
+              </Badge>
+            )}
           </div>
           <div className="flex gap-2">
             <Button
