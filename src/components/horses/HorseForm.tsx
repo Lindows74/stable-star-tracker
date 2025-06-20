@@ -101,10 +101,12 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
   const [breedSelections, setBreedSelections] = useState<BreedSelection[]>([]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+  const [gender, setGender] = useState<"stallion" | "mare" | undefined>(undefined);
   const [showDietPlans, setShowDietPlans] = useState(false);
   const [showMaxTraining, setShowMaxTraining] = useState(false);
 
   console.log("Current breed selections in HorseForm:", breedSelections);
+  console.log("Current gender in HorseForm:", gender);
 
   // Fetch existing horse names for duplicate validation
   const { data: existingHorses } = useQuery({
@@ -127,6 +129,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     mutationFn: async (horseData: TablesInsert<"horses">) => {
       console.log("Creating horse with data:", horseData);
       console.log("Breed selections to save:", breedSelections);
+      console.log("Gender to save:", gender);
       
       // Check for duplicate name
       const horseName = horseData.name?.toLowerCase().trim();
@@ -140,7 +143,10 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
 
       const { data: horse, error } = await supabase
         .from("horses")
-        .insert(horseData)
+        .insert({
+          ...horseData,
+          gender: gender || null
+        })
         .select()
         .single();
 
@@ -309,6 +315,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       form.reset();
       setBreedSelections([]);
       setSelectedTraits([]);
+      setGender(undefined);
       
       onSuccess();
     },
@@ -325,6 +332,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     console.log("Form submitted with values:", values);
     console.log("Breed selections at submit:", breedSelections);
+    console.log("Gender at submit:", gender);
     
     const horseData: TablesInsert<"horses"> = {
       name: values.name,
@@ -358,6 +366,8 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
         <BreedingSection 
           breedSelections={breedSelections}
           setBreedSelections={setBreedSelections}
+          gender={gender}
+          setGender={setGender}
         />
 
         <CategorySelector control={form.control} />
