@@ -56,9 +56,9 @@ interface ExcelHorseRow {
 // Enhanced translation mappings from Swedish to English
 const SWEDISH_TRANSLATIONS = {
   categories: {
-    "platt": "flat_racing",
-    "hinderbana": "steeplechase", 
-    "terräng": "cross_country"
+    "slättlopp": "flat_racing", // Corrected from "platt"
+    "hinderlopp": "steeplechase", // Corrected from "hinderbana"
+    "terränglopp": "cross_country" // Corrected from "terräng"
   },
   surfaces: {
     "mycket hård": "very_hard",
@@ -618,7 +618,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
         {inputLanguage === "swedish" && (
           <>
             <div><strong>Swedish column mapping:</strong> namn→name, rank→tier, snabbhet→speed, sprint→sprint_energy, rörlighet→agility, hopp→jump, kön→gender, underlag→surfaces, distans→distances</div>
-            <div><strong>Swedish examples:</strong> platt/hinderbana/terräng, v mjukt/mjukt/fast/medelhård/hård, fram/mitten/bak, hingst/sto/valack</div>
+            <div><strong>Swedish examples:</strong> slättlopp/hinderlopp/terränglopp, v mjukt/mjukt/fast/medelhård/hård, fram/mitten/bak, hingst/sto/valack</div>
           </>
         )}
         <div><strong>Expected columns:</strong></div>
