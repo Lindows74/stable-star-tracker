@@ -100,16 +100,16 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
 
   // Determine gender background color for the name
   const getGenderNameBackgroundClass = (gender: string) => {
-    if (gender === 'stallion') return 'bg-blue-100 border border-blue-200';
-    if (gender === 'mare') return 'bg-pink-100 border border-pink-200';
-    return 'bg-gray-100 border border-gray-200';
+    if (gender === 'stallion') return 'bg-blue-200 border border-blue-300';
+    if (gender === 'mare') return 'bg-pink-200 border border-pink-300';
+    return 'bg-gray-200 border border-gray-300';
   };
 
   // Determine gender badge color
   const getGenderBadgeClass = (gender: string) => {
-    if (gender === 'stallion') return 'bg-blue-100 text-blue-800 border-blue-200';
-    if (gender === 'mare') return 'bg-pink-100 text-pink-800 border-pink-200';
-    return 'bg-gray-100 text-gray-800 border-gray-200';
+    if (gender === 'stallion') return 'bg-blue-200 text-blue-900 border-blue-300';
+    if (gender === 'mare') return 'bg-pink-200 text-pink-900 border-pink-300';
+    return 'bg-gray-200 text-gray-900 border-gray-300';
   };
 
   return (
