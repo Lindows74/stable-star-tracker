@@ -98,11 +98,18 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     horse.max_jump && "Jump"
   ].filter(Boolean);
 
-  // Determine gender background color
-  const getGenderBackgroundClass = (gender: string) => {
-    if (gender === 'stallion') return 'bg-blue-50';
-    if (gender === 'mare') return 'bg-pink-50';
-    return '';
+  // Determine gender background color for the name
+  const getGenderNameBackgroundClass = (gender: string) => {
+    if (gender === 'stallion') return 'bg-blue-100 border border-blue-200';
+    if (gender === 'mare') return 'bg-pink-100 border border-pink-200';
+    return 'bg-gray-100 border border-gray-200';
+  };
+
+  // Determine gender badge color
+  const getGenderBadgeClass = (gender: string) => {
+    if (gender === 'stallion') return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (gender === 'mare') return 'bg-pink-100 text-pink-800 border-pink-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
   return (
@@ -110,7 +117,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div>
-            <div className={`inline-block px-3 py-1 rounded-md ${getGenderBackgroundClass(horse.gender)}`}>
+            <div className={`inline-block px-3 py-2 rounded-lg ${getGenderNameBackgroundClass(horse.gender || '')}`}>
               <CardTitle className="text-lg">{horse.name}</CardTitle>
             </div>
             <div className="flex gap-2 mt-2">
@@ -122,13 +129,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               {horse.gender && (
                 <Badge 
                   variant="outline" 
-                  className={`text-xs ${
-                    horse.gender === 'stallion' 
-                      ? 'bg-blue-100 text-blue-800 border-blue-200' 
-                      : horse.gender === 'mare' 
-                      ? 'bg-pink-100 text-pink-800 border-pink-200' 
-                      : ''
-                  }`}
+                  className={`text-xs ${getGenderBadgeClass(horse.gender)}`}
                 >
                   {horse.gender === 'stallion' ? 'Stallion' : horse.gender === 'mare' ? 'Mare' : horse.gender}
                 </Badge>
