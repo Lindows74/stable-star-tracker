@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +42,47 @@ interface ExcelHorseRow {
   breed_percentages?: string;
 }
 
+// Translation mappings from Swedish to English
+const SWEDISH_TRANSLATIONS = {
+  categories: {
+    "platt": "flat_racing",
+    "hinderbana": "steeplechase", 
+    "terräng": "cross_country",
+    "flat racing": "flat_racing",
+    "steeplechase": "steeplechase",
+    "cross country": "cross_country"
+  },
+  surfaces: {
+    "mycket hård": "very_hard",
+    "hård": "hard", 
+    "fast": "firm",
+    "medel": "medium",
+    "mjuk": "soft",
+    "mycket mjuk": "very_soft",
+    "very hard": "very_hard",
+    "firm": "firm",
+    "medium": "medium",
+    "soft": "soft",
+    "very soft": "very_soft"
+  },
+  positions: {
+    "fram": "front",
+    "mitten": "middle", 
+    "bak": "back",
+    "front": "front",
+    "middle": "middle",
+    "back": "back"
+  },
+  genders: {
+    "hingst": "stallion",
+    "sto": "mare",
+    "valack": "gelding",
+    "stallion": "stallion",
+    "mare": "mare", 
+    "gelding": "gelding"
+  }
+};
+
 export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -54,8 +94,61 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      processExcelFile(selectedFile);
+      if (selectedFile.name.toLowerCase().endsWith('.csv')) {
+        processCsvFile(selectedFile);
+      } else {
+        processExcelFile(selectedFile);
+      }
     }
+  };
+
+  const processCsvFile = (file: File) => {
+    setIsProcessing(true);
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      try {
+        const csvText = e.target?.result as string;
+        const lines = csvText.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+        
+        const jsonData: ExcelHorseRow[] = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          if (lines[i].trim()) {
+            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+            const row: any = {};
+            
+            headers.forEach((header, index) => {
+              if (values[index] !== undefined) {
+                row[header] = values[index];
+              }
+            });
+            
+            jsonData.push(row);
+          }
+        }
+        
+        console.log("Parsed CSV data:", jsonData);
+        setPreviewData(jsonData);
+        setIsProcessing(false);
+        
+        toast({
+          title: "CSV file processed successfully!",
+          description: `Found ${jsonData.length} horses to import.`,
+        });
+      } catch (error) {
+        console.error("Error processing CSV file:", error);
+        toast({
+          title: "Error",
+          description: "Failed to process CSV file. Please check the format.",
+          variant: "destructive",
+        });
+        setIsProcessing(false);
+      }
+    };
+    
+    reader.readAsText(file);
   };
 
   const processExcelFile = (file: File) => {
@@ -75,7 +168,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
         setIsProcessing(false);
         
         toast({
-          title: "File processed successfully!",
+          title: "Excel file processed successfully!",
           description: `Found ${jsonData.length} horses to import.`,
         });
       } catch (error) {
@@ -92,17 +185,42 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     reader.readAsBinaryString(file);
   };
 
+  const translateValue = (value: string, translationType: keyof typeof SWEDISH_TRANSLATIONS): string => {
+    if (!value) return value;
+    
+    const translations = SWEDISH_TRANSLATIONS[translationType];
+    const lowerValue = value.toLowerCase().trim();
+    
+    // Check for exact matches first
+    for (const [swedish, english] of Object.entries(translations)) {
+      if (lowerValue === swedish.toLowerCase()) {
+        return english;
+      }
+    }
+    
+    // Return original value if no translation found
+    return value;
+  };
+
   const parseBoolean = (value: boolean | string | undefined): boolean => {
     if (typeof value === "boolean") return value;
     if (typeof value === "string") {
-      return value.toLowerCase() === "true" || value === "1" || value.toLowerCase() === "yes";
+      const lowerValue = value.toLowerCase();
+      return lowerValue === "true" || lowerValue === "1" || lowerValue === "yes" || 
+             lowerValue === "ja" || lowerValue === "sant";
     }
     return false;
   };
 
-  const parseArray = (value: string | undefined): string[] => {
+  const parseArray = (value: string | undefined, translationType?: keyof typeof SWEDISH_TRANSLATIONS): string[] => {
     if (!value) return [];
-    return value.split(",").map(item => item.trim()).filter(item => item.length > 0);
+    const items = value.split(",").map(item => item.trim()).filter(item => item.length > 0);
+    
+    if (translationType) {
+      return items.map(item => translateValue(item, translationType));
+    }
+    
+    return items;
   };
 
   const importHorsesMutation = useMutation({
@@ -117,7 +235,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
         console.log("Processing horse:", horseRow.name);
 
-        // Create the horse record
+        // Create the horse record with translation
         const horseData: TablesInsert<"horses"> = {
           name: horseRow.name,
           tier: horseRow.tier,
@@ -137,7 +255,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           max_agility: parseBoolean(horseRow.max_agility),
           max_jump: parseBoolean(horseRow.max_jump),
           notes: horseRow.notes,
-          gender: horseRow.gender || null,
+          gender: horseRow.gender ? translateValue(horseRow.gender, 'genders') : null,
         };
 
         const { data: horse, error: horseError } = await supabase
@@ -153,8 +271,8 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
         console.log("Horse created:", horse);
 
-        // Insert categories
-        const categories = parseArray(horseRow.categories);
+        // Insert categories with translation
+        const categories = parseArray(horseRow.categories, 'categories');
         if (categories.length > 0) {
           const categoryInserts = categories.map((category) => ({
             horse_id: horse.id,
@@ -170,8 +288,8 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert surfaces
-        const surfaces = parseArray(horseRow.preferred_surfaces);
+        // Insert surfaces with translation
+        const surfaces = parseArray(horseRow.preferred_surfaces, 'surfaces');
         if (surfaces.length > 0) {
           const surfaceInserts = surfaces.map((surface) => ({
             horse_id: horse.id,
@@ -187,7 +305,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert distances
+        // Insert distances (no translation needed - numbers are universal)
         const distances = parseArray(horseRow.preferred_distances);
         if (distances.length > 0) {
           const distanceInserts = distances.map((distance) => ({
@@ -204,8 +322,8 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert positions
-        const positions = parseArray(horseRow.field_positions);
+        // Insert positions with translation
+        const positions = parseArray(horseRow.field_positions, 'positions');
         if (positions.length > 0) {
           const positionInserts = positions.map((position) => ({
             horse_id: horse.id,
@@ -221,7 +339,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert traits
+        // Insert traits (no translation for trait names - keep original Swedish names)
         const traits = parseArray(horseRow.traits);
         if (traits.length > 0) {
           const traitInserts = traits.map((trait) => ({
@@ -239,7 +357,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert breeding data
+        // Insert breeding data (no translation for breed names - keep original)
         const breeds = parseArray(horseRow.breeds);
         const percentages = parseArray(horseRow.breed_percentages);
         
@@ -317,7 +435,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     if (previewData.length === 0) {
       toast({
         title: "No data to import",
-        description: "Please select a valid Excel file first.",
+        description: "Please select a valid file first.",
         variant: "destructive",
       });
       return;
@@ -329,7 +447,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-semibold">Import Horses from Excel</h3>
+        <h3 className="text-lg font-semibold">Import Horses from Excel/CSV</h3>
         <Button variant="outline" size="sm" onClick={onClose}>
           <X className="h-4 w-4" />
         </Button>
@@ -340,14 +458,14 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           <div className="text-center">
             <FileSpreadsheet className="mx-auto h-12 w-12 text-gray-400" />
             <div className="mt-4">
-              <label htmlFor="excel-file" className="cursor-pointer">
+              <label htmlFor="file-upload" className="cursor-pointer">
                 <span className="mt-2 block text-sm font-medium text-gray-900">
-                  Select Excel file
+                  Select Excel (.xlsx, .xls) or CSV file
                 </span>
                 <Input
-                  id="excel-file"
+                  id="file-upload"
                   type="file"
-                  accept=".xlsx,.xls"
+                  accept=".xlsx,.xls,.csv"
                   onChange={handleFileChange}
                   className="hidden"
                 />
@@ -370,7 +488,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
         {isProcessing && (
           <div className="text-center py-4">
-            <div className="text-sm text-gray-600">Processing Excel file...</div>
+            <div className="text-sm text-gray-600">Processing file...</div>
           </div>
         )}
 
@@ -413,12 +531,15 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
         )}
       </div>
 
-      <div className="text-xs text-gray-500 space-y-1">
+      <div className="text-xs text-gray-500 space-y-2">
+        <div><strong>Supported formats:</strong> Excel (.xlsx, .xls) and CSV files</div>
+        <div><strong>Swedish translation support:</strong> Categories, surfaces, positions, and genders will be automatically translated</div>
         <div><strong>Expected columns:</strong></div>
         <div>name, tier, speed, sprint_energy, acceleration, agility, jump, diet_speed, diet_sprint_energy, diet_acceleration, diet_agility, diet_jump</div>
-        <div>max_speed, max_sprint_energy, max_acceleration, max_agility, max_jump (true/false)</div>
+        <div>max_speed, max_sprint_energy, max_acceleration, max_agility, max_jump (true/false/ja/sant)</div>
         <div>notes, gender, categories, preferred_surfaces, preferred_distances, field_positions, traits (comma-separated)</div>
         <div>breeds, breed_percentages (comma-separated, matching order)</div>
+        <div><strong>Swedish examples:</strong> platt/hinderbana/terräng, mycket hård/hård/fast/medel/mjuk, fram/mitten/bak, hingst/sto/valack</div>
       </div>
     </div>
   );
