@@ -15,12 +15,18 @@ interface ExcelImporterProps {
 
 interface ExcelHorseRow {
   name?: string;
+  namn?: string; // Swedish for name
   tier?: number;
+  rank?: number; // Swedish uses "Rank"
   speed?: number;
+  snabbhet?: number; // Swedish for speed
   sprint_energy?: number;
+  sprint?: number; // Swedish for sprint
   acceleration?: number;
   agility?: number;
+  rörlighet?: number; // Swedish for agility
   jump?: number;
+  hopp?: number; // Swedish for jump
   diet_speed?: number;
   diet_sprint_energy?: number;
   diet_acceleration?: number;
@@ -33,16 +39,20 @@ interface ExcelHorseRow {
   max_jump?: boolean | string;
   notes?: string;
   gender?: string;
+  kön?: string; // Swedish for gender
   categories?: string;
   preferred_surfaces?: string;
+  underlag?: string; // Swedish for surface
   preferred_distances?: string;
+  distans?: string; // Swedish for distance
   field_positions?: string;
+  position?: string; // Swedish for position
   traits?: string;
   breeds?: string;
   breed_percentages?: string;
 }
 
-// Translation mappings from Swedish to English
+// Enhanced translation mappings from Swedish to English
 const SWEDISH_TRANSLATIONS = {
   categories: {
     "platt": "flat_racing",
@@ -54,11 +64,20 @@ const SWEDISH_TRANSLATIONS = {
   },
   surfaces: {
     "mycket hård": "very_hard",
-    "hård": "hard", 
+    "v mjukt/hård": "medium", // From your data
+    "v mjukt": "very_soft",
+    "mjukt": "soft", 
+    "mjukt/fast": "medium",
     "fast": "firm",
-    "medel": "medium",
-    "mjuk": "soft",
+    "medelhård": "medium",
+    "hård": "hard",
+    "v hård": "very_hard",
+    "hård/v hård": "hard",
+    "mjukt/fast/medelhård/hård": "medium", // Multiple preferences -> medium
+    "v mjukt/fast/medelhård": "medium",
     "mycket mjuk": "very_soft",
+    "medel": "medium",
+    "mycket hård": "very_hard",
     "very hard": "very_hard",
     "firm": "firm",
     "medium": "medium",
@@ -80,6 +99,24 @@ const SWEDISH_TRANSLATIONS = {
     "stallion": "stallion",
     "mare": "mare", 
     "gelding": "gelding"
+  },
+  // Common Swedish trait translations based on typical horse racing terms
+  traits: {
+    "blixthov": "lightning_hoof",
+    "snabb galopp": "fast_gallop", 
+    "maximal uthållighet": "maximum_endurance",
+    "perfekt hållning": "perfect_posture",
+    "snabbast start": "fastest_start",
+    "energisparare": "energy_saver",
+    "maratonträvare": "marathon_runner",
+    "grenslopp": "boundary_race",
+    "uthållig rusare": "enduring_runner",
+    "flexibel fantom": "flexible_phantom",
+    "gränsgalopp": "boundary_gallop",
+    "mellani sport": "middle_sport",
+    "maximal sport": "maximum_sport",
+    "graninglopp": "scrutiny_race",
+    "uthållig rusare": "enduring_runner"
   }
 };
 
@@ -223,13 +260,48 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     return items;
   };
 
+  const normalizeHorseData = (horseRow: ExcelHorseRow) => {
+    // Map Swedish column names to English equivalents
+    return {
+      name: horseRow.name || horseRow.namn,
+      tier: horseRow.tier || horseRow.rank,
+      speed: horseRow.speed || horseRow.snabbhet,
+      sprint_energy: horseRow.sprint_energy || horseRow.sprint,
+      acceleration: horseRow.acceleration,
+      agility: horseRow.agility || horseRow.rörlighet,
+      jump: horseRow.jump || horseRow.hopp,
+      diet_speed: horseRow.diet_speed,
+      diet_sprint_energy: horseRow.diet_sprint_energy,
+      diet_acceleration: horseRow.diet_acceleration,
+      diet_agility: horseRow.diet_agility,
+      diet_jump: horseRow.diet_jump,
+      max_speed: horseRow.max_speed,
+      max_sprint_energy: horseRow.max_sprint_energy,
+      max_acceleration: horseRow.max_acceleration,
+      max_agility: horseRow.max_agility,
+      max_jump: horseRow.max_jump,
+      notes: horseRow.notes,
+      gender: horseRow.gender || horseRow.kön,
+      categories: horseRow.categories,
+      preferred_surfaces: horseRow.preferred_surfaces || horseRow.underlag,
+      preferred_distances: horseRow.preferred_distances || horseRow.distans,
+      field_positions: horseRow.field_positions || horseRow.position,
+      traits: horseRow.traits,
+      breeds: horseRow.breeds,
+      breed_percentages: horseRow.breed_percentages,
+    };
+  };
+
   const importHorsesMutation = useMutation({
     mutationFn: async (horses: ExcelHorseRow[]) => {
       console.log("Starting import of", horses.length, "horses");
       
-      for (const horseRow of horses) {
+      for (const horseRowRaw of horses) {
+        // Normalize Swedish column names to English
+        const horseRow = normalizeHorseData(horseRowRaw);
+        
         if (!horseRow.name) {
-          console.log("Skipping horse without name:", horseRow);
+          console.log("Skipping horse without name:", horseRowRaw);
           continue;
         }
 
@@ -339,12 +411,12 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert traits (no translation for trait names - keep original Swedish names)
-        const traits = parseArray(horseRow.traits);
+        // Insert traits with translation
+        const traits = parseArray(horseRow.traits, 'traits');
         if (traits.length > 0) {
           const traitInserts = traits.map((trait) => ({
             horse_id: horse.id,
-            trait_name: trait,
+            trait_name: translateValue(trait, 'traits'),
             trait_category: "misc" as const,
           }));
           
@@ -500,13 +572,16 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
             
             <div className="max-h-60 overflow-y-auto border rounded-lg">
               <div className="p-4 space-y-2">
-                {previewData.slice(0, 5).map((horse, index) => (
-                  <div key={index} className="text-sm border-b pb-2">
-                    <strong>{horse.name}</strong>
-                    {horse.tier && <span className="ml-2 text-gray-600">Tier {horse.tier}</span>}
-                    {horse.categories && <span className="ml-2 text-blue-600">Categories: {horse.categories}</span>}
-                  </div>
-                ))}
+                {previewData.slice(0, 5).map((horse, index) => {
+                  const normalizedHorse = normalizeHorseData(horse);
+                  return (
+                    <div key={index} className="text-sm border-b pb-2">
+                      <strong>{normalizedHorse.name}</strong>
+                      {normalizedHorse.tier && <span className="ml-2 text-gray-600">Tier {normalizedHorse.tier}</span>}
+                      {normalizedHorse.categories && <span className="ml-2 text-blue-600">Categories: {normalizedHorse.categories}</span>}
+                    </div>
+                  );
+                })}
                 {previewData.length > 5 && (
                   <div className="text-sm text-gray-500">
                     ... and {previewData.length - 5} more horses
@@ -533,13 +608,15 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
       <div className="text-xs text-gray-500 space-y-2">
         <div><strong>Supported formats:</strong> Excel (.xlsx, .xls) and CSV files</div>
-        <div><strong>Swedish translation support:</strong> Categories, surfaces, positions, and genders will be automatically translated</div>
-        <div><strong>Expected columns:</strong></div>
-        <div>name, tier, speed, sprint_energy, acceleration, agility, jump, diet_speed, diet_sprint_energy, diet_acceleration, diet_agility, diet_jump</div>
+        <div><strong>Swedish translation support:</strong> Categories, surfaces, positions, genders, and traits will be automatically translated</div>
+        <div><strong>Swedish column mapping:</strong> namn→name, rank→tier, snabbhet→speed, sprint→sprint_energy, rörlighet→agility, hopp→jump, kön→gender, underlag→surfaces, distans→distances</div>
+        <div><strong>Expected columns (English or Swedish):</strong></div>
+        <div>name/namn, tier/rank, speed/snabbhet, sprint_energy/sprint, acceleration, agility/rörlighet, jump/hopp</div>
+        <div>diet_speed, diet_sprint_energy, diet_acceleration, diet_agility, diet_jump</div>
         <div>max_speed, max_sprint_energy, max_acceleration, max_agility, max_jump (true/false/ja/sant)</div>
-        <div>notes, gender, categories, preferred_surfaces, preferred_distances, field_positions, traits (comma-separated)</div>
+        <div>notes, gender/kön, categories, preferred_surfaces/underlag, preferred_distances/distans, field_positions/position, traits (comma-separated)</div>
         <div>breeds, breed_percentages (comma-separated, matching order)</div>
-        <div><strong>Swedish examples:</strong> platt/hinderbana/terräng, mycket hård/hård/fast/medel/mjuk, fram/mitten/bak, hingst/sto/valack</div>
+        <div><strong>Swedish examples:</strong> platt/hinderbana/terräng, v mjukt/mjukt/fast/medelhård/hård, fram/mitten/bak, hingst/sto/valack</div>
       </div>
     </div>
   );
