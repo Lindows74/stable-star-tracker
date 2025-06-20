@@ -128,9 +128,12 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
     if (horse.gender) {
       setHorseGender(horse.gender as "stallion" | "mare");
     }
+
+    console.log("Edit form initialized with traits:", initialTraits);
   }, [horse, form]);
 
   const handleTraitsChange = (traits: string[]) => {
+    console.log("Traits changed in edit form:", traits);
     setSelectedTraits(traits);
     form.setValue("traits", traits);
   };
