@@ -2,7 +2,7 @@
 import { HorseList } from "@/components/horses/HorseList";
 import { HorseForm } from "@/components/horses/HorseForm";
 import { Button } from "@/components/ui/button";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -11,20 +11,20 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Stable Star Tracker</h1>
-            <p className="text-gray-600">Manage and track your horse racing stable</p>
-          </div>
-          
-          <div className="flex gap-3">
-            <Link to="/search">
-              <Button variant="outline" className="flex items-center gap-2">
+      {/* Navigation Header */}
+      <nav className="bg-white shadow mb-8">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-6">
+              <Link to="/" className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                <Home className="h-6 w-6" />
+                Stable Star Tracker
+              </Link>
+              <Link to="/search" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
                 <Search className="h-4 w-4" />
                 Search Horses
-              </Button>
-            </Link>
+              </Link>
+            </div>
             <Button 
               onClick={() => setShowForm(!showForm)}
               className="flex items-center gap-2"
@@ -32,6 +32,15 @@ const Index = () => {
               <Plus className="h-4 w-4" />
               Add Horse
             </Button>
+          </div>
+        </div>
+      </nav>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Horses</h1>
+            <p className="text-gray-600">Manage and track your horse racing stable</p>
           </div>
         </div>
 

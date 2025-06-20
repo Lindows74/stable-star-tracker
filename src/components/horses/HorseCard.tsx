@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -99,21 +98,39 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     horse.max_jump && "Jump"
   ].filter(Boolean);
 
+  // Determine gender background color
+  const getGenderBackgroundClass = (gender: string) => {
+    if (gender === 'stallion') return 'bg-blue-50';
+    if (gender === 'mare') return 'bg-pink-50';
+    return '';
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-lg">{horse.name}</CardTitle>
-            <div className="flex gap-2 mt-1">
+            <div className={`inline-block px-3 py-1 rounded-md ${getGenderBackgroundClass(horse.gender)}`}>
+              <CardTitle className="text-lg">{horse.name}</CardTitle>
+            </div>
+            <div className="flex gap-2 mt-2">
               {horse.tier && (
                 <Badge variant="secondary">
                   Tier {horse.tier}
                 </Badge>
               )}
               {horse.gender && (
-                <Badge variant="outline" className="text-xs">
-                  {horse.gender}
+                <Badge 
+                  variant="outline" 
+                  className={`text-xs ${
+                    horse.gender === 'stallion' 
+                      ? 'bg-blue-100 text-blue-800 border-blue-200' 
+                      : horse.gender === 'mare' 
+                      ? 'bg-pink-100 text-pink-800 border-pink-200' 
+                      : ''
+                  }`}
+                >
+                  {horse.gender === 'stallion' ? 'Stallion' : horse.gender === 'mare' ? 'Mare' : horse.gender}
                 </Badge>
               )}
             </div>
