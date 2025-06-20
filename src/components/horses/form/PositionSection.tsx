@@ -15,17 +15,18 @@ const positionOptions = [
 ];
 
 export const PositionSection = ({ control }: PositionSectionProps) => {
-  const { setValue } = useFormContext();
+  const { setValue, getValues } = useFormContext();
   const selectedPositions = useWatch({
     control,
     name: "field_positions",
-    defaultValue: []
+    defaultValue: getValues("field_positions") || []
   });
 
   const togglePosition = (position: string) => {
-    const updated = selectedPositions.includes(position)
-      ? selectedPositions.filter((p: string) => p !== position)
-      : [...selectedPositions, position];
+    const current = getValues("field_positions") || [];
+    const updated = current.includes(position)
+      ? current.filter((p: string) => p !== position)
+      : [...current, position];
     setValue("field_positions", updated);
   };
 
@@ -37,7 +38,7 @@ export const PositionSection = ({ control }: PositionSectionProps) => {
           <div key={position.value} className="flex items-center space-x-2">
             <Checkbox
               id={`position-${position.value}`}
-              checked={selectedPositions.includes(position.value)}
+              checked={selectedPositions?.includes(position.value) || false}
               onCheckedChange={() => togglePosition(position.value)}
             />
             <Label htmlFor={`position-${position.value}`} className="text-sm font-normal">

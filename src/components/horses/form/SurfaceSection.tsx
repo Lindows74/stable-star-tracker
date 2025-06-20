@@ -18,17 +18,18 @@ const surfaceOptions = [
 ];
 
 export const SurfaceSection = ({ control }: SurfaceSectionProps) => {
-  const { setValue } = useFormContext();
+  const { setValue, getValues } = useFormContext();
   const selectedSurfaces = useWatch({
     control,
     name: "preferred_surfaces",
-    defaultValue: []
+    defaultValue: getValues("preferred_surfaces") || []
   });
 
   const toggleSurface = (surface: string) => {
-    const updated = selectedSurfaces.includes(surface)
-      ? selectedSurfaces.filter((s: string) => s !== surface)
-      : [...selectedSurfaces, surface];
+    const current = getValues("preferred_surfaces") || [];
+    const updated = current.includes(surface)
+      ? current.filter((s: string) => s !== surface)
+      : [...current, surface];
     setValue("preferred_surfaces", updated);
   };
 
@@ -40,7 +41,7 @@ export const SurfaceSection = ({ control }: SurfaceSectionProps) => {
           <div key={surface.value} className="flex items-center space-x-2">
             <Checkbox
               id={`surface-${surface.value}`}
-              checked={selectedSurfaces.includes(surface.value)}
+              checked={selectedSurfaces?.includes(surface.value) || false}
               onCheckedChange={() => toggleSurface(surface.value)}
             />
             <Label htmlFor={`surface-${surface.value}`} className="text-sm font-normal">

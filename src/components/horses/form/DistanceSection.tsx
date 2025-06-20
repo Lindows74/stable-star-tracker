@@ -26,17 +26,18 @@ const distanceOptions = [
 ];
 
 export const DistanceSection = ({ control }: DistanceSectionProps) => {
-  const { setValue } = useFormContext();
+  const { setValue, getValues } = useFormContext();
   const selectedDistances = useWatch({
     control,
     name: "preferred_distances",
-    defaultValue: []
+    defaultValue: getValues("preferred_distances") || []
   });
 
   const toggleDistance = (distance: string) => {
-    const updated = selectedDistances.includes(distance)
-      ? selectedDistances.filter((d: string) => d !== distance)
-      : [...selectedDistances, distance];
+    const current = getValues("preferred_distances") || [];
+    const updated = current.includes(distance)
+      ? current.filter((d: string) => d !== distance)
+      : [...current, distance];
     setValue("preferred_distances", updated);
   };
 
@@ -48,7 +49,7 @@ export const DistanceSection = ({ control }: DistanceSectionProps) => {
           <div key={distance.value} className="flex items-center space-x-2">
             <Checkbox
               id={`distance-${distance.value}`}
-              checked={selectedDistances.includes(distance.value)}
+              checked={selectedDistances?.includes(distance.value) || false}
               onCheckedChange={() => toggleDistance(distance.value)}
             />
             <Label htmlFor={`distance-${distance.value}`} className="text-sm font-normal">
