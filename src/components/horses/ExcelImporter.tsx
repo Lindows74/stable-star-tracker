@@ -86,17 +86,16 @@ const SWEDISH_TRANSLATIONS = {
     "sto": "mare",
     "valack": "gelding"
   },
-  // Common Swedish trait translations based on typical horse racing terms
+  // Corrected Swedish trait translations based on user feedback
   traits: {
-    "blixthov": "lightning_hoof",
-    "snabb galopp": "fast_gallop", 
-    "maximal uthållighet": "maximum_endurance",
-    "perfekt hållning": "perfect_posture",
-    "snabbast start": "fastest_start",
-    "energisparare": "energy_saver",
-    "maratonträvare": "marathon_runner",
-    "grenslopp": "boundary_race",
-    "uthållig rusare": "enduring_runner",
+    "blixthov": "Blazing Hoof", // Also matches "Blazing Hoof Pro"
+    "snabb galopp": "Quick Gallop",
+    "maximal uthållighet": "Top Endurance",
+    "perfekt steg": "Perfect Step", // Corrected from "perfekt hållning"
+    "snabbast i stan": "Fast Draw", // Corrected from "snabbast start"
+    "energisparare": "Energy Saver",
+    "maratontravare": "Marathon Trotter", // Corrected from "maratonträvare"
+    // Keep any other existing trait translations that weren't corrected
     "flexibel fantom": "flexible_phantom",
     "gränsgalopp": "boundary_gallop",
     "mellani sport": "middle_sport",
