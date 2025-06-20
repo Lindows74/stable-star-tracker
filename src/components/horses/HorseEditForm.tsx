@@ -19,6 +19,7 @@ import { MaxTrainingCheckboxes } from "./MaxTrainingCheckboxes";
 import { DistanceSection } from "./form/DistanceSection";
 import { SurfaceSection } from "./form/SurfaceSection";
 import { PositionSection } from "./form/PositionSection";
+import { BreedingSection, type BreedSelection } from "./form/BreedingSection";
 
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -44,6 +45,7 @@ const formSchema = z.object({
   preferred_distances: z.array(z.string()).min(1, "At least one distance is required"),
   preferred_surfaces: z.array(z.string()).min(1, "At least one surface is required"),
   field_positions: z.array(z.string()).min(1, "At least one position is required"),
+  gender: z.enum(["stallion", "mare"]).optional(),
 });
 
 interface HorseEditFormProps {
@@ -53,6 +55,8 @@ interface HorseEditFormProps {
     horse_distances?: { distance: string }[];
     horse_surfaces?: { surface: string }[];
     horse_positions?: { position: string }[];
+    horse_breeding?: { breeds?: { name: string }; percentage: number }[];
+    gender?: string;
   };
   onCancel: () => void;
 }
@@ -76,6 +80,8 @@ const DIET_STATS = [
 export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+  const [breedSelections, setBreedSelections] = useState<BreedSelection[]>([]);
+  const [horseGender, setHorseGender] = useState<"stallion" | "mare" | undefined>(undefined);
   const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -104,6 +110,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       preferred_distances: horse.horse_distances?.map(hd => hd.distance) || [],
       preferred_surfaces: horse.horse_surfaces?.map(hs => hs.surface) || [],
       field_positions: horse.horse_positions?.map(hp => hp.position) || [],
+      gender: horse.gender as "stallion" | "mare" | undefined,
     },
   });
 
@@ -111,7 +118,20 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
     const initialTraits = horse.horse_traits?.map(ht => ht.trait_name) || [];
     setSelectedTraits(initialTraits);
     form.setValue("traits", initialTraits);
-  }, [horse.horse_traits, form]);
+
+    // Initialize breeding data
+    const initialBreedSelections = horse.horse_breeding?.map(hb => ({
+      breed: hb.breeds?.name || "",
+      percentage: hb.percentage || 0
+    })) || [];
+    setBreedSelections(initialBreedSelections);
+
+    // Initialize gender
+    if (horse.gender) {
+      setHorseGender(horse.gender as "stallion" | "mare");
+      form.setValue("gender", horse.gender as "stallion" | "mare");
+    }
+  }, [horse, form]);
 
   const handleTraitsChange = (traits: string[]) => {
     setSelectedTraits(traits);
@@ -145,6 +165,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
           max_agility: values.max_agility,
           max_jump: values.max_jump,
           notes: values.notes,
+          gender: horseGender,
           updated_at: new Date().toISOString(),
         })
         .eq("id", horse.id);
@@ -152,6 +173,34 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       if (horseError) {
         console.error("Error updating horse:", horseError);
         throw horseError;
+      }
+
+      // Handle breeding data
+      if (breedSelections.length > 0) {
+        // Delete existing breeding records
+        await supabase.from("horse_breeding").delete().eq("horse_id", horse.id);
+
+        // Get breed IDs
+        const breedNames = breedSelections.map(bs => bs.breed);
+        const { data: breeds } = await supabase
+          .from("breeds")
+          .select("id, name")
+          .in("name", breedNames);
+
+        if (breeds) {
+          const breedingInserts = breedSelections.map((selection) => {
+            const breed = breeds.find(b => b.name === selection.breed);
+            return {
+              horse_id: horse.id,
+              breed_id: breed?.id,
+              percentage: selection.percentage,
+            };
+          }).filter(insert => insert.breed_id);
+
+          if (breedingInserts.length > 0) {
+            await supabase.from("horse_breeding").insert(breedingInserts);
+          }
+        }
       }
 
       // Delete existing categories
@@ -303,6 +352,13 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
             </div>
 
             <CategorySelector control={form.control} />
+
+            <BreedingSection 
+              breedSelections={breedSelections}
+              setBreedSelections={setBreedSelections}
+              gender={horseGender}
+              setGender={setHorseGender}
+            />
 
             <TraitSelector 
               selectedTraits={selectedTraits} 
