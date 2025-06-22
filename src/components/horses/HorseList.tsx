@@ -55,88 +55,48 @@ export const HorseList = () => {
     queryFn: async () => {
       console.log("HorseList: Fetching horses...");
       
-      try {
-        // First, let's check the total count of horses in the database
-        const { count: totalCount, error: countError } = await supabase
-          .from("horses")
-          .select("*", { count: 'exact', head: true });
-        
-        console.log("HorseList: Total horses in database:", totalCount);
-        console.log("HorseList: Count query error:", countError);
+      const { data, error } = await supabase
+        .from("horses")
+        .select(`
+          *,
+          horse_categories(category),
+          horse_surfaces(surface),
+          horse_distances(distance),
+          horse_positions(position),
+          horse_breeding(
+            percentage,
+            breeds(name)
+          ),
+          horse_traits(
+            trait_name,
+            trait_value,
+            trait_category
+          )
+        `)
+        .order("created_at", { ascending: false });
 
-        // Let's also check what user_id context we're working with
-        const { data: currentUser } = await supabase.auth.getUser();
-        console.log("HorseList: Current user:", currentUser?.user?.id || "No authenticated user");
-
-        // Now let's try the main query
-        const { data, error } = await supabase
-          .from("horses")
-          .select(`
-            *,
-            horse_categories(category),
-            horse_surfaces(surface),
-            horse_distances(distance),
-            horse_positions(position),
-            horse_breeding(
-              percentage,
-              breeds(name)
-            ),
-            horse_traits(
-              trait_name,
-              trait_value,
-              trait_category
-            )
-          `)
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          console.error("HorseList: Supabase error:", error);
-          throw error;
-        }
-
-        console.log("HorseList: Raw data from Supabase:", data);
-        console.log("HorseList: Data type:", typeof data);
-        console.log("HorseList: Is array:", Array.isArray(data));
-        
-        if (!data) {
-          console.log("HorseList: No data returned");
-          return [];
-        }
-
-        console.log("HorseList: Number of horses fetched:", data.length);
-        if (data.length > 0) {
-          console.log("HorseList: First horse data:", data[0]);
-          console.log("HorseList: All horse names:", data.map(h => h.name));
-          console.log("HorseList: All horse IDs:", data.map(h => h.id));
-          console.log("HorseList: All horse user_ids:", data.map(h => h.user_id));
-        }
-        
-        // Let's also try a simpler query to see if RLS is the issue
-        const { data: simpleData, error: simpleError } = await supabase
-          .from("horses")
-          .select("id, name, user_id");
-        
-        console.log("HorseList: Simple query result:", simpleData?.length || 0, "horses");
-        console.log("HorseList: Simple query error:", simpleError);
-        console.log("HorseList: Simple query data:", simpleData);
-        
-        // Sort horses by tier and stats
-        const sortedHorses = sortHorses(data);
-        console.log("HorseList: Sorted horses:", sortedHorses.length, "horses");
-        console.log("HorseList: Horse names after sorting:", sortedHorses.map(h => h.name));
-        
-        return sortedHorses;
-      } catch (err) {
-        console.error("HorseList: Catch block error:", err);
-        throw err;
+      if (error) {
+        console.error("HorseList: Supabase error:", error);
+        throw error;
       }
+
+      console.log("HorseList: Number of horses fetched:", data?.length || 0);
+      
+      if (!data) {
+        return [];
+      }
+      
+      // Sort horses by tier and stats
+      const sortedHorses = sortHorses(data);
+      console.log("HorseList: Sorted horses:", sortedHorses.length, "horses");
+      
+      return sortedHorses;
     },
   });
 
   console.log("HorseList: Component render - isLoading:", isLoading, "error:", error, "horses count:", horses?.length);
 
   if (isLoading) {
-    console.log("HorseList: Rendering loading state");
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[...Array(6)].map((_, i) => (
@@ -158,7 +118,6 @@ export const HorseList = () => {
   }
 
   if (!horses || horses.length === 0) {
-    console.log("HorseList: Rendering empty state - horses:", horses);
     return (
       <div className="text-center py-12">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">No horses yet</h3>
@@ -168,14 +127,12 @@ export const HorseList = () => {
   }
 
   console.log("HorseList: About to render", horses.length, "horses");
-  console.log("HorseList: Horse names being rendered:", horses.map(h => h.name));
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {horses.map((horse, index) => {
-        console.log(`HorseList: Rendering horse ${index + 1}/${horses.length}:`, horse.name, "ID:", horse.id);
-        return <HorseCard key={horse.id} horse={horse} />;
-      })}
+      {horses.map((horse) => (
+        <HorseCard key={horse.id} horse={horse} />
+      ))}
     </div>
   );
 };
