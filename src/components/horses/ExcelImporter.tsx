@@ -104,6 +104,19 @@ const SWEDISH_TRANSLATIONS = {
   }
 };
 
+// Breed shorthand mapping for parsing shorthand notations like "50KS/50FB"
+const BREED_SHORTHAND = {
+  "AFB": "Arabian", // Arabiskt Fullblod
+  "FB": "Thoroughbred", // Fullblod
+  "MU": "Mustang",
+  "QH": "Quarter Horse",
+  "SF": "Selle Francais",
+  "AP": "Appaloosa",
+  "AT": "Akhal-Teke",
+  "AA": "Anglo-Arab",
+  "KS": "Knabstrupper"
+};
+
 export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -248,6 +261,35 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
     return items;
   };
 
+  const parseBreedShorthand = (value: string): { breeds: string[], percentages: string[] } => {
+    if (!value) return { breeds: [], percentages: [] };
+    
+    // Check if this looks like shorthand notation (e.g., "50KS/50FB" or "100MU")
+    const shorthandPattern = /(\d+)([A-Z]+)/g;
+    const matches = [...value.matchAll(shorthandPattern)];
+    
+    if (matches.length > 0) {
+      const breeds: string[] = [];
+      const percentages: string[] = [];
+      
+      matches.forEach(match => {
+        const percentage = match[1];
+        const shorthand = match[2];
+        const fullBreedName = BREED_SHORTHAND[shorthand as keyof typeof BREED_SHORTHAND];
+        
+        if (fullBreedName) {
+          breeds.push(fullBreedName);
+          percentages.push(percentage);
+        }
+      });
+      
+      return { breeds, percentages };
+    }
+    
+    // Fallback to original parsing for regular format
+    return { breeds: [], percentages: [] };
+  };
+
   const normalizeHorseData = (horseRow: ExcelHorseRow) => {
     // Map Swedish column names to English equivalents only if Swedish is selected
     if (inputLanguage === "swedish") {
@@ -300,9 +342,37 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
 
         console.log("Processing horse:", horseRow.name);
 
+        // Parse gender from horse name if it includes gender info (e.g., "50KS/50FB Sto")
+        let parsedGender = horseRow.gender;
+        let cleanName = horseRow.name;
+        let breedInfo = { breeds: [], percentages: [] };
+
+        // Check if name contains breed and gender info
+        if (horseRow.name.includes(' ')) {
+          const nameParts = horseRow.name.split(' ');
+          const lastPart = nameParts[nameParts.length - 1].toLowerCase();
+          
+          // Check if last part is a gender
+          if (lastPart === 'sto' || lastPart === 'hingst' || lastPart === 'valack') {
+            parsedGender = translateValue(lastPart, 'genders');
+            const remainingParts = nameParts.slice(0, -1);
+            
+            // Check if there's breed shorthand in the remaining parts
+            const potentialBreedPart = remainingParts[remainingParts.length - 1];
+            const parsedBreeds = parseBreedShorthand(potentialBreedPart);
+            
+            if (parsedBreeds.breeds.length > 0) {
+              breedInfo = parsedBreeds;
+              cleanName = remainingParts.slice(0, -1).join(' '); // Remove breed part too
+            } else {
+              cleanName = remainingParts.join(' '); // Just remove gender
+            }
+          }
+        }
+
         // Create the horse record with translation
         const horseData: TablesInsert<"horses"> = {
-          name: horseRow.name,
+          name: cleanName,
           tier: horseRow.tier,
           speed: horseRow.speed,
           sprint_energy: horseRow.sprint_energy,
@@ -320,7 +390,7 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           max_agility: parseBoolean(horseRow.max_agility),
           max_jump: parseBoolean(horseRow.max_jump),
           notes: horseRow.notes,
-          gender: horseRow.gender ? translateValue(horseRow.gender, 'genders') : null,
+          gender: parsedGender ? translateValue(parsedGender, 'genders') : null,
         };
 
         const { data: horse, error: horseError } = await supabase
@@ -422,9 +492,17 @@ export const ExcelImporter = ({ onSuccess, onClose }: ExcelImporterProps) => {
           }
         }
 
-        // Insert breeding data (no translation for breed names - keep original)
-        const breeds = parseArray(horseRow.breeds);
-        const percentages = parseArray(horseRow.breed_percentages);
+        // Insert breeding data - use parsed breed info if available, otherwise fall back to original data
+        let breeds: string[] = [];
+        let percentages: string[] = [];
+
+        if (breedInfo.breeds.length > 0) {
+          breeds = breedInfo.breeds;
+          percentages = breedInfo.percentages;
+        } else {
+          breeds = parseArray(horseRow.breeds);
+          percentages = parseArray(horseRow.breed_percentages);
+        }
         
         if (breeds.length > 0 && percentages.length === breeds.length) {
           for (let i = 0; i < breeds.length; i++) {
