@@ -56,6 +56,19 @@ export const HorseList = () => {
       console.log("HorseList: Fetching horses...");
       
       try {
+        // First, let's check the total count of horses in the database
+        const { count: totalCount, error: countError } = await supabase
+          .from("horses")
+          .select("*", { count: 'exact', head: true });
+        
+        console.log("HorseList: Total horses in database:", totalCount);
+        console.log("HorseList: Count query error:", countError);
+
+        // Let's also check what user_id context we're working with
+        const { data: currentUser } = await supabase.auth.getUser();
+        console.log("HorseList: Current user:", currentUser?.user?.id || "No authenticated user");
+
+        // Now let's try the main query
         const { data, error } = await supabase
           .from("horses")
           .select(`
@@ -82,6 +95,8 @@ export const HorseList = () => {
         }
 
         console.log("HorseList: Raw data from Supabase:", data);
+        console.log("HorseList: Data type:", typeof data);
+        console.log("HorseList: Is array:", Array.isArray(data));
         
         if (!data) {
           console.log("HorseList: No data returned");
@@ -92,7 +107,18 @@ export const HorseList = () => {
         if (data.length > 0) {
           console.log("HorseList: First horse data:", data[0]);
           console.log("HorseList: All horse names:", data.map(h => h.name));
+          console.log("HorseList: All horse IDs:", data.map(h => h.id));
+          console.log("HorseList: All horse user_ids:", data.map(h => h.user_id));
         }
+        
+        // Let's also try a simpler query to see if RLS is the issue
+        const { data: simpleData, error: simpleError } = await supabase
+          .from("horses")
+          .select("id, name, user_id");
+        
+        console.log("HorseList: Simple query result:", simpleData?.length || 0, "horses");
+        console.log("HorseList: Simple query error:", simpleError);
+        console.log("HorseList: Simple query data:", simpleData);
         
         // Sort horses by tier and stats
         const sortedHorses = sortHorses(data);
