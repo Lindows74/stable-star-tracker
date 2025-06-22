@@ -53,7 +53,20 @@ export const HorseList = () => {
   const { data: horses, isLoading, error } = useQuery({
     queryKey: ["horses"],
     queryFn: async () => {
-      console.log("HorseList: Fetching horses...");
+      console.log("HorseList: Starting fetch...");
+      
+      // Check authentication state
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      console.log("HorseList: Current user:", user?.id || "not authenticated");
+      console.log("HorseList: Auth error:", authError);
+      
+      // Try a simple count query first
+      const { count, error: countError } = await supabase
+        .from("horses")
+        .select("*", { count: 'exact', head: true });
+      
+      console.log("HorseList: Total horses count:", count);
+      console.log("HorseList: Count error:", countError);
       
       const { data, error } = await supabase
         .from("horses")
@@ -75,20 +88,23 @@ export const HorseList = () => {
         `)
         .order("created_at", { ascending: false });
 
+      console.log("HorseList: Query response - data length:", data?.length || 0);
+      console.log("HorseList: Query error:", error);
+      console.log("HorseList: First few horses:", data?.slice(0, 3));
+
       if (error) {
         console.error("HorseList: Supabase error:", error);
         throw error;
       }
 
-      console.log("HorseList: Number of horses fetched:", data?.length || 0);
-      
       if (!data) {
+        console.log("HorseList: No data returned");
         return [];
       }
       
       // Sort horses by tier and stats
       const sortedHorses = sortHorses(data);
-      console.log("HorseList: Sorted horses:", sortedHorses.length, "horses");
+      console.log("HorseList: Returning sorted horses:", sortedHorses.length);
       
       return sortedHorses;
     },
