@@ -108,7 +108,7 @@ const HorseSearch = () => {
 
   const categories = ["flat_racing", "steeplechase", "cross_country", "misc"];
   const surfaces = ["very_hard", "hard", "firm", "medium", "soft", "very_soft"];
-  const distances = ["800", "900", "1000", "1200", "1400", "1600", "1800", "2000", "2200", "2400", "2600", "2800", "3000", "3200"];
+  const distances = ["800", "900", "1000", "1100", "1200", "1400", "1600", "1800", "2000", "2200", "2400", "2600", "2800", "3000", "3200"];
   const positions = ["front", "middle", "back"];
   const traits = [
     "Agile Arrow", "Agile Arrow Pro", "Blazing Hoof", "Blazing Hoof Pro", "Fast Draw",

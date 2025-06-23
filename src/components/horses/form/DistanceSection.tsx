@@ -12,6 +12,7 @@ const distanceOptions = [
   { value: "800", label: "800m" },
   { value: "900", label: "900m" },
   { value: "1000", label: "1000m" },
+  { value: "1100", label: "1100m" },
   { value: "1200", label: "1200m" },
   { value: "1400", label: "1400m" },
   { value: "1600", label: "1600m" },

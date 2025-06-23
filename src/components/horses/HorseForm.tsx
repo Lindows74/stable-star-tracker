@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -197,7 +196,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       if (form.getValues("preferred_distances").length > 0) {
         const distanceInserts = form.getValues("preferred_distances").map((distance) => ({
           horse_id: horse.id,
-          distance: distance as "800" | "900" | "1000" | "1200" | "1400" | "1600" | "1800" | "2000" | "2200" | "2400" | "2600" | "2800" | "3000" | "3200",
+          distance: distance as "800" | "900" | "1000" | "1100" | "1200" | "1400" | "1600" | "1800" | "2000" | "2200" | "2400" | "2600" | "2800" | "3000" | "3200",
         }));
 
         console.log("Inserting distances:", distanceInserts);
