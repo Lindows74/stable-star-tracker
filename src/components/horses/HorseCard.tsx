@@ -105,6 +105,9 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     return 'bg-gray-200 border border-gray-300';
   };
 
+  // Extract all trait names for stacking detection
+  const allTraitNames = horse.horse_traits?.map((trait: any) => trait.trait_name) || [];
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -290,6 +293,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 <TraitBadge 
                   key={idx} 
                   traitName={trait.trait_name}
+                  allTraits={allTraitNames}
                 />
               ))}
             </div>
