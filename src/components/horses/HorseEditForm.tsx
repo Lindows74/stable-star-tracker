@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -249,7 +248,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       if (values.preferred_distances.length > 0) {
         const distanceInserts = values.preferred_distances.map((distance) => ({
           horse_id: horse.id,
-          distance: distance as "800" | "900" | "1000" | "1100" | "1200" | "1400" | "1600" | "1800" | "2000" | "2200" | "2400" | "2600" | "2800" | "3000" | "3200",
+          distance: distance as any,
         }));
         await supabase.from("horse_distances").insert(distanceInserts);
       }
@@ -259,7 +258,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       if (values.preferred_surfaces.length > 0) {
         const surfaceInserts = values.preferred_surfaces.map((surface) => ({
           horse_id: horse.id,
-          surface: surface as "very_hard" | "hard" | "firm" | "medium" | "soft" | "very_soft",
+          surface: surface as any,
         }));
         await supabase.from("horse_surfaces").insert(surfaceInserts);
       }
@@ -269,7 +268,7 @@ export const HorseEditForm = ({ horse, onCancel }: HorseEditFormProps) => {
       if (values.field_positions.length > 0) {
         const positionInserts = values.field_positions.map((position) => ({
           horse_id: horse.id,
-          position: position as "front" | "middle" | "back",
+          position: position as any,
         }));
         await supabase.from("horse_positions").insert(positionInserts);
       }

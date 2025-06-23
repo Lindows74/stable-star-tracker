@@ -321,6 +321,7 @@ export type Database = {
         | "2800"
         | "3000"
         | "3200"
+        | "1100"
       position_type: "front" | "middle" | "back"
       surface_type:
         | "very_hard"
@@ -465,6 +466,7 @@ export const Constants = {
         "2800",
         "3000",
         "3200",
+        "1100",
       ],
       position_type: ["front", "middle", "back"],
       surface_type: [
