@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { 
   ContextMenu,
@@ -89,7 +88,6 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
                 className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
               >
                 {traitInfo?.isPro && <span className="text-xs font-bold">⭐</span>}
-                {isStacking && <span className="text-xs font-bold">🔥</span>}
                 {traitName}
               </Badge>
             </TooltipTrigger>

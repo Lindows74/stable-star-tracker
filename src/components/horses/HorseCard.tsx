@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,6 +26,21 @@ interface HorseCardProps {
 
 // Define traits that give full stamina
 const FULL_STAMINA_TRAITS = ["Thundering Hooves", "Top Endurance"];
+
+// Define which traits can stack together
+const STACKING_TRAIT_GROUPS = [
+  ["Lightning Bolt", "Hard N' Fast"], // Faster stamina refill during final stretch
+  ["Leaping Star", "Leaping Lancer"], // Enhanced jump streak in Steeplechase
+  ["Perfect Step", "Leaping Lancer"], // Enhanced boost after perfect jump in Steeplechase
+];
+
+const checkIfHorseHasStackingTraits = (allTraits: string[] = []): boolean => {
+  return STACKING_TRAIT_GROUPS.some(group => {
+    // Check if horse has at least 2 traits from this stacking group
+    const traitsInGroup = group.filter(trait => allTraits.includes(trait));
+    return traitsInGroup.length >= 2;
+  });
+};
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -117,6 +131,9 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
     FULL_STAMINA_TRAITS.includes(traitName)
   );
 
+  // Check if horse has stacking traits
+  const hasStackingTraits = checkIfHorseHasStackingTraits(allTraitNames);
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -126,6 +143,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               <CardTitle className="text-lg flex items-center gap-1">
                 {horse.name}
                 {hasFullStaminaTrait && <span className="text-lg">💯</span>}
+                {hasStackingTraits && <span className="text-lg">🔥</span>}
               </CardTitle>
             </div>
             {horse.tier && (
