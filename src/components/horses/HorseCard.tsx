@@ -193,16 +193,11 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         {horse.horse_breeding && horse.horse_breeding.length > 0 && (
           <div>
             <h4 className="text-sm font-medium mb-2">Breed Composition</h4>
-            <div className="space-y-1">
-              {horse.horse_breeding.map((breeding: any, idx: number) => (
-                <div key={idx} className="flex justify-between items-center text-sm">
-                  <span className="font-medium">{breeding.breeds?.name || 'Unknown Breed'}</span>
-                  <Badge variant="outline" className="text-xs">
-                    {breeding.percentage}%
-                  </Badge>
-                </div>
-              ))}
-            </div>
+            <p className="text-sm">
+              {horse.horse_breeding
+                .map((breeding: any) => `${breeding.breeds?.name || 'Unknown Breed'} ${breeding.percentage}%`)
+                .join(' / ')}
+            </p>
           </div>
         )}
 
