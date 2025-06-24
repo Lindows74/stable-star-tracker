@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { 
   ContextMenu,
@@ -91,12 +92,37 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
                 {traitName}
               </Badge>
             </TooltipTrigger>
-            <TooltipContent>
-              <p className="text-xs">
-                {isStacking ? "STACKING TRAIT - " : ""}
-                {traitInfo?.isPro ? "PRO TRAIT - " : ""}
-                Right-click for trait details
-              </p>
+            <TooltipContent side="top" className="max-w-xs">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 font-medium">
+                  {isStacking && <span className="text-red-600 font-bold">🔥 STACKING</span>}
+                  {traitInfo?.isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
+                  <span>{traitName}</span>
+                </div>
+                {traitInfo && (
+                  <>
+                    <div className="text-xs text-muted-foreground">
+                      Category: {traitInfo.category}
+                    </div>
+                    <div className="text-xs">
+                      {traitInfo.description}
+                    </div>
+                    {isStacking && (
+                      <div className="text-xs text-red-600 font-medium">
+                        This trait stacks with other compatible traits for enhanced effects!
+                      </div>
+                    )}
+                  </>
+                )}
+                {!traitInfo && (
+                  <div className="text-xs text-muted-foreground">
+                    Unknown trait - no information available
+                  </div>
+                )}
+                <div className="text-xs text-muted-foreground mt-1 pt-1 border-t">
+                  Right-click for more options
+                </div>
+              </div>
             </TooltipContent>
           </Tooltip>
         </ContextMenuTrigger>
