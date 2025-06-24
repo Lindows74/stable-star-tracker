@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,9 @@ import {
 interface HorseCardProps {
   horse: any;
 }
+
+// Define traits that give full stamina
+const FULL_STAMINA_TRAITS = ["Thundering Hooves", "Top Endurance"];
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -107,6 +111,11 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
 
   // Extract all trait names for stacking detection
   const allTraitNames = horse.horse_traits?.map((trait: any) => trait.trait_name) || [];
+  
+  // Check if horse has full stamina traits
+  const hasFullStaminaTrait = allTraitNames.some((traitName: string) => 
+    FULL_STAMINA_TRAITS.includes(traitName)
+  );
 
   return (
     <Card className="w-full">
@@ -114,7 +123,10 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         <div className="flex justify-between items-start">
           <div className="flex items-center gap-2">
             <div className={`inline-block px-3 py-2 rounded-lg ${getGenderNameBackgroundClass(horse.gender || '')}`}>
-              <CardTitle className="text-lg">{horse.name}</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-1">
+                {horse.name}
+                {hasFullStaminaTrait && <span className="text-lg">💯</span>}
+              </CardTitle>
             </div>
             {horse.tier && (
               <Badge variant="secondary">
