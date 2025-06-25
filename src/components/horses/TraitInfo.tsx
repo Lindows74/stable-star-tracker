@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { 
   Zap, 
@@ -197,6 +196,16 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
     description: "Increased speed boost during jumps in Cross Country",
     category: "Speed & Acceleration"
   },
+  "Revitalizing Surge": {
+    icon: Battery,
+    description: "Recover 20% stamina the first time you deplete all stamina in Cross Country",
+    category: "Endurance & Stamina"
+  },
+  "Steam Burst": {
+    icon: Zap,
+    description: "On flat racing tracks between 800-1200m, sprinting increases acceleration and maximum top speed but uses more Sprint Energy",
+    category: "Speed & Acceleration"
+  },
 
   // Castle Traits (from Castle Traits image)
   "Hefty Shoulder": {
@@ -256,14 +265,14 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
     description: "Max Jump streak in Steeplechase is increased by 1. Improved boost when you perform a perfect jump in Steeplechase",
     category: "Jumping & Agility"
   },
-  "Menace Mane": {
+  "Majestic Mane": {
     icon: Crown,
-    description: "The horse will have a baboon's living mind and agility",
+    description: "The horse will have a magnificent presence and enhanced agility",
     category: "Jumping & Agility"
   },
-  "Crystal Gift": {
+  "Crystal Coat": {
     icon: Star,
-    description: "A beautiful coat reveals your horse soul like no other",
+    description: "A beautiful coat reveals your horse's soul like no other",
     category: "Special Abilities"
   },
 

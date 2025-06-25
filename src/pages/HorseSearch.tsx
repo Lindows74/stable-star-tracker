@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { X, Search, Filter, Home } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -164,7 +164,8 @@ const HorseSearch = () => {
     "Marathon Master", "Marathon Trotter", "Top Endurance", "Mid Dash", "Mid Miracle",
     "Short Star", "Granite Gallop", "Hard N' Fast", "Meadow Runner", "Meadowstride",
     "River Rider", "Steady Strider", "Swampy Strider", "Leaping Lancer", "Leaping Star",
-    "Perfect Step", "Elite Lineage", "Thrifty Spender", "To the Moon", "Top Student"
+    "Perfect Step", "Elite Lineage", "Thrifty Spender", "To the Moon", "Top Student",
+    "Revitalizing Surge", "Steam Burst", "Majestic Mane", "Crystal Coat"
   ];
 
   const toggleArrayValue = (array: string[], setValue: (value: string[]) => void, value: string) => {
@@ -225,182 +226,186 @@ const HorseSearch = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Filters Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-6 sticky top-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold flex items-center gap-2">
-                  <Filter className="h-5 w-5" />
-                  Filters
-                </h2>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={clearAllFilters}
-                  className="text-xs"
-                >
-                  Clear All
-                </Button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Search by Name */}
-                <div>
-                  <Label htmlFor="search">Horse Name</Label>
-                  <div className="relative mt-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      id="search"
-                      placeholder="Search by name..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-
-                {/* Tier Range */}
-                <div>
-                  <Label>Tier Range</Label>
-                  <div className="grid grid-cols-2 gap-2 mt-1">
-                    <Input
-                      type="number"
-                      placeholder="Min"
-                      value={minTier || ""}
-                      onChange={(e) => setMinTier(e.target.value ? Number(e.target.value) : null)}
-                      min="1"
-                      max="10"
-                    />
-                    <Input
-                      type="number"
-                      placeholder="Max"
-                      value={maxTier || ""}
-                      onChange={(e) => setMaxTier(e.target.value ? Number(e.target.value) : null)}
-                      min="1"
-                      max="10"
-                    />
-                  </div>
-                </div>
-
-                {/* Categories */}
-                <div>
-                  <Label>Categories</Label>
-                  <div className="mt-2 space-y-2">
-                    {categories.map((category) => (
-                      <div key={category} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`category-${category}`}
-                          checked={selectedCategories.includes(category)}
-                          onCheckedChange={() => toggleArrayValue(selectedCategories, setSelectedCategories, category)}
-                        />
-                        <Label htmlFor={`category-${category}`} className="text-sm font-normal">
-                          {formatLabel(category)}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Surfaces */}
-                <div>
-                  <Label>Preferred Surfaces</Label>
-                  <div className="mt-2 space-y-2">
-                    {surfaces.map((surface) => (
-                      <div key={surface} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`surface-${surface}`}
-                          checked={selectedSurfaces.includes(surface)}
-                          onCheckedChange={() => toggleArrayValue(selectedSurfaces, setSelectedSurfaces, surface)}
-                        />
-                        <Label htmlFor={`surface-${surface}`} className="text-sm font-normal">
-                          {formatLabel(surface)}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Distances */}
-                <div>
-                  <Label>Distances</Label>
-                  <Select onValueChange={(value) => toggleArrayValue(selectedDistances, setSelectedDistances, value)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select distances..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {distances.map((distance) => (
-                        <SelectItem key={distance} value={distance}>
-                          {distance}m
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {selectedDistances.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {selectedDistances.map((distance) => (
-                        <Badge key={distance} variant="secondary" className="text-xs">
-                          {distance}m
-                          <button
-                            onClick={() => toggleArrayValue(selectedDistances, setSelectedDistances, distance)}
-                            className="ml-1 hover:bg-gray-200 rounded-full"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Positions */}
-                <div>
-                  <Label>Field Positions</Label>
-                  <div className="mt-2 space-y-2">
-                    {positions.map((position) => (
-                      <div key={position} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`position-${position}`}
-                          checked={selectedPositions.includes(position)}
-                          onCheckedChange={() => toggleArrayValue(selectedPositions, setSelectedPositions, position)}
-                        />
-                        <Label htmlFor={`position-${position}`} className="text-sm font-normal">
-                          {formatLabel(position)}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Traits */}
-                <div>
-                  <Label>Traits</Label>
-                  <Select onValueChange={(value) => toggleArrayValue(selectedTraits, setSelectedTraits, value)}>
-                    <SelectTrigger className="mt-1">
-                      <SelectValue placeholder="Select traits..." />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-60">
-                      {traits.map((trait) => (
-                        <SelectItem key={trait} value={trait}>
-                          {trait}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {selectedTraits.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {selectedTraits.map((trait) => (
-                        <Badge key={trait} variant="secondary" className="text-xs">
-                          {trait}
-                          <button
-                            onClick={() => toggleArrayValue(selectedTraits, setSelectedTraits, trait)}
-                            className="ml-1 hover:bg-gray-200 rounded-full"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
+            <div className="bg-white rounded-lg shadow sticky top-4 h-[calc(100vh-8rem)]">
+              <div className="p-6 border-b">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    Filters
+                  </h2>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearAllFilters}
+                    className="text-xs"
+                  >
+                    Clear All
+                  </Button>
                 </div>
               </div>
+
+              <ScrollArea className="h-[calc(100%-5rem)]">
+                <div className="p-6 space-y-6">
+                  {/* Search by Name */}
+                  <div>
+                    <Label htmlFor="search">Horse Name</Label>
+                    <div className="relative mt-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="search"
+                        placeholder="Search by name..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Tier Range */}
+                  <div>
+                    <Label>Tier Range</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-1">
+                      <Input
+                        type="number"
+                        placeholder="Min"
+                        value={minTier || ""}
+                        onChange={(e) => setMinTier(e.target.value ? Number(e.target.value) : null)}
+                        min="1"
+                        max="10"
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Max"
+                        value={maxTier || ""}
+                        onChange={(e) => setMaxTier(e.target.value ? Number(e.target.value) : null)}
+                        min="1"
+                        max="10"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Categories */}
+                  <div>
+                    <Label>Categories</Label>
+                    <div className="mt-2 space-y-2">
+                      {categories.map((category) => (
+                        <div key={category} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`category-${category}`}
+                            checked={selectedCategories.includes(category)}
+                            onCheckedChange={() => toggleArrayValue(selectedCategories, setSelectedCategories, category)}
+                          />
+                          <Label htmlFor={`category-${category}`} className="text-sm font-normal">
+                            {formatLabel(category)}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Surfaces */}
+                  <div>
+                    <Label>Preferred Surfaces</Label>
+                    <div className="mt-2 space-y-2">
+                      {surfaces.map((surface) => (
+                        <div key={surface} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`surface-${surface}`}
+                            checked={selectedSurfaces.includes(surface)}
+                            onCheckedChange={() => toggleArrayValue(selectedSurfaces, setSelectedSurfaces, surface)}
+                          />
+                          <Label htmlFor={`surface-${surface}`} className="text-sm font-normal">
+                            {formatLabel(surface)}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Distances */}
+                  <div>
+                    <Label>Distances</Label>
+                    <Select onValueChange={(value) => toggleArrayValue(selectedDistances, setSelectedDistances, value)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select distances..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {distances.map((distance) => (
+                          <SelectItem key={distance} value={distance}>
+                            {distance}m
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedDistances.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {selectedDistances.map((distance) => (
+                          <Badge key={distance} variant="secondary" className="text-xs">
+                            {distance}m
+                            <button
+                              onClick={() => toggleArrayValue(selectedDistances, setSelectedDistances, distance)}
+                              className="ml-1 hover:bg-gray-200 rounded-full"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Positions */}
+                  <div>
+                    <Label>Field Positions</Label>
+                    <div className="mt-2 space-y-2">
+                      {positions.map((position) => (
+                        <div key={position} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`position-${position}`}
+                            checked={selectedPositions.includes(position)}
+                            onCheckedChange={() => toggleArrayValue(selectedPositions, setSelectedPositions, position)}
+                          />
+                          <Label htmlFor={`position-${position}`} className="text-sm font-normal">
+                            {formatLabel(position)}
+                          </Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Traits */}
+                  <div>
+                    <Label>Traits</Label>
+                    <Select onValueChange={(value) => toggleArrayValue(selectedTraits, setSelectedTraits, value)}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue placeholder="Select traits..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {traits.map((trait) => (
+                          <SelectItem key={trait} value={trait}>
+                            {trait}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {selectedTraits.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {selectedTraits.map((trait) => (
+                          <Badge key={trait} variant="secondary" className="text-xs">
+                            {trait}
+                            <button
+                              onClick={() => toggleArrayValue(selectedTraits, setSelectedTraits, trait)}
+                              className="ml-1 hover:bg-gray-200 rounded-full"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </ScrollArea>
             </div>
           </div>
 

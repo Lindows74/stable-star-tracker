@@ -79,20 +79,22 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
   });
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={300}>
       <ContextMenu>
         <ContextMenuTrigger>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge 
-                variant="secondary"
-                className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
-              >
-                {traitInfo?.isPro && <span className="text-xs font-bold">⭐</span>}
-                {traitName}
-              </Badge>
+              <div>
+                <Badge 
+                  variant="secondary"
+                  className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
+                >
+                  {traitInfo?.isPro && <span className="text-xs font-bold">⭐</span>}
+                  {traitName}
+                </Badge>
+              </div>
             </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs">
+            <TooltipContent side="top" className="max-w-xs z-50">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 font-medium">
                   {isStacking && <span className="text-red-600 font-bold">🔥 STACKING</span>}
