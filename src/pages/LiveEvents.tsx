@@ -65,14 +65,66 @@ const LiveEvents = () => {
             [] // No matching horses for inactive races
         }));
         
-        setRaceMatches(raceMatchesWithAll);
+        // Sort to match the official list: 17 Flat, 3 Steeplechase (incl. 1100m under repair), then Cross Country
+        const flatOrder = [
+          { d: '800', s: 'very_soft' },
+          { d: '900', s: 'firm' },
+          { d: '1000', s: 'hard' },
+          { d: '1200', s: 'medium' },
+          { d: '1200', s: 'very_soft' },
+          { d: '1400', s: 'medium' },
+          { d: '1600', s: 'firm' },
+          { d: '1600', s: 'hard' },
+          { d: '1600', s: 'very_hard' },
+          { d: '1800', s: 'very_hard' },
+          { d: '2000', s: 'hard' },
+          { d: '2000', s: 'soft' },
+          { d: '2400', s: 'firm' },
+          { d: '2800', s: 'very_hard' },
+          { d: '3000', s: 'hard' },
+          { d: '3200', s: 'soft' },
+          { d: '3200', s: 'very_hard' },
+        ];
+        const steepleOrder = [
+          { d: '900', s: 'very_hard' },
+          { d: '1100', s: 'very_hard' }, // Under Repair (even grades)
+          { d: '1400', s: 'firm' },
+        ];
+        
+        const isSteeple = (r: any) => /steeplechase/i.test(r.race_name || '');
+        const isCrossCountry = (r: any) => r.distance === '0' || /cross country/i.test(r.race_name || '');
+        
+        const flats = raceMatchesWithAll.filter((r: any) => !isSteeple(r) && !isCrossCountry(r));
+        const steeples = raceMatchesWithAll.filter((r: any) => isSteeple(r));
+        const cross = raceMatchesWithAll.filter((r: any) => isCrossCountry(r));
+        
+        const sortByOrder = (arr: any[], order: { d: string; s: string }[]) =>
+          arr.sort((a, b) => {
+            const ia = order.findIndex(o => o.d === a.distance && o.s === a.surface);
+            const ib = order.findIndex(o => o.d === b.distance && o.s === b.surface);
+            const na = ia === -1 ? Number.MAX_SAFE_INTEGER : ia;
+            const nb = ib === -1 ? Number.MAX_SAFE_INTEGER : ib;
+            return na - nb;
+          });
+        
+        const flatsSorted = sortByOrder(flats, flatOrder);
+        const steeplesSorted = sortByOrder(steeples, steepleOrder);
+        const crossSorted = cross.sort((a: any, b: any) => {
+          // Very Hard first, then Very Soft, then others
+          const pref = (s: string) => (s === 'very_hard' ? 0 : s === 'very_soft' ? 1 : 2);
+          return pref(a.surface) - pref(b.surface);
+        });
+        
+        const sorted = [...flatsSorted, ...steeplesSorted, ...crossSorted];
+        
+        setRaceMatches(sorted);
         setTotalHorses(data.totalHorses || 0);
         
-        const totalMatches = raceMatchesWithAll.reduce((sum: number, race: any) => sum + race.matchingHorses.length, 0);
+        const totalMatches = sorted.reduce((sum: number, race: any) => sum + race.matchingHorses.length, 0);
         
         toast({
           title: "Success",
-          description: `Found ${allRaces.length} live events with ${totalMatches} matching horses from ${data.totalHorses || 0} horses in database.`,
+          description: `Found ${sorted.length} live events with ${totalMatches} matching horses from ${data.totalHorses || 0} horses in database.`,
         });
       } else {
         throw new Error(data.error || 'Unknown error');
@@ -180,18 +232,16 @@ const LiveEvents = () => {
                   
                   if (raceNumber <= 17) {
                     raceType = "Flat Racing";
-                    raceLabel = `${raceType} Race ${raceNumber}`;
+                    raceLabel = `Race ${raceNumber} - ${raceType}`;
                   } else if (raceNumber <= 20) {
                     raceType = "Steeplechase";
-                    const steeplechaseNumber = raceNumber - 17; // Steeplechase 1, 2, or 3
-                    raceLabel = `${raceType} Race ${steeplechaseNumber}`;
+                    raceLabel = `Race ${raceNumber} - ${raceType}`;
                     if (race.race_name?.includes('Under Repair')) {
                       raceLabel += ' (Under Repair)';
                     }
                   } else {
                     raceType = "Cross Country";
-                    const ccNumber = raceNumber - 20; // Cross Country 1, 2, or 3
-                    raceLabel = `${raceType} ${ccNumber} (Surface preference only)`;
+                    raceLabel = `Race ${raceNumber} - ${raceType} (Surface preference only)`;
                   }
                   
                   return (
