@@ -84,16 +84,16 @@ serve(async (req) => {
         }
         
         return hasSurface && hasDistance && tierMatch;
-      }).map(horse => ({
-        id: horse.id,
-        name: horse.name,
-        tier: horse.tier,
-        speed: horse.speed,
-        sprint_energy: horse.sprint_energy,
-        acceleration: horse.acceleration,
-        agility: horse.agility,
-        jump: horse.jump,
-        traits: horse.horse_traits?.map(t => t.trait_name) || []
+        }).map(horse => ({
+          id: horse.id,
+          name: horse.name,
+          tier: horse.tier,
+          speed: horse.speed,
+          sprint_energy: horse.sprint_energy,
+          acceleration: horse.acceleration,
+          agility: horse.agility,
+          jump: horse.jump,
+          traits: horse.horse_traits?.map(t => t.trait_name) || []
         })) || [];
       }
 

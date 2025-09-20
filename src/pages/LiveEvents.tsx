@@ -8,11 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import AddRaceForm from "@/components/races/AddRaceForm";
+import { TraitsByDisciplineInline } from "@/components/horses/TraitsByDisciplineInline";
 
 interface MatchingHorse {
   id: number;
   name: string;
   tier: number;
+  traits: string[];
 }
 
 interface RaceMatch {
@@ -270,24 +272,31 @@ const LiveEvents = () => {
                     </div>
 
                     {race.matchingHorses.length > 0 ? (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Horse Name</TableHead>
-                            <TableHead>Tier</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {race.matchingHorses.map((horse) => (
-                            <TableRow key={horse.id}>
-                              <TableCell className="font-medium">{horse.name}</TableCell>
-                              <TableCell>
-                                <Badge variant="outline">Tier {horse.tier}</Badge>
-                              </TableCell>
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                       <Table>
+                         <TableHeader>
+                           <TableRow>
+                             <TableHead>Horse Name</TableHead>
+                             <TableHead>Tier</TableHead>
+                             <TableHead>Traits</TableHead>
+                           </TableRow>
+                         </TableHeader>
+                         <TableBody>
+                           {race.matchingHorses.map((horse) => (
+                             <TableRow key={horse.id}>
+                               <TableCell className="font-medium">{horse.name}</TableCell>
+                               <TableCell>
+                                 <Badge variant="outline">Tier {horse.tier}</Badge>
+                               </TableCell>
+                               <TableCell className="max-w-md">
+                                 <TraitsByDisciplineInline 
+                                   traits={horse.traits?.map(traitName => ({ trait_name: traitName })) || []}
+                                   allTraitNames={horse.traits || []}
+                                 />
+                               </TableCell>
+                             </TableRow>
+                           ))}
+                         </TableBody>
+                       </Table>
                     ) : (
                       <div className="text-center py-8 text-muted-foreground">
                         No horses match this race's surface and distance requirements
