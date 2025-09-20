@@ -82,6 +82,12 @@ serve(async (req) => {
           // If no tier restriction, allow all tiers
           tierMatch = true;
         }
+
+        // Debug logging for specific horse
+        if (horse.name === 'Staars Autumn') {
+          console.log(`DEBUG: Horse ${horse.name} (tier ${horse.tier}) vs Race ${race.race_name} (restriction: ${race.tier_restriction})`);
+          console.log(`DEBUG: Surface match: ${hasSurface}, Distance match: ${hasDistance}, Tier match: ${tierMatch}`);
+        }
         
         return hasSurface && hasDistance && tierMatch;
         }).map(horse => ({
