@@ -143,7 +143,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               </Badge>
             )}
             {/* Timestamp */}
-            <div className="text-xs text-gray-400 ml-2">
+            <div className="text-[10px] text-gray-400 ml-2">
               {horse.created_at && horse.updated_at && 
                new Date(horse.created_at).toISOString() !== new Date(horse.updated_at).toISOString() ? (
                 <>Updated: {new Date(horse.updated_at).toLocaleDateString()}</>
