@@ -12,56 +12,56 @@ interface TraitSelectorProps {
 }
 
 const TRAIT_CATEGORIES = {
-  "Speed & Acceleration": [
+  "General Traits": [
     "Blazing Hoof",
-    "Flash Ignite",
-    "Lightning Bolt",
-    "Fast Draw",
-    "Saxon Burst"
-  ],
-  "Endurance & Stamina": [
     "Fleet Dash",
+    "Agile Arrow",
+    "Flash Ignite",
+    "To The Moon",
     "Energy Saver",
     "Endless Stride",
-    "Top Endurance",
-    "Thundering Hooves",
-    "Saxon Soul"
+    "Rolling Current",
+    "Streak Shield"
   ],
-  "Distance Specialization": [
-    "Quick Gallop",
-    "Swift Trot",
-    "Steady Strider", 
-    "Meadow Runner",
-    "Endurance Charger",
-    "Marathon Trotter",
-    "Short Star",
-    "Mid Miracle",
-    "Marathon Master"
-  ],
-  "Terrain & Surface": [
+  "Surface Preference Traits": [
     "Granite Gallop",
     "Mid Dash",
-    "Swampy Strider",
-    "Rolling Current",
-    "Hard N' Fast",
-    "Meadowstride",
-    "River Rider"
+    "Swampy Strider"
   ],
-  "Jumping & Agility": [
-    "Agile Arrow",
-    "To The Moon",
+  "Specific Game Mode Traits": [
+    "Lightning Bolt",
+    "Top Endurance",
     "Leaping Star",
     "Perfect Step",
-    "Leaping Lancer",
-    "Menace Mane"
+    "River Rider",
+    "Fast Draw"
   ],
-  "Special Abilities": [
-    "Hefty Spender",
-    "Firm Lineage", 
-    "Top Student",
+  "Distance Preference Traits": [
+    "Quick Gallop",
+    "Swift Trot",
+    "Steady Strider",
+    "Meadow Runner",
+    "Endurance Charger",
+    "Marathon Trotter"
+  ],
+  "Exotic Traits": [
+    "Steam Burst",
+    "Short Star",
+    "Mid Miracle",
+    "Marathon Master",
+    "Thundering Hooves",
+    "Hard 'N' Fast",
+    "Meadowstride",
+    "Leaping Lancer",
+    "Majestic Mane",
+    "Crystal Coat",
+    "Noble Braid",
+    "Kinetic Boost"
+  ],
+  "Star Club Traits": [
     "Thrifty Spender",
     "Elite Lineage",
-    "Crystal Gift"
+    "Top Student"
   ]
 };
 
