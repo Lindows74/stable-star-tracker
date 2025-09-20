@@ -26,6 +26,12 @@ const STACKING_TRAIT_GROUPS = [
   ["Perfect Step", "Leaping Lancer"], // Enhanced boost after perfect jump in Steeplechase
 ];
 
+// Define traits that provide full stamina benefits
+const FULL_STAMINA_TRAITS = [
+  "Top Endurance", // Start with more Sprint Energy in Flat Racing
+  "Thundering Hooves", // Starts with full stamina bar
+];
+
 const getTraitCategoryColor = (category: string, isPro?: boolean, isStacking?: boolean) => {
   // Red background for stacking traits
   if (isStacking) {
@@ -68,12 +74,14 @@ const checkIfTraitStacks = (traitName: string, allTraits: string[] = []): boolea
 export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
   const traitInfo = getTraitInfo(traitName);
   const isStacking = checkIfTraitStacks(traitName, allTraits);
+  const isFullStamina = FULL_STAMINA_TRAITS.includes(traitName);
   const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category, traitInfo.isPro, isStacking) : "bg-gray-100 text-gray-800 border-gray-200";
 
   console.log(`TraitBadge for "${traitName}":`, {
     traitInfo,
     isPro: traitInfo?.isPro,
     isStacking,
+    isFullStamina,
     allTraits,
     colorClass
   });
@@ -90,6 +98,8 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
                   className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
                 >
                   {traitInfo?.isPro && <span className="text-xs font-bold">⭐</span>}
+                  {isStacking && <span className="text-xs font-bold">🔥</span>}
+                  {isFullStamina && <span className="text-xs font-bold">💯</span>}
                   {traitName}
                 </Badge>
               </div>
@@ -98,6 +108,7 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 font-medium">
                   {isStacking && <span className="text-red-600 font-bold">🔥 STACKING</span>}
+                  {isFullStamina && <span className="text-blue-600 font-bold">💯 FULL STAMINA</span>}
                   {traitInfo?.isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
                   <span>{traitName}</span>
                 </div>
@@ -112,6 +123,11 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
                     {isStacking && (
                       <div className="text-xs text-red-600 font-medium">
                         This trait stacks with other compatible traits for enhanced effects!
+                      </div>
+                    )}
+                    {isFullStamina && (
+                      <div className="text-xs text-blue-600 font-medium">
+                        This trait provides enhanced stamina benefits!
                       </div>
                     )}
                   </>
@@ -133,6 +149,7 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
           <ContextMenuItem disabled className="flex-col items-start space-y-1">
             <div className="flex items-center gap-2 font-medium">
               {isStacking && <span className="text-red-600 font-bold">🔥 STACKING</span>}
+              {isFullStamina && <span className="text-blue-600 font-bold">💯 FULL STAMINA</span>}
               {traitInfo?.isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
               {traitName}
             </div>
@@ -147,6 +164,11 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
                 {isStacking && (
                   <div className="text-xs text-red-600 font-medium">
                     This trait stacks with other compatible traits for enhanced effects!
+                  </div>
+                )}
+                {isFullStamina && (
+                  <div className="text-xs text-blue-600 font-medium">
+                    This trait provides enhanced stamina benefits!
                   </div>
                 )}
               </>

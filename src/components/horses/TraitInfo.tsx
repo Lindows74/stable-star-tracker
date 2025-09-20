@@ -194,7 +194,7 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   },
   "Perfect Step": {
     icon: Footprints,
-    description: "Improved boost after a perfect jump in Steeplechase. Perfect Step can stack with Leaping Lancer to get an even greater improved boost after a perfect jump in Steeplechase",
+    description: "Improved boost for perfect jumps in Steeplechase. Perfect Step can stack with Leaping Lancer to get an even greater improved boost after a perfect jump in Steeplechase",
     category: "Jumping & Agility"
   },
   "River Rider": {
