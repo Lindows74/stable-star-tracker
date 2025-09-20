@@ -8,7 +8,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const MASTER_KEY = 'Lindows';
+const MASTER_KEY = 'yes';
 const SESSION_KEY = 'horse_auth_session';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
