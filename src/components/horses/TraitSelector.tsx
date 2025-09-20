@@ -12,15 +12,6 @@ interface TraitSelectorProps {
 }
 
 const TRAIT_CATEGORIES = {
-  "Pro Traits": [
-    "Blazing Hoof Pro",
-    "Fleet Dash Pro", 
-    "Agile Arrow Pro",
-    "Flash Ignite Pro",
-    "To The Moon Pro",
-    "Endless Stride Pro",
-    "Rolling Current Pro"
-  ],
   "Speed & Acceleration": [
     "Blazing Hoof",
     "Flash Ignite",

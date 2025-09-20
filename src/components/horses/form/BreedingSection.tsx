@@ -95,18 +95,10 @@ export const BreedingSection = ({ breedSelections, setBreedSelections, gender, s
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <Label>Breeding Information (Optional)</Label>
-        <div className="flex gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={addBreedSelection}>
-            <Plus className="h-4 w-4 mr-1" />
-            Add Breed
-          </Button>
-          {breedSelections.length > 0 && hasUnsavedChanges && (
-            <Button type="button" variant="default" size="sm" onClick={saveBreedingData}>
-              <Save className="h-4 w-4 mr-1" />
-              Save Breeds
-            </Button>
-          )}
-        </div>
+        <Button type="button" variant="outline" size="sm" onClick={addBreedSelection}>
+          <Plus className="h-4 w-4 mr-1" />
+          Add Breed
+        </Button>
       </div>
 
       {/* Gender Selection */}
@@ -175,16 +167,24 @@ export const BreedingSection = ({ breedSelections, setBreedSelections, gender, s
             </div>
           ))}
           
-          <div className="text-sm">
-            Total: {totalPercentage}%
-            {totalPercentage > 100 && (
-              <span className="text-red-500 ml-2">Warning: Total exceeds 100%</span>
-            )}
-            {totalPercentage === 100 && (
-              <span className="text-green-600 ml-2">✓ Perfect total</span>
-            )}
+          <div className="flex items-center justify-between">
+            <div className="text-sm">
+              Total: {totalPercentage}%
+              {totalPercentage > 100 && (
+                <span className="text-red-500 ml-2">Warning: Total exceeds 100%</span>
+              )}
+              {totalPercentage === 100 && (
+                <span className="text-green-600 ml-2">✓ Perfect total</span>
+              )}
+              {hasUnsavedChanges && (
+                <span className="text-orange-500 ml-2">• Unsaved changes</span>
+              )}
+            </div>
             {hasUnsavedChanges && (
-              <span className="text-orange-500 ml-2">• Unsaved changes</span>
+              <Button type="button" variant="default" size="sm" onClick={saveBreedingData}>
+                <Save className="h-4 w-4 mr-1" />
+                Save Breeds
+              </Button>
             )}
           </div>
         </div>
