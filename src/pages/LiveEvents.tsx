@@ -56,14 +56,23 @@ const LiveEvents = () => {
       console.log('Response:', data);
 
       if (data.success) {
-        setRaceMatches(data.raceMatches || []);
+        // Show all races including inactive ones (like "under repair" races)
+        const allRaces = data.liveRaces || [];
+        const raceMatchesWithAll = allRaces.map((race: any) => ({
+          ...race,
+          matchingHorses: race.is_active ? 
+            (data.raceMatches?.find((rm: any) => rm.id === race.id)?.matchingHorses || []) : 
+            [] // No matching horses for inactive races
+        }));
+        
+        setRaceMatches(raceMatchesWithAll);
         setTotalHorses(data.totalHorses || 0);
         
-        const totalMatches = data.raceMatches?.reduce((sum: number, race: RaceMatch) => sum + race.matchingHorses.length, 0) || 0;
+        const totalMatches = raceMatchesWithAll.reduce((sum: number, race: any) => sum + race.matchingHorses.length, 0);
         
         toast({
           title: "Success",
-          description: `Found ${data.raceMatches?.length || 0} live events with ${totalMatches} matching horses from ${data.totalHorses || 0} horses in database.`,
+          description: `Found ${allRaces.length} live events with ${totalMatches} matching horses from ${data.totalHorses || 0} horses in database.`,
         });
       } else {
         throw new Error(data.error || 'Unknown error');
@@ -172,13 +181,16 @@ const LiveEvents = () => {
                   if (raceNumber <= 17) {
                     raceType = "Flat Racing";
                     raceLabel = `${raceType} Race ${raceNumber}`;
-                  } else if (raceNumber <= 19) {
+                  } else if (raceNumber <= 20) {
                     raceType = "Steeplechase";
-                    const steeplechaseNumber = raceNumber - 17; // Steeplechase 1 or 2
+                    const steeplechaseNumber = raceNumber - 17; // Steeplechase 1, 2, or 3
                     raceLabel = `${raceType} Race ${steeplechaseNumber}`;
+                    if (race.race_name?.includes('Under Repair')) {
+                      raceLabel += ' (Under Repair)';
+                    }
                   } else {
                     raceType = "Cross Country";
-                    const ccNumber = raceNumber - 19; // Cross Country 1 or 2
+                    const ccNumber = raceNumber - 20; // Cross Country 1, 2, or 3
                     raceLabel = `${raceType} ${ccNumber} (Surface preference only)`;
                   }
                   

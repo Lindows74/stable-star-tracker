@@ -19,14 +19,11 @@ serve(async (req) => {
   try {
     console.log('Fetching live races and horses data...');
 
-    // Fetch active live races
+    // Fetch all live races (including inactive ones for display)
     const { data: liveRaces, error: racesError } = await supabase
       .from('live_races')
       .select('*')
-      .eq('is_active', true)
-      .gte('start_time', new Date().toISOString())
-      .order('start_time', { ascending: true })
-      .limit(20);
+      .order('id');
 
     if (racesError) {
       console.error('Error fetching live races:', racesError);
@@ -61,8 +58,11 @@ serve(async (req) => {
     for (const race of liveRaces || []) {
       console.log(`Processing race: ${race.race_name} - Surface: ${race.surface}, Distance: ${race.distance}, Tier: ${race.tier_restriction}`);
       
-      // Find horses that match this race's surface, distance, and tier restriction
-      const matchingHorses = horses?.filter(horse => {
+      // Only find matching horses for active races  
+      let matchingHorses = [];
+      if (race.is_active) {
+        // Find horses that match this race's surface, distance, and tier restriction
+        matchingHorses = horses?.filter(horse => {
         // Check if horse has the matching surface preference
         const hasSurface = horse.horse_surfaces?.some(s => s.surface === race.surface);
         
@@ -94,7 +94,8 @@ serve(async (req) => {
         agility: horse.agility,
         jump: horse.jump,
         traits: horse.horse_traits?.map(t => t.trait_name) || []
-      })) || [];
+        })) || [];
+      }
 
       console.log(`Found ${matchingHorses.length} matching horses for race ${race.race_name}`);
 
