@@ -166,13 +166,8 @@ const LiveEvents = () => {
               <div className="space-y-6">
                 {raceMatches.map((race, index) => (
                   <div key={race.id} className="border rounded-lg p-6">
-                     <div className="flex items-center justify-between mb-4">
-                       <div>
+                     <div className="mb-4">
                          <h3 className="text-lg font-semibold">Race {index + 1}</h3>
-                         <p className="text-sm text-muted-foreground">
-                           {race.track_name && `${race.track_name} • `}{formatDateTime(race.start_time)}
-                         </p>
-                       </div>
                      </div>
 
                     <div className="flex gap-4 mb-4">
