@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, Lock } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -9,6 +9,8 @@ import { HorseEditForm } from "./HorseEditForm";
 import { TraitBadge } from "./TraitBadge";
 import { TraitsByDiscipline } from "./TraitsByDiscipline";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { MasterKeyDialog } from "@/components/auth/MasterKeyDialog";
 import { checkHorseLiveRaceMatches, formatSurfaceName, type HorseRaceMatch } from "@/utils/liveRaces";
 import { getHorseSpecialIcons, checkHorseHasStackingTraits, checkHorseHasFullStaminaTrait, checkHorseHasSpeedStackingTraits, checkHorseHasJumpingStackingTraits } from "@/utils/horseTraitUtils";
 import {
@@ -29,8 +31,11 @@ interface HorseCardProps {
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [showMasterKeyDialog, setShowMasterKeyDialog] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'edit' | 'delete' | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const { isAuthenticated } = useAuth();
 
   const deleteMutation = useMutation({
     mutationFn: async (horseId: number) => {
@@ -124,6 +129,33 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   const horseCategories = horse.horse_categories?.map((c: any) => c.category) || [];
   const liveRaceMatches = checkHorseLiveRaceMatches(horseDistances, horseSurfaces, horseCategories);
 
+  const handleEdit = () => {
+    if (isAuthenticated) {
+      setIsEditing(true);
+    } else {
+      setPendingAction('edit');
+      setShowMasterKeyDialog(true);
+    }
+  };
+
+  const handleDelete = () => {
+    if (isAuthenticated) {
+      // Delete action will be handled by the AlertDialog
+      return;
+    } else {
+      setPendingAction('delete');
+      setShowMasterKeyDialog(true);
+    }
+  };
+
+  const handleMasterKeySuccess = () => {
+    if (pendingAction === 'edit') {
+      setIsEditing(true);
+    }
+    // For delete, user will need to click delete button again after auth
+    setPendingAction(null);
+  };
+
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -156,13 +188,20 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setIsEditing(true)}
+              onClick={handleEdit}
             >
+              {!isAuthenticated && <Lock className="h-3 w-3 mr-1" />}
               <Edit2 className="h-4 w-4" />
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" size="sm">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => !isAuthenticated && handleDelete()}
+                  disabled={!isAuthenticated && pendingAction === 'delete'}
+                >
+                  {!isAuthenticated && <Lock className="h-3 w-3 mr-1" />}
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -176,8 +215,9 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => deleteMutation.mutate(horse.id)}
+                    onClick={() => isAuthenticated && deleteMutation.mutate(horse.id)}
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    disabled={!isAuthenticated}
                   >
                     Delete
                   </AlertDialogAction>
@@ -186,6 +226,15 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             </AlertDialog>
           </div>
         </div>
+
+        <MasterKeyDialog
+          isOpen={showMasterKeyDialog}
+          onClose={() => {
+            setShowMasterKeyDialog(false);
+            setPendingAction(null);
+          }}
+          onSuccess={handleMasterKeySuccess}
+        />
       </CardHeader>
       
       <CardContent className="space-y-4">

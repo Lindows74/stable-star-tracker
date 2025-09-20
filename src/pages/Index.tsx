@@ -3,12 +3,20 @@ import { Button } from "@/components/ui/button";
 import Layout from "@/components/layout/Layout";
 import { HorseList } from "@/components/horses/HorseList";
 import { HorseForm } from "@/components/horses/HorseForm";
+import { useAuth } from "@/contexts/AuthContext";
+import { MasterKeyDialog } from "@/components/auth/MasterKeyDialog";
 
 const Index = () => {
   const [showForm, setShowForm] = useState(false);
+  const [showMasterKeyDialog, setShowMasterKeyDialog] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const handleAddHorse = () => {
-    setShowForm(!showForm);
+    if (isAuthenticated) {
+      setShowForm(!showForm);
+    } else {
+      setShowMasterKeyDialog(true);
+    }
   };
 
   return (
@@ -36,6 +44,12 @@ const Index = () => {
         <div className="bg-card rounded-lg border">
           <HorseList />
         </div>
+
+        <MasterKeyDialog
+          isOpen={showMasterKeyDialog}
+          onClose={() => setShowMasterKeyDialog(false)}
+          onSuccess={() => setShowForm(true)}
+        />
       </div>
     </Layout>
   );

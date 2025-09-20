@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Home, Search, Heart, Plus } from "lucide-react";
+import { Home, Search, Heart, Plus, Lock } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NavigationProps {
   onAddHorse?: () => void;
@@ -10,6 +11,7 @@ interface NavigationProps {
 
 const Navigation = ({ onAddHorse, showAddButton = false }: NavigationProps) => {
   const location = useLocation();
+  const { isAuthenticated } = useAuth();
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: Home },
@@ -50,6 +52,7 @@ const Navigation = ({ onAddHorse, showAddButton = false }: NavigationProps) => {
           
           {showAddButton && (
             <Button onClick={onAddHorse} className="flex items-center gap-2">
+              {!isAuthenticated && <Lock className="h-3 w-3" />}
               <Plus className="h-4 w-4" />
               Add Horse
             </Button>
