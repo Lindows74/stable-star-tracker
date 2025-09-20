@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { HorseEditForm } from "./HorseEditForm";
 import { TraitBadge } from "./TraitBadge";
+import { TraitsByDiscipline } from "./TraitsByDiscipline";
 import { useToast } from "@/hooks/use-toast";
 import { checkHorseLiveRaceMatches, formatSurfaceName, type HorseRaceMatch } from "@/utils/liveRaces";
 import {
@@ -349,16 +350,11 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
         {/* Traits */}
         {horse.horse_traits && horse.horse_traits.length > 0 && (
           <div>
-            <h4 className="text-sm font-medium mb-2">Traits</h4>
-            <div className="flex flex-wrap gap-1">
-              {horse.horse_traits.map((trait: any, idx: number) => (
-                <TraitBadge 
-                  key={idx} 
-                  traitName={trait.trait_name}
-                  allTraits={allTraitNames}
-                />
-              ))}
-            </div>
+            <h4 className="text-sm font-medium mb-2">Traits ({horse.horse_traits.length})</h4>
+            <TraitsByDiscipline 
+              traits={horse.horse_traits}
+              allTraitNames={allTraitNames}
+            />
           </div>
         )}
 
