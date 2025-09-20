@@ -1,1 +1,4 @@
 project_id = "axvjexhubtwhpdkjsyuw"
+
+[functions.breeding-suggestions]
+verify_jwt = false

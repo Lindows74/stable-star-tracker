@@ -1,41 +1,40 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, Heart, Star, Zap, Info } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Heart, Loader2, Calendar, Trophy, Target, Zap, Star, Clock, Info } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+
+interface AIBreedingSuggestion {
+  parent1: { id: number; name: string };
+  parent2: { id: number; name: string };
+  targetRace: { name: string; surface: string; distance: string };
+  expectedTraits: string[];
+  reasoning: string;
+  compatibilityScore: number;
+  tierImprovement: string;
+  estimatedOffspringTier: number;
+}
+
+interface LiveRace {
+  id: number;
+  race_name: string;
+  surface: string;
+  distance: string;
+  start_time: string;
+  track_name: string;
+  prize_money: number;
+}
 
 const BreedingSuggestions = () => {
-  const [filters, setFilters] = useState({
-    minTier: "",
-    maxTier: "",
-    breeds: [] as string[],
-    distances: [] as string[],
-    surfaces: [] as string[],
-    positions: [] as string[],
-    traits: [] as string[],
-  });
-
-  const breedOptions = [
-    "Akhal-Teke", "Appaloosa", "Knabstrupper", "Thoroughbred", 
-    "Quarter Horse", "Arabian", "Mustang", "Anglo-Arab", 
-    "French Chaser", "Selle Francais"
-  ];
-
-  const distanceOptions = [
-    "800", "900", "1000", "1100", "1200", "1400", "1600", 
-    "1800", "2000", "2200", "2400", "2600", "2800", "3000", "3200"
-  ];
-
-  const surfaceOptions = [
-    "Very Hard", "Hard", "Firm", "Medium", "Soft", "Very Soft"
-  ];
-
-  const positionOptions = ["Front", "Middle", "Back"];
+  const [suggestions, setSuggestions] = useState<AIBreedingSuggestion[]>([]);
+  const [liveRaces, setLiveRaces] = useState<LiveRace[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [totalHorses, setTotalHorses] = useState(0);
+  const { toast } = useToast();
 
   const traitDescriptions = {
     // Pro Traits
@@ -106,295 +105,327 @@ const BreedingSuggestions = () => {
     "Top Student": "All foals bred from this horse have 20% of their possible XP but still require training."
   };
 
-  const traitsByCategory = {
-    "Pro Traits (80%+ Pure Breed)": [
-      "Blazing Hoof Pro", "Fleet Dash Pro", "Agile Arrow Pro", "Flash Ignite Pro", 
-      "To The Moon Pro", "Endless Stride Pro", "Rolling Current Pro", "Streak Shield Pro"
-    ],
-    "General Stat Boost": [
-      "Blazing Hoof", "Fleet Dash", "Agile Arrow", "Flash Ignite", "To The Moon", "Energy Saver"
-    ],
-    "Surface Preference": [
-      "Granite Gallop", "Mid Dash", "Swampy Strider"
-    ],
-    "Flat Racing": [
-      "Lightning Bolt", "Top Endurance", "Endless Stride"
-    ],
-    "Steeplechase": [
-      "Leaping Star", "Perfect Step", "Streak Shield", "Leaping Lancer", "Kinetic Boost"
-    ],
-    "Cross Country": [
-      "River Rider", "Fast Draw", "Rolling Current", "Meadowstride"
-    ],
-    "Distance Preference": [
-      "Quick Gallop", "Swift Trot", "Steady Strider", "Meadow Runner", 
-      "Endurance Charger", "Marathon Trotter"
-    ],
-    "Exotic Traits (Event Only)": [
-      "Steam Burst", "Short Star", "Mid Miracle", "Marathon Master", 
-      "Thundering Hooves", "Hard 'N' Fast"
-    ],
-    "Cosmetic Traits": [
-      "Majestic Mane", "Crystal Coat", "Noble Braid"
-    ],
-    "Star Club Exclusive": [
-      "Thrifty Spender", "Elite Lineage", "Top Student"
-    ]
-  };
+  const fetchAIRecommendations = async () => {
+    setLoading(true);
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to get personalized breeding suggestions.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  // Flatten all traits for the filter state
-  const allTraits = Object.values(traitsByCategory).flat();
+      const { data, error } = await supabase.functions.invoke('breeding-suggestions', {
+        headers: {
+          Authorization: `Bearer ${session.session.access_token}`,
+        },
+      });
 
-  const toggleArrayFilter = (category: keyof typeof filters, value: string) => {
-    setFilters(prev => ({
-      ...prev,
-      [category]: (prev[category] as string[]).includes(value)
-        ? (prev[category] as string[]).filter(item => item !== value)
-        : [...(prev[category] as string[]), value]
-    }));
-  };
+      if (error) {
+        console.error('Error fetching breeding suggestions:', error);
+        toast({
+          title: "Error",
+          description: "Failed to get breeding suggestions. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  const breedingCombinations = [
-    {
-      parents: ["Thoroughbred", "Arabian"],
-      expectedTraits: ["Speed Boost", "Stamina Boost"],
-      compatibility: "95%",
-      description: "Excellent for long distance racing with high speed potential"
-    },
-    {
-      parents: ["Quarter Horse", "Mustang"], 
-      expectedTraits: ["Acceleration Boost", "Agility Boost"],
-      compatibility: "88%",
-      description: "Great for sprint distances with quick acceleration"
-    },
-    {
-      parents: ["Akhal-Teke", "Anglo-Arab"],
-      expectedTraits: ["Speed Boost", "Recovery Boost"],
-      compatibility: "92%",
-      description: "Balanced combination for middle distance racing"
+      console.log('AI response:', data);
+
+      if (data.success) {
+        setSuggestions(data.suggestions || []);
+        setLiveRaces(data.liveRaces || []);
+        setTotalHorses(data.totalHorses || 0);
+        
+        toast({
+          title: "Success",
+          description: `Generated ${data.suggestions?.length || 0} AI-powered breeding suggestions based on ${data.liveRaces?.length || 0} upcoming races.`,
+        });
+      } else {
+        throw new Error(data.error || 'Unknown error');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Something went wrong",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString();
+  };
+
+  const getCompatibilityColor = (score: number) => {
+    if (score >= 9) return "text-green-600";
+    if (score >= 7) return "text-yellow-600";
+    return "text-red-600";
+  };
 
   return (
     <TooltipProvider>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="container mx-auto p-4">
-        {/* Header */}
-        <div className="mb-6">
-          <Link to="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 mb-4">
-            <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
-          </Link>
-          <div className="flex items-center gap-3 mb-2">
-            <Heart className="h-8 w-8 text-pink-500" />
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Breeding Suggestions
-            </h1>
+        <div className="container mx-auto p-4">
+          {/* Header */}
+          <div className="mb-6">
+            <Link to="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 mb-4">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Dashboard
+            </Link>
+            <div className="flex items-center gap-3 mb-2">
+              <Heart className="h-8 w-8 text-pink-500" />
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                AI-Powered Breeding Suggestions
+              </h1>
+            </div>
+            <p className="text-muted-foreground">
+              Smart breeding recommendations based on your stable and upcoming live races
+            </p>
           </div>
-          <p className="text-muted-foreground">
-            Find the perfect breeding combinations based on your preferences
-          </p>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Filters Panel */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Star className="h-5 w-5" />
-                Breeding Filters
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Tier Range */}
-              <div className="space-y-2">
-                <Label>Tier Range</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Min"
-                    min="1"
-                    max="10"
-                    value={filters.minTier}
-                    onChange={(e) => setFilters(prev => ({...prev, minTier: e.target.value}))}
-                  />
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    min="1"
-                    max="10"
-                    value={filters.maxTier}
-                    onChange={(e) => setFilters(prev => ({...prev, maxTier: e.target.value}))}
-                  />
+          {/* Stats Overview */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-yellow-500" />
+                  <div>
+                    <div className="text-2xl font-bold">{totalHorses}</div>
+                    <div className="text-sm text-muted-foreground">Horses in Stable</div>
+                  </div>
                 </div>
-              </div>
-
-              <Separator />
-
-              {/* Breeds */}
-              <div className="space-y-3">
-                <Label>Preferred Breeds</Label>
-                <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
-                  {breedOptions.map((breed) => (
-                    <div key={breed} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`breed-${breed}`}
-                        checked={filters.breeds.includes(breed)}
-                        onCheckedChange={() => toggleArrayFilter('breeds', breed)}
-                      />
-                      <Label htmlFor={`breed-${breed}`} className="text-sm font-normal">
-                        {breed}
-                      </Label>
-                    </div>
-                  ))}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <div className="text-2xl font-bold">{liveRaces.length}</div>
+                    <div className="text-sm text-muted-foreground">Upcoming Races</div>
+                  </div>
                 </div>
-              </div>
-
-              <Separator />
-
-              {/* Distances */}
-              <div className="space-y-3">
-                <Label>Target Distances</Label>
-                <div className="grid grid-cols-3 gap-2 max-h-32 overflow-y-auto">
-                  {distanceOptions.map((distance) => (
-                    <div key={distance} className="flex items-center space-x-1">
-                      <Checkbox
-                        id={`distance-${distance}`}
-                        checked={filters.distances.includes(distance)}
-                        onCheckedChange={() => toggleArrayFilter('distances', distance)}
-                      />
-                      <Label htmlFor={`distance-${distance}`} className="text-xs font-normal">
-                        {distance}m
-                      </Label>
-                    </div>
-                  ))}
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-green-500" />
+                  <div>
+                    <div className="text-2xl font-bold">{suggestions.length}</div>
+                    <div className="text-sm text-muted-foreground">AI Suggestions</div>
+                  </div>
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
 
-              <Separator />
-
-              {/* Surfaces */}
-              <div className="space-y-3">
-                <Label>Preferred Surfaces</Label>
-                <div className="grid grid-cols-1 gap-2">
-                  {surfaceOptions.map((surface) => (
-                    <div key={surface} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`surface-${surface}`}
-                        checked={filters.surfaces.includes(surface)}
-                        onCheckedChange={() => toggleArrayFilter('surfaces', surface)}
-                      />
-                      <Label htmlFor={`surface-${surface}`} className="text-sm font-normal">
-                        {surface}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Traits */}
-              <div className="space-y-3">
-                <Label>Desired Traits</Label>
-                <div className="space-y-4 max-h-64 overflow-y-auto">
-                  {Object.entries(traitsByCategory).map(([category, traits]) => (
-                    <div key={category} className="space-y-2">
-                      <div className="text-sm font-semibold text-muted-foreground border-b pb-1">
-                        {category}
-                      </div>
-                      <div className="grid grid-cols-1 gap-1 pl-2">
-                        {traits.map((trait) => (
-                          <div key={trait} className="flex items-center space-x-2">
-                            <Checkbox
-                              id={`trait-${trait}`}
-                              checked={filters.traits.includes(trait)}
-                              onCheckedChange={() => toggleArrayFilter('traits', trait)}
-                            />
-                            <Label htmlFor={`trait-${trait}`} className="text-xs font-normal flex-1">
-                              {trait}
-                            </Label>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Info className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-help" />
-                              </TooltipTrigger>
-                              <TooltipContent side="right" className="max-w-xs">
-                                <p className="text-sm">{traitDescriptions[trait] || "No description available"}</p>
-                              </TooltipContent>
-                            </Tooltip>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Live Races Panel */}
+            <Card className="lg:col-span-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Upcoming Live Races
+                </CardTitle>
+                <CardDescription>
+                  AI analyzes these races for breeding optimization
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {liveRaces.length > 0 ? (
+                  liveRaces.map((race) => (
+                    <Card key={race.id} className="border-l-4 border-primary">
+                      <CardContent className="p-3">
+                        <div className="font-semibold text-sm">{race.race_name}</div>
+                        <div className="text-xs text-muted-foreground mb-2">
+                          {race.track_name}
+                        </div>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-xs">
+                            <Badge variant="secondary" className="text-xs">
+                              {race.surface}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {race.distance}
+                            </Badge>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <Button className="w-full" onClick={() => console.log("Search breeding suggestions")}>
-                <Zap className="h-4 w-4 mr-2" />
-                Find Combinations
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Results Panel */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Recommended Breeding Combinations</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {breedingCombinations.map((combo, index) => (
-                  <Card key={index} className="border-2 hover:border-primary/50 transition-colors">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="flex items-center gap-1">
-                            <span className="font-semibold text-primary">{combo.parents[0]}</span>
-                            <Heart className="h-4 w-4 text-pink-500 mx-2" />
-                            <span className="font-semibold text-primary">{combo.parents[1]}</span>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="h-3 w-3" />
+                            {formatDateTime(race.start_time)}
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-green-600">
+                            <Trophy className="h-3 w-3" />
+                            ${race.prize_money?.toLocaleString()}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm text-muted-foreground">Compatibility</div>
-                          <div className="text-lg font-bold text-green-600">{combo.compatibility}</div>
-                        </div>
-                      </div>
-                      
-                      <p className="text-sm text-muted-foreground mb-3">
-                        {combo.description}
+                      </CardContent>
+                    </Card>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-8">
+                    <Calendar className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                    <p>No upcoming races found</p>
+                  </div>
+                )}
+
+                <Button 
+                  onClick={fetchAIRecommendations} 
+                  disabled={loading}
+                  className="w-full"
+                  size="lg"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4 mr-2" />
+                      Get AI Suggestions
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* AI Suggestions Panel */}
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="h-5 w-5 text-yellow-500" />
+                  AI Breeding Recommendations
+                </CardTitle>
+                <CardDescription>
+                  Strategic breeding combinations optimized for upcoming races
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <div className="text-center">
+                      <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin text-primary" />
+                      <p className="text-lg font-semibold">Analyzing Your Stable...</p>
+                      <p className="text-sm text-muted-foreground">
+                        AI is evaluating horses and upcoming races
                       </p>
-                      
-                      <div className="space-y-2">
-                        <div className="text-sm font-medium">Expected Traits:</div>
-                        <div className="flex flex-wrap gap-2">
-                          {combo.expectedTraits.map((trait) => (
-                            <span
-                              key={trait}
-                              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary"
-                            >
-                              {trait}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      <div className="mt-4 flex gap-2">
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
-                        <Button size="sm">
-                          Start Breeding
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    </div>
+                  </div>
+                ) : suggestions.length > 0 ? (
+                  <div className="space-y-6">
+                    {suggestions.map((suggestion, index) => (
+                      <Card key={index} className="border-2 hover:border-primary/50 transition-colors">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-primary text-lg">
+                                  {suggestion.parent1.name}
+                                </span>
+                                <Heart className="h-5 w-5 text-pink-500" />
+                                <span className="font-bold text-primary text-lg">
+                                  {suggestion.parent2.name}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <div className="text-sm text-muted-foreground">Compatibility</div>
+                              <div className={`text-2xl font-bold ${getCompatibilityColor(suggestion.compatibilityScore)}`}>
+                                {suggestion.compatibilityScore}/10
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Target Race */}
+                          <div className="bg-gradient-to-r from-primary/5 to-purple/5 rounded-lg p-4 mb-4">
+                            <div className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
+                              <Target className="h-4 w-4" />
+                              Optimized for: {suggestion.targetRace.name}
+                            </div>
+                            <div className="flex gap-2">
+                              <Badge variant="secondary">
+                                {suggestion.targetRace.surface}
+                              </Badge>
+                              <Badge variant="outline">
+                                {suggestion.targetRace.distance}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          {/* Expected Traits */}
+                          <div className="space-y-3 mb-4">
+                            <div className="text-sm font-semibold">Expected Traits:</div>
+                            <div className="flex flex-wrap gap-2">
+                              {suggestion.expectedTraits.map((trait) => (
+                                <div key={trait} className="flex items-center gap-1">
+                                  <Badge variant="default" className="text-xs">
+                                    {trait}
+                                  </Badge>
+                                  {traitDescriptions[trait] && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Info className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-help" />
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="max-w-xs">
+                                        <p className="text-sm">{traitDescriptions[trait]}</p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* AI Reasoning */}
+                          <div className="bg-muted/50 rounded-lg p-4 mb-4">
+                            <div className="text-sm font-semibold mb-2">AI Analysis:</div>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
+                              {suggestion.reasoning}
+                            </p>
+                          </div>
+
+                          {/* Performance Metrics */}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="text-center p-3 bg-green-50 rounded-lg">
+                              <div className="text-sm text-muted-foreground">Estimated Tier</div>
+                              <div className="text-xl font-bold text-green-600">
+                                {suggestion.estimatedOffspringTier}
+                              </div>
+                            </div>
+                            <div className="text-center p-3 bg-blue-50 rounded-lg">
+                              <div className="text-sm text-muted-foreground">Improvement</div>
+                              <div className="text-sm font-semibold text-blue-600">
+                                {suggestion.tierImprovement}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Star className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-lg font-semibold mb-2">No Suggestions Yet</p>
+                    <p className="text-muted-foreground mb-4">
+                      Click "Get AI Suggestions" to analyze your stable and upcoming races
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
       </div>
     </TooltipProvider>
   );
