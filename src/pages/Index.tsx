@@ -2,7 +2,7 @@
 import { HorseList } from "@/components/horses/HorseList";
 import { HorseForm } from "@/components/horses/HorseForm";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Home } from "lucide-react";
+import { Search, Plus, Home, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 
@@ -23,6 +23,10 @@ const Index = () => {
               <Link to="/search" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
                 <Search className="h-4 w-4" />
                 Search Horses
+              </Link>
+              <Link to="/breeding" className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors">
+                <Heart className="h-4 w-4" />
+                Breeding Suggestions
               </Link>
             </div>
             <div className="flex gap-2">
