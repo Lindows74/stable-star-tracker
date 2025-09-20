@@ -310,7 +310,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <div className="space-y-1">
               {liveRaceMatches.map((match: HorseRaceMatch, idx: number) => (
                 <div key={idx} className="flex items-center gap-2 text-xs">
-                  <Badge variant="destructive" className="text-xs">
+                  <Badge variant="default" className="text-xs bg-blue-600 text-white hover:bg-blue-700">
                     {match.category}
                   </Badge>
                   {match.distance > 0 && (
