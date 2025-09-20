@@ -303,6 +303,48 @@ export type Database = {
         }
         Relationships: []
       }
+      live_races: {
+        Row: {
+          created_at: string
+          distance: string
+          end_time: string | null
+          id: number
+          is_active: boolean | null
+          prize_money: number | null
+          race_name: string
+          start_time: string
+          surface: string
+          track_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          distance: string
+          end_time?: string | null
+          id?: number
+          is_active?: boolean | null
+          prize_money?: number | null
+          race_name: string
+          start_time: string
+          surface: string
+          track_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          distance?: string
+          end_time?: string | null
+          id?: number
+          is_active?: boolean | null
+          prize_money?: number | null
+          race_name?: string
+          start_time?: string
+          surface?: string
+          track_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
