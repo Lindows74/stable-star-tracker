@@ -72,24 +72,26 @@ serve(async (req) => {
           hasDistance = horse.horse_distances?.some(d => d.distance === race.distance);
         }
         
-        // Check tier restriction
+        // Check tier restriction  
         let tierMatch = false;
+        console.log(`CHECKING TIER: Horse ${horse.name} (tier: ${horse.tier}, type: ${typeof horse.tier}) vs Race ${race.race_name} (restriction: ${race.tier_restriction}, type: ${typeof race.tier_restriction})`);
+        
         if (race.tier_restriction === 'odd_grades') {
           tierMatch = horse.tier && [3, 5, 7, 9].includes(horse.tier);
+          console.log(`ODD CHECK: tierMatch = ${tierMatch}, horse.tier = ${horse.tier}, includes result = ${[3, 5, 7, 9].includes(horse.tier)}`);
         } else if (race.tier_restriction === 'even_grades') {
           tierMatch = horse.tier && [2, 4, 6, 8].includes(horse.tier);
+          console.log(`EVEN CHECK: tierMatch = ${tierMatch}, horse.tier = ${horse.tier}, includes result = ${[2, 4, 6, 8].includes(horse.tier)}`);
         } else {
           // If no tier restriction, allow all tiers
           tierMatch = true;
+          console.log(`NO RESTRICTION: tierMatch = ${tierMatch}`);
         }
 
-        // Debug logging for specific horse
-        if (horse.name === 'Staars Autumn') {
-          console.log(`DEBUG: Horse ${horse.name} (tier ${horse.tier}) vs Race ${race.race_name} (restriction: ${race.tier_restriction})`);
-          console.log(`DEBUG: Surface match: ${hasSurface}, Distance match: ${hasDistance}, Tier match: ${tierMatch}`);
-        }
+        const finalMatch = hasSurface && hasDistance && tierMatch;
+        console.log(`FINAL: Horse ${horse.name} - Surface: ${hasSurface}, Distance: ${hasDistance}, Tier: ${tierMatch}, OVERALL: ${finalMatch}`);
         
-        return hasSurface && hasDistance && tierMatch;
+        return finalMatch;
         }).map(horse => ({
           id: horse.id,
           name: horse.name,
