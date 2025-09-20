@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import HorseSearch from "./pages/HorseSearch";
-import BreedingSuggestions from "./pages/BreedingSuggestions";
+import LiveEvents from "./pages/LiveEvents";
 import NotFound from "./pages/NotFound";
 
 console.log('App.tsx: Component loading...');
@@ -27,7 +27,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/search" element={<HorseSearch />} />
-            <Route path="/breeding" element={<BreedingSuggestions />} />
+            <Route path="/breeding" element={<LiveEvents />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

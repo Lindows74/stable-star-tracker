@@ -14,7 +14,7 @@ const Navigation = ({ onAddHorse, showAddButton = false }: NavigationProps) => {
   const navItems = [
     { path: "/", label: "Dashboard", icon: Home },
     { path: "/search", label: "Search Horses", icon: Search },
-    { path: "/breeding", label: "Breeding Suggestions", icon: Heart },
+    { path: "/breeding", label: "Live Events", icon: Heart },
   ];
 
   return (
