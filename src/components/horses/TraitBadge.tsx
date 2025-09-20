@@ -13,10 +13,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getTraitInfo } from "./TraitInfo";
+import { checkTraitShouldBePro } from "@/utils/horseTraitUtils";
 
 interface TraitBadgeProps {
   traitName: string;
   allTraits?: string[];
+  horseBreeding?: Array<{percentage: number, breeds: {name: string}}>;
 }
 
 // Define which traits can stack together
@@ -71,16 +73,23 @@ const checkIfTraitStacks = (traitName: string, allTraits: string[] = []): boolea
   });
 };
 
-export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
+export const TraitBadge = ({ traitName, allTraits = [], horseBreeding }: TraitBadgeProps) => {
   const traitInfo = getTraitInfo(traitName);
   const isStacking = checkIfTraitStacks(traitName, allTraits);
-  const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category, traitInfo.isPro, isStacking) : "bg-gray-100 text-gray-800 border-gray-200";
+  
+  // Check if trait should be Pro based on breeding percentage
+  const shouldBePro = horseBreeding ? checkTraitShouldBePro(traitName, horseBreeding) : false;
+  const isPro = traitInfo?.isPro || shouldBePro;
+  
+  const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category, isPro, isStacking) : "bg-gray-100 text-gray-800 border-gray-200";
 
   console.log(`TraitBadge for "${traitName}":`, {
     traitInfo,
-    isPro: traitInfo?.isPro,
+    isPro,
+    shouldBePro,
     isStacking,
     allTraits,
+    horseBreeding,
     colorClass
   });
 
@@ -95,7 +104,7 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
                   variant="secondary"
                   className={`flex items-center gap-1 text-xs border cursor-pointer hover:opacity-80 transition-colors ${colorClass}`}
                 >
-                  {traitInfo?.isPro && <span className="text-xs font-bold">⭐</span>}
+                  {isPro && <span className="text-xs font-bold">⭐</span>}
                   {traitName}
                 </Badge>
               </div>
@@ -104,7 +113,7 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 font-medium">
                   {isStacking && <span className="text-red-600 font-bold">🔥 STACKING</span>}
-                  {traitInfo?.isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
+                  {isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
                   <span>{traitName}</span>
                 </div>
                 {traitInfo && (
@@ -139,7 +148,7 @@ export const TraitBadge = ({ traitName, allTraits = [] }: TraitBadgeProps) => {
           <ContextMenuItem disabled className="flex-col items-start space-y-1">
             <div className="flex items-center gap-2 font-medium">
               {isStacking && <span className="text-red-600 font-bold">🔥 STACKING</span>}
-              {traitInfo?.isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
+              {isPro && <span className="text-yellow-600 font-bold">⭐ PRO</span>}
               {traitName}
             </div>
             {traitInfo && (

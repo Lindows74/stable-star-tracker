@@ -395,6 +395,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <TraitsByDiscipline 
               traits={horse.horse_traits}
               allTraitNames={allTraitNames}
+              horseBreeding={horse.horse_breeding}
             />
           </div>
         )}

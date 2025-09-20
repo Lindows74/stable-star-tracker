@@ -44,6 +44,34 @@ export const checkHorseHasFullStaminaTrait = (horseTraits: string[]): boolean =>
   return FULL_STAMINA_TRAITS.some(trait => horseTraits.includes(trait));
 };
 
+// Mapping of traits to their required breeds for Pro status (based on 80% breeding requirement)
+const TRAIT_BREEDING_REQUIREMENTS = {
+  "Blazing Hoof": ["Thoroughbred"],
+  "Fleet Dash": ["Arabian", "Mustang"],  
+  "Agile Arrow": ["KS"],
+  "Flash Ignite": ["QH"],
+  "To The Moon": ["Selle Francais", "Knabstrupper"],
+  "Endless Stride": ["Akhal-Teke"],
+  "Rolling Current": ["Anglo-Arab"]
+};
+
+// Check if a trait should be displayed as Pro based on breeding percentages
+export const checkTraitShouldBePro = (
+  traitName: string, 
+  horseBreeding: Array<{percentage: number, breeds: {name: string}}>
+): boolean => {
+  const requiredBreeds = TRAIT_BREEDING_REQUIREMENTS[traitName as keyof typeof TRAIT_BREEDING_REQUIREMENTS];
+  
+  if (!requiredBreeds || !horseBreeding) return false;
+  
+  return requiredBreeds.some(requiredBreed => {
+    const breedMatch = horseBreeding.find(breeding => 
+      breeding.breeds?.name === requiredBreed
+    );
+    return breedMatch && breedMatch.percentage >= 80;
+  });
+};
+
 export const getHorseSpecialIcons = (horseTraits: string[]): string => {
   const icons = [];
   

@@ -4,6 +4,7 @@ import { TraitBadge } from "./TraitBadge";
 interface TraitsByDisciplineProps {
   traits: Array<{ trait_name: string; trait_value?: string }>;
   allTraitNames: string[];
+  horseBreeding?: Array<{percentage: number, breeds: {name: string}}>;
 }
 
 // Trait categorization based on official guide
@@ -98,7 +99,7 @@ const categorizeTraits = (traits: Array<{ trait_name: string; trait_value?: stri
   return categorized;
 };
 
-export const TraitsByDiscipline = ({ traits, allTraitNames }: TraitsByDisciplineProps) => {
+export const TraitsByDiscipline = ({ traits, allTraitNames, horseBreeding }: TraitsByDisciplineProps) => {
   if (!traits || traits.length === 0) {
     return null;
   }
@@ -139,6 +140,7 @@ export const TraitsByDiscipline = ({ traits, allTraitNames }: TraitsByDiscipline
                   key={`${category}-${idx}`}
                   traitName={trait.trait_name}
                   allTraits={allTraitNames}
+                  horseBreeding={horseBreeding}
                 />
               ))}
             </div>
