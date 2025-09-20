@@ -198,7 +198,7 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
               <SelectTrigger>
                 <SelectValue placeholder="Select a trait to add..." />
               </SelectTrigger>
-              <SelectContent className="max-h-80 bg-white">
+              <SelectContent className="max-h-80 bg-white z-50">
                 {Object.entries(TRAIT_CATEGORIES).map(([category, traits]) => {
                   const availableTraits = traits.filter(trait => !selectedTraits.includes(trait));
                   
@@ -210,7 +210,7 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
                         {category}
                       </div>
                       {availableTraits.map((trait) => (
-                        <SelectItem key={trait} value={trait} className="pl-4">
+                        <SelectItem key={trait} value={trait} className="pl-4 bg-white hover:bg-gray-100">
                           {trait}
                         </SelectItem>
                       ))}
