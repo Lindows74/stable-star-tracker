@@ -248,22 +248,11 @@ const LiveEvents = () => {
                   
                   const allTiers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
                   const matchedTiers = new Set(race.matchingHorses.map(h => h.tier));
-                  const missingTiers = allTiers.filter(tier => !matchedTiers.has(tier));
                   
                   return (
                     <div key={race.id} className="border rounded-lg p-6">
                        <div className="mb-4">
                            <h3 className="text-lg font-semibold">{raceLabel}</h3>
-                           {missingTiers.length > 0 && (
-                             <div className="mt-2 flex flex-wrap gap-1">
-                               <span className="text-sm text-muted-foreground mr-2">Missing tiers:</span>
-                               {missingTiers.map(tier => (
-                                 <Badge key={tier} variant="secondary" className="text-xs">
-                                   Tier {tier}
-                                 </Badge>
-                               ))}
-                             </div>
-                           )}
                        </div>
 
                     <div className="flex gap-4 mb-4">
@@ -277,7 +266,35 @@ const LiveEvents = () => {
                       </Badge>
                       {race.tier_restriction && (
                         <Badge variant="outline" className="text-sm">
-                          {race.tier_restriction === 'odd_grades' ? 'Odd Grades (3,5,7,9)' : 'Even Grades (2,4,6,8)'}
+                          {race.tier_restriction === 'odd_grades' ? (
+                            <>
+                              Odd Grades (
+                              {[3, 5, 7, 9].map((tier, index) => {
+                                const hasMatch = race.matchingHorses.some(h => h.tier === tier);
+                                return (
+                                  <span key={tier}>
+                                    {index > 0 && ','}
+                                    <span className={hasMatch ? '' : 'text-red-500 font-semibold'}>{tier}</span>
+                                  </span>
+                                );
+                              })}
+                              )
+                            </>
+                          ) : (
+                            <>
+                              Even Grades (
+                              {[2, 4, 6, 8].map((tier, index) => {
+                                const hasMatch = race.matchingHorses.some(h => h.tier === tier);
+                                return (
+                                  <span key={tier}>
+                                    {index > 0 && ','}
+                                    <span className={hasMatch ? '' : 'text-red-500 font-semibold'}>{tier}</span>
+                                  </span>
+                                );
+                              })}
+                              )
+                            </>
+                          )}
                         </Badge>
                       )}
                       <Badge variant="secondary" className="text-sm">
