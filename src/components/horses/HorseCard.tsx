@@ -10,6 +10,7 @@ import { TraitBadge } from "./TraitBadge";
 import { TraitsByDiscipline } from "./TraitsByDiscipline";
 import { useToast } from "@/hooks/use-toast";
 import { checkHorseLiveRaceMatches, formatSurfaceName, type HorseRaceMatch } from "@/utils/liveRaces";
+import { getHorseSpecialIcons, checkHorseHasStackingTraits, checkHorseHasFullStaminaTrait } from "@/utils/horseTraitUtils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,24 +26,6 @@ import {
 interface HorseCardProps {
   horse: any;
 }
-
-// Define traits that give full stamina
-const FULL_STAMINA_TRAITS = ["Thundering Hooves", "Top Endurance"];
-
-// Define which traits can stack together
-const STACKING_TRAIT_GROUPS = [
-  ["Lightning Bolt", "Hard N' Fast"], // Faster stamina refill during final stretch
-  ["Leaping Star", "Leaping Lancer"], // Enhanced jump streak in Steeplechase
-  ["Perfect Step", "Leaping Lancer"], // Enhanced boost after perfect jump in Steeplechase
-];
-
-const checkIfHorseHasStackingTraits = (allTraits: string[] = []): boolean => {
-  return STACKING_TRAIT_GROUPS.some(group => {
-    // Check if horse has at least 2 traits from this stacking group
-    const traitsInGroup = group.filter(trait => allTraits.includes(trait));
-    return traitsInGroup.length >= 2;
-  });
-};
 
 export const HorseCard = ({ horse }: HorseCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -129,12 +112,10 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   const allTraitNames = horse.horse_traits?.map((trait: any) => trait.trait_name) || [];
   
   // Check if horse has full stamina traits
-  const hasFullStaminaTrait = allTraitNames.some((traitName: string) => 
-    FULL_STAMINA_TRAITS.includes(traitName)
-  );
+  const hasFullStaminaTrait = checkHorseHasFullStaminaTrait(allTraitNames);
 
   // Check if horse has stacking traits
-  const hasStackingTraits = checkIfHorseHasStackingTraits(allTraitNames);
+  const hasStackingTraits = checkHorseHasStackingTraits(allTraitNames);
   
   // Check for live race matches
   const horseDistances = horse.horse_distances?.map((d: any) => d.distance.toString()) || [];

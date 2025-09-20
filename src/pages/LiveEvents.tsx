@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import AddRaceForm from "@/components/races/AddRaceForm";
 import { TraitsByDisciplineInline } from "@/components/horses/TraitsByDisciplineInline";
+import { getHorseSpecialIcons } from "@/utils/horseTraitUtils";
 
 interface MatchingHorse {
   id: number;
@@ -315,8 +316,15 @@ const LiveEvents = () => {
                          </TableHeader>
                          <TableBody>
                            {race.matchingHorses.map((horse) => (
-                             <TableRow key={horse.id}>
-                               <TableCell className="font-medium">{horse.name}</TableCell>
+                              <TableRow key={horse.id}>
+                                <TableCell className="font-medium">
+                                  <div className="flex items-center gap-1">
+                                    {horse.name}
+                                    {getHorseSpecialIcons(horse.traits || []) && (
+                                      <span className="text-sm">{getHorseSpecialIcons(horse.traits || [])}</span>
+                                    )}
+                                  </div>
+                                </TableCell>
                                <TableCell>
                                  <Badge variant="outline">Tier {horse.tier}</Badge>
                                </TableCell>
