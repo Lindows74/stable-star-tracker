@@ -59,16 +59,27 @@ serve(async (req) => {
     const raceMatches = [];
     
     for (const race of liveRaces || []) {
-      console.log(`Processing race: ${race.race_name} - Surface: ${race.surface}, Distance: ${race.distance}`);
+      console.log(`Processing race: ${race.race_name} - Surface: ${race.surface}, Distance: ${race.distance}, Tier: ${race.tier_restriction}`);
       
-      // Find horses that match this race's surface and distance
+      // Find horses that match this race's surface, distance, and tier restriction
       const matchingHorses = horses?.filter(horse => {
         // Check if horse has the matching surface preference
         const hasSurface = horse.horse_surfaces?.some(s => s.surface === race.surface);
         // Check if horse has the matching distance preference  
         const hasDistance = horse.horse_distances?.some(d => d.distance === race.distance);
         
-        return hasSurface && hasDistance;
+        // Check tier restriction
+        let tierMatch = false;
+        if (race.tier_restriction === 'odd_grades') {
+          tierMatch = horse.tier && [3, 5, 7, 9].includes(horse.tier);
+        } else if (race.tier_restriction === 'even_grades') {
+          tierMatch = horse.tier && [2, 4, 6, 8].includes(horse.tier);
+        } else {
+          // If no tier restriction, allow all tiers
+          tierMatch = true;
+        }
+        
+        return hasSurface && hasDistance && tierMatch;
       }).map(horse => ({
         id: horse.id,
         name: horse.name,

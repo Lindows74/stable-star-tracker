@@ -314,6 +314,7 @@ export type Database = {
           race_name: string
           start_time: string
           surface: string
+          tier_restriction: string | null
           track_name: string | null
           updated_at: string
         }
@@ -327,6 +328,7 @@ export type Database = {
           race_name: string
           start_time: string
           surface: string
+          tier_restriction?: string | null
           track_name?: string | null
           updated_at?: string
         }
@@ -340,6 +342,7 @@ export type Database = {
           race_name?: string
           start_time?: string
           surface?: string
+          tier_restriction?: string | null
           track_name?: string | null
           updated_at?: string
         }

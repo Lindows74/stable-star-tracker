@@ -23,6 +23,7 @@ interface RaceMatch {
   start_time: string;
   track_name: string;
   prize_money: number;
+  tier_restriction: string;
   matchingHorses: MatchingHorse[];
 }
 
@@ -163,11 +164,11 @@ const LiveEvents = () => {
           <CardContent>
             {raceMatches.length > 0 ? (
               <div className="space-y-6">
-                {raceMatches.map((race) => (
+                {raceMatches.map((race, index) => (
                   <div key={race.id} className="border rounded-lg p-6">
                      <div className="flex items-center justify-between mb-4">
                        <div>
-                         <h3 className="text-lg font-semibold">{race.race_name}</h3>
+                         <h3 className="text-lg font-semibold">Race {index + 1}</h3>
                          <p className="text-sm text-muted-foreground">
                            {race.track_name && `${race.track_name} • `}{formatDateTime(race.start_time)}
                          </p>
@@ -176,10 +177,13 @@ const LiveEvents = () => {
 
                     <div className="flex gap-4 mb-4">
                       <Badge variant="outline" className="text-sm">
+                        Distance: {race.distance}m
+                      </Badge>
+                      <Badge variant="outline" className="text-sm">
                         Surface: {formatSurface(race.surface)}
                       </Badge>
                       <Badge variant="outline" className="text-sm">
-                        Distance: {race.distance}m
+                        {race.tier_restriction === 'odd_grades' ? 'Odd Grades (3,5,7,9)' : 'Even Grades (2,4,6,8)'}
                       </Badge>
                       <Badge variant="secondary" className="text-sm">
                         {race.matchingHorses.length} Matching Horses

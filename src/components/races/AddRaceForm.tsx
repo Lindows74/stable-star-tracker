@@ -19,6 +19,7 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
     raceType: "",
     distance: "",
     surface: "",
+    tierRestriction: "",
     trackName: "",
     startDate: "",
     startTime: ""
@@ -47,7 +48,7 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.raceType || !formData.distance || !formData.surface || !formData.startDate || !formData.startTime) {
+    if (!formData.raceType || !formData.distance || !formData.surface || !formData.tierRestriction || !formData.startDate || !formData.startTime) {
       toast({
         title: "Validation Error",
         description: "Please fill in all required fields.",
@@ -63,9 +64,10 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
       const { error } = await supabase
         .from('live_races')
         .insert([{
-          race_name: `${formData.raceType.replace('_', ' ')} ${formData.distance}m ${formData.surface}`,
+          race_name: `${formData.distance}m ${formData.surface} (${formData.tierRestriction === 'odd_grades' ? 'Odd Grades' : 'Even Grades'})`,
           surface: formData.surface,
           distance: formData.distance,
+          tier_restriction: formData.tierRestriction,
           start_time: startDateTime,
           track_name: formData.trackName || null,
           prize_money: null,
@@ -92,6 +94,7 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
         raceType: "",
         distance: "",
         surface: "",
+        tierRestriction: "",
         trackName: "",
         startDate: "",
         startTime: ""
@@ -198,6 +201,22 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
                       {formatSurface(surface.value)}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="tierRestriction">Tier Restriction *</Label>
+              <Select 
+                value={formData.tierRestriction} 
+                onValueChange={(value) => setFormData({...formData, tierRestriction: value})}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select tier restriction" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="odd_grades">Odd Grades (Tiers 3, 5, 7, 9)</SelectItem>
+                  <SelectItem value="even_grades">Even Grades (Tiers 2, 4, 6, 8)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
