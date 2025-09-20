@@ -142,6 +142,15 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 Tier {horse.tier}
               </Badge>
             )}
+            {/* Timestamp */}
+            <div className="text-xs text-gray-400 ml-2">
+              {horse.created_at && horse.updated_at && 
+               new Date(horse.created_at).toISOString() !== new Date(horse.updated_at).toISOString() ? (
+                <>Updated: {new Date(horse.updated_at).toLocaleDateString()}</>
+              ) : (
+                <>Added: {new Date(horse.created_at || horse.updated_at).toLocaleDateString()}</>
+              )}
+            </div>
           </div>
           <div className="flex gap-2">
             <Button
@@ -362,16 +371,6 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <p className="text-sm text-gray-600">{horse.notes}</p>
           </div>
         )}
-
-        {/* Timestamp */}
-        <div className="text-xs text-gray-400 pt-2 border-t">
-          {horse.created_at && horse.updated_at && 
-           new Date(horse.created_at).toISOString() !== new Date(horse.updated_at).toISOString() ? (
-            <>Updated: {new Date(horse.updated_at).toLocaleDateString()}</>
-          ) : (
-            <>Added: {new Date(horse.created_at || horse.updated_at).toLocaleDateString()}</>
-          )}
-        </div>
       </CardContent>
     </Card>
   );
