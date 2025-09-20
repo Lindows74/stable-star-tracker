@@ -73,10 +73,10 @@ const HorseSearch = () => {
   const [maxTier, setMaxTier] = useState<number | null>(null);
   const [fromDate, setFromDate] = useState<Date | undefined>();
   const [toDate, setToDate] = useState<Date | undefined>();
-  const [dateSortOption, setDateSortOption] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc">("created_desc");
+  const [selectedDateSort, setSelectedDateSort] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc">("created_desc");
 
   const { data: horses, isLoading, error } = useQuery({
-    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, dateSortOption],
+    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, selectedDateSort],
     queryFn: async () => {
       console.log("HorseSearch: Fetching horses with filters...");
       
@@ -113,7 +113,7 @@ const HorseSearch = () => {
       }
 
       // Apply date filters
-      const dateField = dateSortOption.startsWith("created") ? "created_at" : "updated_at";
+      const dateField = selectedDateSort.startsWith("created") ? "created_at" : "updated_at";
       if (fromDate) {
         const fromDateISO = fromDate.toISOString();
         query = query.gte(dateField, fromDateISO);
@@ -126,7 +126,7 @@ const HorseSearch = () => {
         query = query.lte(dateField, toDateISO);
       }
 
-      const sortAscending = dateSortOption.endsWith("_asc");
+      const sortAscending = selectedDateSort.endsWith("_asc");
       const { data, error } = await query.order(dateField, { ascending: sortAscending });
 
       if (error) {
@@ -209,7 +209,7 @@ const HorseSearch = () => {
     setMaxTier(null);
     setFromDate(undefined);
     setToDate(undefined);
-    setDateSortOption("created_desc");
+    setSelectedDateSort("created_desc");
   };
 
   const formatLabel = (value: string) => {
@@ -286,21 +286,57 @@ const HorseSearch = () => {
                 </div>
 
                 {/* Date Filter */}
+                {/* Date Sort Options */}
                 <div>
                   <Label>Sort by Date</Label>
+                  <div className="mt-2 space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="date-created-desc"
+                        checked={selectedDateSort === "created_desc"}
+                        onCheckedChange={() => setSelectedDateSort("created_desc")}
+                      />
+                      <Label htmlFor="date-created-desc" className="text-sm font-normal">
+                        Date Added ↓ (Newest First)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="date-created-asc"
+                        checked={selectedDateSort === "created_asc"}
+                        onCheckedChange={() => setSelectedDateSort("created_asc")}
+                      />
+                      <Label htmlFor="date-created-asc" className="text-sm font-normal">
+                        Date Added ↑ (Oldest First)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="date-updated-desc"
+                        checked={selectedDateSort === "updated_desc"}
+                        onCheckedChange={() => setSelectedDateSort("updated_desc")}
+                      />
+                      <Label htmlFor="date-updated-desc" className="text-sm font-normal">
+                        Last Updated ↓ (Newest First)
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="date-updated-asc"
+                        checked={selectedDateSort === "updated_asc"}
+                        onCheckedChange={() => setSelectedDateSort("updated_asc")}
+                      />
+                      <Label htmlFor="date-updated-asc" className="text-sm font-normal">
+                        Last Updated ↑ (Oldest First)
+                      </Label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date Range Filter */}
+                <div>
+                  <Label>Date Range Filter</Label>
                   <div className="space-y-3 mt-2">
-                    <Select value={dateSortOption} onValueChange={(value: "created_desc" | "created_asc" | "updated_desc" | "updated_asc") => setDateSortOption(value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="created_desc">Date Added ↓</SelectItem>
-                        <SelectItem value="created_asc">Date Added ↑</SelectItem>
-                        <SelectItem value="updated_desc">Last Updated ↓</SelectItem>
-                        <SelectItem value="updated_asc">Last Updated ↑</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <Label className="text-xs text-muted-foreground">From</Label>
