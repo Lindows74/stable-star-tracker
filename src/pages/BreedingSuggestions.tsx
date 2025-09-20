@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Heart, Star, Zap } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ArrowLeft, Heart, Star, Zap, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const BreedingSuggestions = () => {
@@ -35,6 +36,75 @@ const BreedingSuggestions = () => {
   ];
 
   const positionOptions = ["Front", "Middle", "Back"];
+
+  const traitDescriptions = {
+    // Pro Traits
+    "Blazing Hoof Pro": "Superior Speed across all game modes.",
+    "Fleet Dash Pro": "Superior Sprint Energy across all game modes.",
+    "Agile Arrow Pro": "Superior Agility across all game modes.",
+    "Flash Ignite Pro": "Superior Acceleration across all game modes.",
+    "To The Moon Pro": "Superior Jump across all game modes.",
+    "Endless Stride Pro": "On Flat Racing tracks of 2400m or more, gain superior acceleration and Sprint Energy lasts longer.",
+    "Rolling Current Pro": "On hard surfaces recharge extra Sprint Energy when jumping and gain superior Acceleration in Cross Country races.",
+    "Streak Shield Pro": "In Steeplechase mode, while a perfect streak is active, missing a perfect jump will not break the streak. Activates 3 times per race.",
+
+    // General Traits
+    "Blazing Hoof": "Improved Speed across all game modes. Turns Pro if the horse is 80% Thoroughbred.",
+    "Fleet Dash": "Improved Sprint Energy across all game modes. Turns Pro if the horse is 80% Arabian or Mustang.",
+    "Agile Arrow": "Improved Agility across all game modes. Turns Pro if the horse is 80% Knabstrupper.",
+    "Flash Ignite": "Improved Acceleration across all game modes. Turns Pro if the horse is 80% Quarter Horse.",
+    "To The Moon": "Improved Jump across all game modes. Turns Pro if the horse is 80% Selle Francais or Knabstrupper.",
+    "Energy Saver": "Story Races only costs 1 Career Energy.",
+    "Endless Stride": "On Flat Racing tracks of 2400m or more, gains improved acceleration and Sprint Energy lasts longer. Turns pro if horse is 80% or higher Akhal-Teke.",
+    "Rolling Current": "On hard surfaces recharge extra Sprint Energy when jumping and gain improved Acceleration in Cross Country races. Turns pro if horse is 80% or higher Anglo-Arab.",
+    "Streak Shield": "In Steeplechase mode, while a perfect streak is active, missing a perfect jump will not break the streak. Activates 2 times per race.",
+
+    // Surface Preference
+    "Granite Gallop": "Extends preference to hard and very hard surfaces.",
+    "Mid Dash": "Extends preference to firm and medium surfaces.",
+    "Swampy Strider": "Extends preference to soft and very soft surfaces.",
+
+    // Flat Racing
+    "Lightning Bolt": "Faster stamina refill rate during the final stretch in Flat Racing. Can stack with Hard 'N' Fast.",
+    "Top Endurance": "Start with more Sprint Energy in Flat Racing.",
+
+    // Steeplechase
+    "Leaping Star": "Max jump streak in Steeplechase. Can stack with Leaping Lancer for even further increased jump streak.",
+    "Perfect Step": "Improved boost for perfect jumps in Steeplechase. Can stack with Leaping Lancer for even greater boost.",
+    "Leaping Lancer": "Max jump streak in Steeplechase is increased by 1. Improved boost when you perform a perfect jump. Can stack with Leaping Star and Perfect Step.",
+    "Kinetic Boost": "While your perfect jump streak is 5 or higher, receive bonus sprint energy on each subsequent perfect jump.",
+
+    // Cross Country
+    "River Rider": "Horse is not slowed by water in Cross Country.",
+    "Fast Draw": "Increased speed boost during jumps in Cross Country.",
+    "Meadowstride": "Horse is not slowed down by water in Cross Country. Increased speed boost during jumps in Cross Country.",
+
+    // Distance Preference
+    "Quick Gallop": "Extends preference to 800m and 900m.",
+    "Swift Trot": "Extends preference to 1,000m, 1,100m, and 1,200m.",
+    "Steady Strider": "Extends preference to 1,400m and 1,600m.",
+    "Meadow Runner": "Extends preference to 1,800m, 2,000m, and 2,200m.",
+    "Endurance Charger": "Extends preference to 2,400m and 2,600m.",
+    "Marathon Trotter": "Extends preference to 2,800m, 3,000m, and 3,200m.",
+
+    // Exotic Traits
+    "Steam Burst": "On Flat Racing tracks between 800m and 1200m, sprinting increases your acceleration and maximum top speed but uses more Sprint Energy.",
+    "Short Star": "Extends preference range to include 1,200m and below.",
+    "Mid Miracle": "Extends preference range to include 1,400m to 2,200m.",
+    "Marathon Master": "Extends preference range to include 2,400m and higher.",
+    "Thundering Hooves": "Starts with full stamina bar. Extends preference range to include 2,800m and higher.",
+    "Hard 'N' Fast": "Faster stamina refill rate during final stretch. Extends Preference range to include hard and very hard surfaces. Can stack with Lightning Bolt.",
+
+    // Cosmetic
+    "Majestic Mane": "The horse will have a Majestic, Long Mane.",
+    "Crystal Coat": "A lustrous coat makes your horse shine like no other.",
+    "Noble Braid": "Tightly sewn braids that add refined charm to your horse's presence.",
+
+    // Star Club
+    "Thrifty Spender": "Reduced entry fee in Live Events.",
+    "Elite Lineage": "Foals born from this horse have +1 to all Base Stats except for A+.",
+    "Top Student": "All foals bred from this horse have 20% of their possible XP but still require training."
+  };
 
   const traitsByCategory = {
     "Pro Traits (80%+ Pure Breed)": [
@@ -106,7 +176,8 @@ const BreedingSuggestions = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto p-4">
         {/* Header */}
         <div className="mb-6">
@@ -240,9 +311,17 @@ const BreedingSuggestions = () => {
                               checked={filters.traits.includes(trait)}
                               onCheckedChange={() => toggleArrayFilter('traits', trait)}
                             />
-                            <Label htmlFor={`trait-${trait}`} className="text-xs font-normal">
+                            <Label htmlFor={`trait-${trait}`} className="text-xs font-normal flex-1">
                               {trait}
                             </Label>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3 w-3 text-muted-foreground hover:text-foreground cursor-help" />
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="max-w-xs">
+                                <p className="text-sm">{traitDescriptions[trait] || "No description available"}</p>
+                              </TooltipContent>
+                            </Tooltip>
                           </div>
                         ))}
                       </div>
@@ -316,7 +395,8 @@ const BreedingSuggestions = () => {
           </Card>
         </div>
       </div>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
 
