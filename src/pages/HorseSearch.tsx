@@ -73,11 +73,10 @@ const HorseSearch = () => {
   const [maxTier, setMaxTier] = useState<number | null>(null);
   const [fromDate, setFromDate] = useState<Date | undefined>();
   const [toDate, setToDate] = useState<Date | undefined>();
-  const [dateFilterType, setDateFilterType] = useState<"created_at" | "updated_at">("created_at");
-  const [dateSortOrder, setDateSortOrder] = useState<"asc" | "desc">("desc");
+  const [dateSortOption, setDateSortOption] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc">("created_desc");
 
   const { data: horses, isLoading, error } = useQuery({
-    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, dateFilterType, dateSortOrder],
+    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, dateSortOption],
     queryFn: async () => {
       console.log("HorseSearch: Fetching horses with filters...");
       
@@ -114,19 +113,21 @@ const HorseSearch = () => {
       }
 
       // Apply date filters
+      const dateField = dateSortOption.startsWith("created") ? "created_at" : "updated_at";
       if (fromDate) {
         const fromDateISO = fromDate.toISOString();
-        query = query.gte(dateFilterType, fromDateISO);
+        query = query.gte(dateField, fromDateISO);
       }
       if (toDate) {
         // Set to end of day for toDate
         const toDateEndOfDay = new Date(toDate);
         toDateEndOfDay.setHours(23, 59, 59, 999);
         const toDateISO = toDateEndOfDay.toISOString();
-        query = query.lte(dateFilterType, toDateISO);
+        query = query.lte(dateField, toDateISO);
       }
 
-      const { data, error } = await query.order(dateFilterType, { ascending: dateSortOrder === "asc" });
+      const sortAscending = dateSortOption.endsWith("_asc");
+      const { data, error } = await query.order(dateField, { ascending: sortAscending });
 
       if (error) {
         console.error("HorseSearch: Error fetching horses:", error);
@@ -208,8 +209,7 @@ const HorseSearch = () => {
     setMaxTier(null);
     setFromDate(undefined);
     setToDate(undefined);
-    setDateFilterType("created_at");
-    setDateSortOrder("desc");
+    setDateSortOption("created_desc");
   };
 
   const formatLabel = (value: string) => {
@@ -287,29 +287,19 @@ const HorseSearch = () => {
 
                 {/* Date Filter */}
                 <div>
-                  <Label>Date Added/Updated</Label>
+                  <Label>Sort by Date</Label>
                   <div className="space-y-3 mt-2">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Select value={dateFilterType} onValueChange={(value: "created_at" | "updated_at") => setDateFilterType(value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="created_at">Date Added</SelectItem>
-                          <SelectItem value="updated_at">Date Updated</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Select value={dateSortOrder} onValueChange={(value: "asc" | "desc") => setDateSortOrder(value)}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="desc">Newest First</SelectItem>
-                          <SelectItem value="asc">Oldest First</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                    <Select value={dateSortOption} onValueChange={(value: "created_desc" | "created_asc" | "updated_desc" | "updated_asc") => setDateSortOption(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="created_desc">Date Added ↓</SelectItem>
+                        <SelectItem value="created_asc">Date Added ↑</SelectItem>
+                        <SelectItem value="updated_desc">Last Updated ↓</SelectItem>
+                        <SelectItem value="updated_asc">Last Updated ↑</SelectItem>
+                      </SelectContent>
+                    </Select>
                     
                     <div className="grid grid-cols-2 gap-2">
                       <div>
