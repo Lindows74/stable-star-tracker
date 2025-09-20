@@ -25,7 +25,8 @@ interface RaceMatch {
   start_time: string;
   track_name: string;
   prize_money: number;
-  tier_restriction: string;
+  tier_restriction: string | null;
+  is_active?: boolean;
   matchingHorses: MatchingHorse[];
 }
 
@@ -274,7 +275,7 @@ const LiveEvents = () => {
                                 return (
                                   <span key={tier}>
                                     {index > 0 && ','}
-                                    <span className={hasMatch ? '' : 'text-red-500 font-semibold'}>{tier}</span>
+                                    <span className={hasMatch ? '' : 'text-destructive font-semibold'}>{tier}</span>
                                   </span>
                                 );
                               })}
@@ -288,7 +289,7 @@ const LiveEvents = () => {
                                 return (
                                   <span key={tier}>
                                     {index > 0 && ','}
-                                    <span className={hasMatch ? '' : 'text-red-500 font-semibold'}>{tier}</span>
+                                    <span className={hasMatch ? '' : 'text-destructive font-semibold'}>{tier}</span>
                                   </span>
                                 );
                               })}
@@ -296,6 +297,9 @@ const LiveEvents = () => {
                             </>
                           )}
                         </Badge>
+                      )}
+                      {race.is_active === false && (
+                        <Badge variant="secondary" className="text-sm">Inactive</Badge>
                       )}
                       <Badge variant="secondary" className="text-sm">
                         {race.matchingHorses.length} Matching Horses
