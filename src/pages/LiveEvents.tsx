@@ -7,6 +7,7 @@ import { Loader2, Calendar, Trophy, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
+import AddRaceForm from "@/components/races/AddRaceForm";
 
 interface MatchingHorse {
   id: number;
@@ -150,6 +151,9 @@ const LiveEvents = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Add Race Form */}
+        <AddRaceForm onRaceAdded={fetchLiveRaces} />
 
         {/* Events Table */}
         <Card>
