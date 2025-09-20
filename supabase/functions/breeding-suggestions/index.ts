@@ -55,10 +55,49 @@ serve(async (req) => {
 
     console.log('Found total horses:', horses?.length);
 
+    // For each live race, find matching horses based on surface and distance
+    const raceMatches = [];
+    
+    for (const race of liveRaces || []) {
+      console.log(`Processing race: ${race.race_name} - Surface: ${race.surface}, Distance: ${race.distance}`);
+      
+      // Find horses that match this race's surface and distance
+      const matchingHorses = horses?.filter(horse => {
+        // Check if horse has the matching surface preference
+        const hasSurface = horse.horse_surfaces?.some(s => s.surface === race.surface);
+        // Check if horse has the matching distance preference  
+        const hasDistance = horse.horse_distances?.some(d => d.distance === race.distance);
+        
+        return hasSurface && hasDistance;
+      }).map(horse => ({
+        id: horse.id,
+        name: horse.name,
+        tier: horse.tier,
+        speed: horse.speed,
+        sprint_energy: horse.sprint_energy,
+        acceleration: horse.acceleration,
+        agility: horse.agility,
+        jump: horse.jump,
+        traits: horse.horse_traits?.map(t => t.trait_name) || []
+      })) || [];
+
+      console.log(`Found ${matchingHorses.length} matching horses for race ${race.race_name}`);
+
+      raceMatches.push({
+        ...race,
+        matchingHorses: matchingHorses.sort((a, b) => {
+          // Sort by tier first (higher tier first), then by speed
+          if (a.tier !== b.tier) return (b.tier || 0) - (a.tier || 0);
+          return (b.speed || 0) - (a.speed || 0);
+        })
+      });
+    }
+
     return new Response(JSON.stringify({
       success: true,
       suggestions: [],
       liveRaces: liveRaces || [],
+      raceMatches: raceMatches,
       totalHorses: horses?.length || 0
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
