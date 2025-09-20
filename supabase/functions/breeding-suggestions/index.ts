@@ -102,9 +102,18 @@ serve(async (req) => {
       raceMatches.push({
         ...race,
         matchingHorses: matchingHorses.sort((a, b) => {
-          // Sort by tier first (higher tier first), then by speed
+          // Sort by tier first (higher tier first)
           if (a.tier !== b.tier) return (b.tier || 0) - (a.tier || 0);
-          return (b.speed || 0) - (a.speed || 0);
+          // Then by speed (higher first)
+          if (a.speed !== b.speed) return (b.speed || 0) - (a.speed || 0);
+          // Then by sprint energy (higher first)
+          if (a.sprint_energy !== b.sprint_energy) return (b.sprint_energy || 0) - (a.sprint_energy || 0);
+          // Then by acceleration (higher first)
+          if (a.acceleration !== b.acceleration) return (b.acceleration || 0) - (a.acceleration || 0);
+          // Then by agility (higher first)
+          if (a.agility !== b.agility) return (b.agility || 0) - (a.agility || 0);
+          // Finally by jump (higher first)
+          return (b.jump || 0) - (a.jump || 0);
         })
       });
     }
