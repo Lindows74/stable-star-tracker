@@ -31,8 +31,16 @@ interface RaceMatch {
   matchingHorses: MatchingHorse[];
 }
 
+interface NonMatchingHorse {
+  id: number;
+  name: string;
+  tier: number;
+  traits: string[];
+}
+
 const LiveEvents = () => {
   const [raceMatches, setRaceMatches] = useState<RaceMatch[]>([]);
+  const [nonMatchingHorses, setNonMatchingHorses] = useState<NonMatchingHorse[]>([]);
   const [loading, setLoading] = useState(false);
   const [totalHorses, setTotalHorses] = useState(0);
   const { toast } = useToast();
@@ -121,6 +129,38 @@ const LiveEvents = () => {
         
         setRaceMatches(sorted);
         setTotalHorses(data.totalHorses || 0);
+        
+        // Get all horses that have matches
+        const matchedHorseIds = new Set();
+        sorted.forEach((race: any) => {
+          race.matchingHorses.forEach((horse: any) => {
+            matchedHorseIds.add(horse.id);
+          });
+        });
+
+        // Fetch all horses to find non-matching ones
+        const { data: allHorses } = await supabase
+          .from('horses')
+          .select(`
+            id,
+            name,
+            tier,
+            horse_traits!inner(trait_name)
+          `);
+
+        if (allHorses) {
+          const nonMatching = allHorses
+            .filter((horse: any) => !matchedHorseIds.has(horse.id))
+            .map((horse: any) => ({
+              id: horse.id,
+              name: horse.name,
+              tier: horse.tier,
+              traits: horse.horse_traits?.map((ht: any) => ht.trait_name) || []
+            }))
+            .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
+          
+          setNonMatchingHorses(nonMatching);
+        }
         
         const totalMatches = sorted.reduce((sum: number, race: any) => sum + race.matchingHorses.length, 0);
         
@@ -356,11 +396,57 @@ const LiveEvents = () => {
                 </p>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
-    </Layout>
-  );
-};
+           </CardContent>
+         </Card>
+
+         {/* Non-Matching Horses Section */}
+         {nonMatchingHorses.length > 0 && (
+           <Card>
+             <CardHeader>
+               <CardTitle>Horses with No Live Race Matches ({nonMatchingHorses.length})</CardTitle>
+               <p className="text-sm text-muted-foreground">
+                 These horses don't match the surface and distance requirements of any current live races
+               </p>
+             </CardHeader>
+             <CardContent>
+               <Table>
+                 <TableHeader>
+                   <TableRow>
+                     <TableHead>Horse Name</TableHead>
+                     <TableHead>Tier</TableHead>
+                     <TableHead>Traits</TableHead>
+                   </TableRow>
+                 </TableHeader>
+                 <TableBody>
+                   {nonMatchingHorses.map((horse) => (
+                     <TableRow key={horse.id}>
+                       <TableCell className="font-medium">
+                         <div className="flex items-center gap-1">
+                           {horse.name}
+                           {getHorseSpecialIcons(horse.traits || []) && (
+                             <span className="text-sm">{getHorseSpecialIcons(horse.traits || [])}</span>
+                           )}
+                         </div>
+                       </TableCell>
+                       <TableCell>
+                         <Badge variant="outline">Tier {horse.tier}</Badge>
+                       </TableCell>
+                       <TableCell className="max-w-md">
+                         <TraitsByDisciplineInline 
+                           traits={horse.traits?.map(traitName => ({ trait_name: traitName })) || []}
+                           allTraitNames={horse.traits || []}
+                         />
+                       </TableCell>
+                     </TableRow>
+                   ))}
+                 </TableBody>
+               </Table>
+             </CardContent>
+           </Card>
+         )}
+       </div>
+     </Layout>
+   );
+ };
 
 export default LiveEvents;
