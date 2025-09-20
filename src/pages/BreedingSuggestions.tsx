@@ -36,29 +36,44 @@ const BreedingSuggestions = () => {
 
   const positionOptions = ["Front", "Middle", "Back"];
 
-  const traitOptions = [
-    // Multi Modes
-    "Burst of Speed", "Photo Finish", "Acceleration", "Stamina", "Agility", "Jump", 
-    "Burst of Strength", "Lightning Speed", "Acceleration Boost", "Speed Boost", 
-    "Stamina Boost", "Agility Boost", "Jump Boost", "Recovery Boost",
-    
-    // Flat Racing
-    "Front Runner", "Stalker", "Closer", "Deep Closer", "Pacesetter", "Rail Runner", 
-    "Mudder", "Turf Specialist", "Distance Specialist", "Sprint Specialist", 
-    "Miler Specialist", "Route Specialist", "Early Speed", "Late Speed",
-    
-    // Steeplechase
-    "Jumper", "Sure Footed", "Obstacle Specialist", "Steeplechase Champion", 
-    "Hurdle Master", "Cross Country Expert",
-    
-    // Cross Country
-    "Endurance", "Hill Climber", "Terrain Master", "Cross Country Specialist",
-    "All Weather", "Mud Runner", "Firm Ground",
-    
-    // Misc
-    "Crowd Pleaser", "Camera Shy", "Early Developer", "Late Developer", 
-    "Consistent", "Temperamental", "Trainer's Pet", "Hard to Handle"
-  ];
+  const traitsByCategory = {
+    "Pro Traits (80%+ Pure Breed)": [
+      "Blazing Hoof Pro", "Fleet Dash Pro", "Agile Arrow Pro", "Flash Ignite Pro", 
+      "To The Moon Pro", "Endless Stride Pro", "Rolling Current Pro", "Streak Shield Pro"
+    ],
+    "General Stat Boost": [
+      "Blazing Hoof", "Fleet Dash", "Agile Arrow", "Flash Ignite", "To The Moon", "Energy Saver"
+    ],
+    "Surface Preference": [
+      "Granite Gallop", "Mid Dash", "Swampy Strider"
+    ],
+    "Flat Racing": [
+      "Lightning Bolt", "Top Endurance", "Endless Stride"
+    ],
+    "Steeplechase": [
+      "Leaping Star", "Perfect Step", "Streak Shield", "Leaping Lancer", "Kinetic Boost"
+    ],
+    "Cross Country": [
+      "River Rider", "Fast Draw", "Rolling Current", "Meadowstride"
+    ],
+    "Distance Preference": [
+      "Quick Gallop", "Swift Trot", "Steady Strider", "Meadow Runner", 
+      "Endurance Charger", "Marathon Trotter"
+    ],
+    "Exotic Traits (Event Only)": [
+      "Steam Burst", "Short Star", "Mid Miracle", "Marathon Master", 
+      "Thundering Hooves", "Hard 'N' Fast"
+    ],
+    "Cosmetic Traits": [
+      "Majestic Mane", "Crystal Coat", "Noble Braid"
+    ],
+    "Star Club Exclusive": [
+      "Thrifty Spender", "Elite Lineage", "Top Student"
+    ]
+  };
+
+  // Flatten all traits for the filter state
+  const allTraits = Object.values(traitsByCategory).flat();
 
   const toggleArrayFilter = (category: keyof typeof filters, value: string) => {
     setFilters(prev => ({
@@ -211,17 +226,26 @@ const BreedingSuggestions = () => {
               {/* Traits */}
               <div className="space-y-3">
                 <Label>Desired Traits</Label>
-                <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
-                  {traitOptions.map((trait) => (
-                    <div key={trait} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={`trait-${trait}`}
-                        checked={filters.traits.includes(trait)}
-                        onCheckedChange={() => toggleArrayFilter('traits', trait)}
-                      />
-                      <Label htmlFor={`trait-${trait}`} className="text-sm font-normal">
-                        {trait}
-                      </Label>
+                <div className="space-y-4 max-h-64 overflow-y-auto">
+                  {Object.entries(traitsByCategory).map(([category, traits]) => (
+                    <div key={category} className="space-y-2">
+                      <div className="text-sm font-semibold text-muted-foreground border-b pb-1">
+                        {category}
+                      </div>
+                      <div className="grid grid-cols-1 gap-1 pl-2">
+                        {traits.map((trait) => (
+                          <div key={trait} className="flex items-center space-x-2">
+                            <Checkbox
+                              id={`trait-${trait}`}
+                              checked={filters.traits.includes(trait)}
+                              onCheckedChange={() => toggleArrayFilter('traits', trait)}
+                            />
+                            <Label htmlFor={`trait-${trait}`} className="text-xs font-normal">
+                              {trait}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
