@@ -177,7 +177,8 @@ const LiveEvents = () => {
                     raceLabel = `${raceType} Race ${raceNumber}`;
                   } else {
                     raceType = "Cross Country";
-                    raceLabel = `${raceType} (Surface preference only)`;
+                    const ccNumber = raceNumber - 19; // Cross Country 1 or 2
+                    raceLabel = `${raceType} ${ccNumber} (Surface preference only)`;
                   }
                   
                   return (
@@ -187,15 +188,19 @@ const LiveEvents = () => {
                        </div>
 
                     <div className="flex gap-4 mb-4">
-                      <Badge variant="outline" className="text-sm">
-                        Distance: {race.distance}m
-                      </Badge>
+                      {race.distance !== '0' && (
+                        <Badge variant="outline" className="text-sm">
+                          Distance: {race.distance}m
+                        </Badge>
+                      )}
                       <Badge variant="outline" className="text-sm">
                         Surface: {formatSurface(race.surface)}
                       </Badge>
-                      <Badge variant="outline" className="text-sm">
-                        {race.tier_restriction === 'odd_grades' ? 'Odd Grades (3,5,7,9)' : 'Even Grades (2,4,6,8)'}
-                      </Badge>
+                      {race.tier_restriction && (
+                        <Badge variant="outline" className="text-sm">
+                          {race.tier_restriction === 'odd_grades' ? 'Odd Grades (3,5,7,9)' : 'Even Grades (2,4,6,8)'}
+                        </Badge>
+                      )}
                       <Badge variant="secondary" className="text-sm">
                         {race.matchingHorses.length} Matching Horses
                       </Badge>
