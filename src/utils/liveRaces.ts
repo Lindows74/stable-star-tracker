@@ -34,8 +34,9 @@ export const LIVE_RACES_2025: LiveRace[] = [
   { distance: 1100, surface: "very_hard", category: "Steeplechase", grades: "Even", active: false }, // Out of rotation
   { distance: 1400, surface: "firm", category: "Steeplechase", grades: "Even", active: true }, // Special Event
   
-  // Cross Country - Note: Cross Country has 3 races with Very Hard and Very Soft preferences
-  // Since specific distances aren't listed, we'll use general surface matching
+  // Cross Country - Only surface matching, no distance requirement
+  { distance: 0, surface: "very_hard", category: "Cross Country", grades: "All", active: true },
+  { distance: 0, surface: "very_soft", category: "Cross Country", grades: "All", active: true },
 ];
 
 export interface HorseRaceMatch {
@@ -76,38 +77,30 @@ export const checkHorseLiveRaceMatches = (
       horseCategories.some(cat => cat.toLowerCase().includes(race.category.toLowerCase().replace(' ', '_')));
     const tierOk = isTierAllowedForRace(race.grades, horseTier);
     
-    if (hasMatchingDistance && hasMatchingSurface && tierOk) {
-      matches.push({
-        distance: race.distance,
-        surface: race.surface,
-        category: race.category,
-        grades: race.grades
-      });
+    // For Cross Country, only check surface and tier - no distance requirement
+    if (race.category === "Cross Country") {
+      if (hasMatchingSurface && tierOk) {
+        matches.push({
+          distance: 0, // Cross Country doesn't specify distance
+          surface: race.surface,
+          category: race.category,
+          grades: race.grades
+        });
+      }
+    } else {
+      // For Flat Racing and Steeplechase, check distance, surface, and tier
+      if (hasMatchingDistance && hasMatchingSurface && tierOk) {
+        matches.push({
+          distance: race.distance,
+          surface: race.surface,
+          category: race.category,
+          grades: race.grades
+        });
+      }
     }
   }
   
-  // Special handling for Cross Country - check if horse has very_hard or very_soft surfaces
-  const hasXCCompatibleSurface = horseSurfaces.some(surface => 
-    surface === 'very_hard' || surface === 'very_soft'
-  );
-  const hasXCCategory = horseCategories.length === 0 || 
-    horseCategories.some(cat => cat.toLowerCase().includes('cross_country'));
-    
-  if (hasXCCompatibleSurface) {
-    // Add Cross Country matches for compatible surfaces
-    const compatibleSurfaces = horseSurfaces.filter(surface => 
-      surface === 'very_hard' || surface === 'very_soft'
-    );
-    
-    for (const surface of compatibleSurfaces) {
-      matches.push({
-        distance: 0, // Cross Country doesn't specify distance
-        surface: surface,
-        category: "Cross Country",
-        grades: "All"
-      });
-    }
-  }
+  // Remove the separate Cross Country handling since it's now in the main loop
   
   return matches;
 };
