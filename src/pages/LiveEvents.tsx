@@ -174,7 +174,8 @@ const LiveEvents = () => {
                     raceLabel = `${raceType} Race ${raceNumber}`;
                   } else if (raceNumber <= 19) {
                     raceType = "Steeplechase";
-                    raceLabel = `${raceType} Race ${raceNumber}`;
+                    const steeplechaseNumber = raceNumber - 17; // Steeplechase 1 or 2
+                    raceLabel = `${raceType} Race ${steeplechaseNumber}`;
                   } else {
                     raceType = "Cross Country";
                     const ccNumber = raceNumber - 19; // Cross Country 1 or 2
