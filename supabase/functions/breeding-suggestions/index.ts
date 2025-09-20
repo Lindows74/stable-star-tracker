@@ -60,9 +60,8 @@ serve(async (req) => {
       
       // Only find matching horses for active races  
       let matchingHorses = [];
-      if (race.is_active) {
-        // Find horses that match this race's surface, distance, and tier restriction
-        matchingHorses = horses?.filter(horse => {
+      // Compute matching horses for this race (active or inactive)
+      matchingHorses = horses?.filter(horse => {
         // Check if horse has the matching surface preference
         const hasSurface = horse.horse_surfaces?.some(s => s.surface === race.surface);
         
@@ -96,7 +95,6 @@ serve(async (req) => {
           jump: horse.jump,
           traits: horse.horse_traits?.map(t => t.trait_name) || []
         })) || [];
-      }
 
       console.log(`Found ${matchingHorses.length} matching horses for race ${race.race_name}`);
 
