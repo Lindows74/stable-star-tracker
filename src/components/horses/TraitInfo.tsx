@@ -69,8 +69,14 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   },
   "Rolling Current Pro": {
     icon: Waves,
-    description: "On hard surfaces recharge extra Sprint Energy when jumping and gain improved Acceleration in Cross Country races. Turns Pro if horse is 80% or higher Akhal Teke",
+    description: "On hard surfaces recharge extra Sprint Energy when jumping and gain superior Acceleration in Cross Country races",
     category: "Terrain & Surface",
+    isPro: true
+  },
+  "Streak Shield Pro": {
+    icon: Shield,
+    description: "In SteepleChase mode, while a perfect streak is active, missing a perfect jump will not break the streak. Activates 3 times per race",
+    category: "Jumping & Agility",
     isPro: true
   },
 
@@ -102,18 +108,23 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   },
   "Energy Saver": {
     icon: Battery,
-    description: "Slow Races only cost 1 Career Energy",
+    description: "Story Races only costs 1 Career Energy",
     category: "Special Abilities"
   },
   "Endless Stride": {
     icon: Battery,
-    description: "On Flat Racing tracks of 2400m or more, gains improved acceleration and Sprint Energy lasts longer. Turns Pro if horse is 80% or higher Akhal Teke",
+    description: "On Flat Racing tracks of 2400m or more, gains improved acceleration and Sprint Energy lasts longer. Turns Pro if horse is 80% or higher Akhal-Teke",
     category: "Endurance & Stamina"
   },
   "Rolling Current": {
     icon: Waves,
-    description: "On hard surfaces recharge extra Sprint Energy when jumping and gain improved Acceleration in Cross Country races. Turns Pro if horse is 80% or higher Akhal Teke",
+    description: "On hard surfaces recharge extra Sprint Energy when jumping and gain improved Acceleration in Cross Country races. Turns Pro if horse is 80% or higher Anglo-Arab",
     category: "Terrain & Surface"
+  },
+  "Streak Shield": {
+    icon: Shield,
+    description: "In SteepleChase mode, while a perfect streak is active, missing a perfect jump will not break the streak. Activates 2 times per race",
+    category: "Jumping & Agility"
   },
 
   // Distance Preference Traits (from Distance Preference Traits image)
@@ -168,7 +179,7 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   // Game Mode Specific Traits (from Specific Game Mode Traits image)
   "Lightning Bolt": {
     icon: Zap,
-    description: "Faster stamina refill rate during the final stretch in Flat Racing. Lightning Bolt can stack with Fleet Dash for even faster stamina refill during the final stretch of a race",
+    description: "Faster stamina refill rate during the final stretch in Flat Racing. Lightning Bolt can stack with Hard 'N' Fast to get even faster stamina refill during the final stretch of a race",
     category: "Speed & Acceleration"
   },
   "Top Endurance": {
@@ -203,7 +214,7 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   },
   "Steam Burst": {
     icon: Zap,
-    description: "On flat racing tracks between 800-1200m, sprinting increases acceleration and maximum top speed but uses more Sprint Energy",
+    description: "On Flat Racing tracks between 800m and 1200m, sprinting increases your acceleration and maximum top speed but uses more Sprint Energy",
     category: "Speed & Acceleration"
   },
 
@@ -235,24 +246,9 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
     description: "Extremely calming mind can include 1,000x and above",
     category: "Endurance & Stamina"
   },
-  "Mid Miracle": {
-    icon: Target,
-    description: "Extremely calming mind can include 1,400m and above",
-    category: "Distance Specialization"
-  },
-  "Marathon Master": {
-    icon: Timer,
-    description: "Extremely calming mind can include 2,400m and higher",
-    category: "Distance Specialization"
-  },
-  "Thundering Hooves": {
-    icon: Zap,
-    description: "Starts with full stamina bar. Extends performance to include 2,600m and 2,800m",
-    category: "Endurance & Stamina"
-  },
-  "Hard N' Fast": {
+  "Hard 'N' Fast": {
     icon: Mountain,
-    description: "Faster stamina refill rate during final stretch. Extends performance to include 2,400m and higher",
+    description: "Faster stamina refill rate during final stretch. Extends Preference range to include hard and very hard surfaces. Can stack with Lightning Bolt",
     category: "Terrain & Surface"
   },
   "Meadowstride": {
@@ -262,18 +258,28 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   },
   "Leaping Lancer": {
     icon: Mountain,
-    description: "Max Jump streak in Steeplechase is increased by 1. Improved boost when you perform a perfect jump in Steeplechase",
+    description: "Max jump streak in Steeplechase is increased by 1. Improved boost when you perform a perfect jump in Steeplechase. Can stack with Leaping Star and with Perfect Step",
     category: "Jumping & Agility"
   },
   "Majestic Mane": {
     icon: Crown,
-    description: "The horse will have a magnificent presence and enhanced agility",
-    category: "Jumping & Agility"
+    description: "The horse will have a Majestic, Long Mane",
+    category: "Special Abilities"
   },
   "Crystal Coat": {
     icon: Star,
-    description: "A beautiful coat reveals your horse's soul like no other",
+    description: "A lustrous coat makes your horse shine like no other",
     category: "Special Abilities"
+  },
+  "Noble Braid": {
+    icon: Crown,
+    description: "Tightly sewn braids that add refined charm to your horse's presence",
+    category: "Special Abilities"
+  },
+  "Kinetic Boost": {
+    icon: Battery,
+    description: "While your perfect jump streak is 5 or higher, receive bonus sprint energy on each subsequent perfect jump",
+    category: "Jumping & Agility"
   },
 
   // Star Club Traits - Special abilities
@@ -291,8 +297,23 @@ export const TRAIT_INFO: Record<string, TraitInfo> = {
   // Additional Distance Traits
   "Short Star": {
     icon: Star,
-    description: "Extends preference range to include 800m and below",
+    description: "Extends preference range to include 1,200m and below",
     category: "Distance Specialization"
+  },
+  "Mid Miracle": {
+    icon: Target,
+    description: "Extends preference range to include 1,400m to 2,200m",
+    category: "Distance Specialization"
+  },
+  "Marathon Master": {
+    icon: Timer,
+    description: "Extends preference range to include 2,400m and higher",
+    category: "Distance Specialization"
+  },
+  "Thundering Hooves": {
+    icon: Zap,
+    description: "Starts with full stamina bar. Extends preference range to include 2,800m and higher",
+    category: "Endurance & Stamina"
   }
 };
 
