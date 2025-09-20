@@ -63,9 +63,7 @@ const LiveEvents = () => {
         const allRaces = data.liveRaces || [];
         const raceMatchesWithAll = allRaces.map((race: any) => ({
           ...race,
-          matchingHorses: race.is_active ? 
-            (data.raceMatches?.find((rm: any) => rm.id === race.id)?.matchingHorses || []) : 
-            [] // No matching horses for inactive races
+          matchingHorses: data.raceMatches?.find((rm: any) => rm.id === race.id)?.matchingHorses || []
         }));
         
         // Sort to match the official list: 17 Flat, 3 Steeplechase (incl. 1100m under repair), then Cross Country

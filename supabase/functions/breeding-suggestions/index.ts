@@ -65,10 +65,11 @@ serve(async (req) => {
         // Check if horse has the matching surface preference
         const hasSurface = horse.horse_surfaces?.some(s => s.surface === race.surface);
         
-        // Check if horse has the matching distance preference - skip for Cross Country races
+        // Check if horse has the matching distance preference - skip for Cross Country and Under Repair Steeplechase races
         let hasDistance = true;
         const isCrossCountry = /cross country/i.test(race.race_name || '');
-        if (!isCrossCountry && race.distance !== '0') {
+        const isUnderRepairSteeple = /steeplechase/i.test(race.race_name || '') && /under repair/i.test(race.race_name || '');
+        if (!isCrossCountry && !isUnderRepairSteeple && race.distance !== '0') {
           hasDistance = horse.horse_distances?.some(d => d.distance === race.distance);
         }
         
