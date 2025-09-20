@@ -73,7 +73,7 @@ const HorseSearch = () => {
   const [maxTier, setMaxTier] = useState<number | null>(null);
   const [fromDate, setFromDate] = useState<Date | undefined>();
   const [toDate, setToDate] = useState<Date | undefined>();
-  const [selectedDateSort, setSelectedDateSort] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc">("created_desc");
+  const [selectedDateSort, setSelectedDateSort] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc" | null>(null);
 
   const { data: horses, isLoading, error } = useQuery({
     queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, selectedDateSort],
@@ -112,22 +112,32 @@ const HorseSearch = () => {
         query = query.lte("tier", maxTier);
       }
 
-      // Apply date filters
-      const dateField = selectedDateSort.startsWith("created") ? "created_at" : "updated_at";
-      if (fromDate) {
-        const fromDateISO = fromDate.toISOString();
-        query = query.gte(dateField, fromDateISO);
-      }
-      if (toDate) {
-        // Set to end of day for toDate
-        const toDateEndOfDay = new Date(toDate);
-        toDateEndOfDay.setHours(23, 59, 59, 999);
-        const toDateISO = toDateEndOfDay.toISOString();
-        query = query.lte(dateField, toDateISO);
-      }
+      // Apply date filters and sorting only if a date sort option is selected
+      let data, error;
+      if (selectedDateSort) {
+        const dateField = selectedDateSort.startsWith("created") ? "created_at" : "updated_at";
+        if (fromDate) {
+          const fromDateISO = fromDate.toISOString();
+          query = query.gte(dateField, fromDateISO);
+        }
+        if (toDate) {
+          // Set to end of day for toDate
+          const toDateEndOfDay = new Date(toDate);
+          toDateEndOfDay.setHours(23, 59, 59, 999);
+          const toDateISO = toDateEndOfDay.toISOString();
+          query = query.lte(dateField, toDateISO);
+        }
 
-      const sortAscending = selectedDateSort.endsWith("_asc");
-      const { data, error } = await query.order(dateField, { ascending: sortAscending });
+        const sortAscending = selectedDateSort.endsWith("_asc");
+        const result = await query.order(dateField, { ascending: sortAscending });
+        data = result.data;
+        error = result.error;
+      } else {
+        // Default query without date sorting
+        const result = await query.order("created_at", { ascending: false });
+        data = result.data;
+        error = result.error;
+      }
 
       if (error) {
         console.error("HorseSearch: Error fetching horses:", error);
@@ -168,10 +178,15 @@ const HorseSearch = () => {
         );
       }
 
-      // Sort horses using the same logic as the landing page
-      const sortedData = sortHorses(filteredData);
-      console.log("HorseSearch: Filtered and sorted horses:", sortedData);
-      return sortedData;
+      // Sort horses using the default logic only if no date sort is selected
+      if (!selectedDateSort) {
+        const sortedData = sortHorses(filteredData);
+        console.log("HorseSearch: Filtered and sorted horses:", sortedData);
+        return sortedData;
+      } else {
+        console.log("HorseSearch: Filtered horses (date sorted):", filteredData);
+        return filteredData;
+      }
     },
   });
 
@@ -209,7 +224,7 @@ const HorseSearch = () => {
     setMaxTier(null);
     setFromDate(undefined);
     setToDate(undefined);
-    setSelectedDateSort("created_desc");
+    setSelectedDateSort(null);
   };
 
   const formatLabel = (value: string) => {
@@ -294,7 +309,7 @@ const HorseSearch = () => {
                       <Checkbox
                         id="date-created-desc"
                         checked={selectedDateSort === "created_desc"}
-                        onCheckedChange={() => setSelectedDateSort("created_desc")}
+                        onCheckedChange={(checked) => setSelectedDateSort(checked ? "created_desc" : null)}
                       />
                       <Label htmlFor="date-created-desc" className="text-sm font-normal">
                         Date Added ↓ (Newest First)
@@ -304,7 +319,7 @@ const HorseSearch = () => {
                       <Checkbox
                         id="date-created-asc"
                         checked={selectedDateSort === "created_asc"}
-                        onCheckedChange={() => setSelectedDateSort("created_asc")}
+                        onCheckedChange={(checked) => setSelectedDateSort(checked ? "created_asc" : null)}
                       />
                       <Label htmlFor="date-created-asc" className="text-sm font-normal">
                         Date Added ↑ (Oldest First)
@@ -314,7 +329,7 @@ const HorseSearch = () => {
                       <Checkbox
                         id="date-updated-desc"
                         checked={selectedDateSort === "updated_desc"}
-                        onCheckedChange={() => setSelectedDateSort("updated_desc")}
+                        onCheckedChange={(checked) => setSelectedDateSort(checked ? "updated_desc" : null)}
                       />
                       <Label htmlFor="date-updated-desc" className="text-sm font-normal">
                         Last Updated ↓ (Newest First)
@@ -324,7 +339,7 @@ const HorseSearch = () => {
                       <Checkbox
                         id="date-updated-asc"
                         checked={selectedDateSort === "updated_asc"}
-                        onCheckedChange={() => setSelectedDateSort("updated_asc")}
+                        onCheckedChange={(checked) => setSelectedDateSort(checked ? "updated_asc" : null)}
                       />
                       <Label htmlFor="date-updated-asc" className="text-sm font-normal">
                         Last Updated ↑ (Oldest First)
