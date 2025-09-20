@@ -20,7 +20,6 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
     distance: "",
     surface: "",
     trackName: "",
-    prizeMoney: "",
     startDate: "",
     startTime: ""
   });
@@ -59,24 +58,17 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
 
     setLoading(true);
     try {
-      const raceTypeLabels = {
-        flat_racing: "Flat Racing",
-        steeplechase: "Steeplechase", 
-        cross_country: "Cross Country"
-      };
-
-      const raceName = `${raceTypeLabels[formData.raceType as keyof typeof raceTypeLabels]} Championship ${formData.distance}m`;
       const startDateTime = `${formData.startDate} ${formData.startTime}:00+00`;
 
       const { error } = await supabase
         .from('live_races')
         .insert([{
-          race_name: raceName,
+          race_name: `${formData.raceType.replace('_', ' ')} ${formData.distance}m ${formData.surface}`,
           surface: formData.surface,
           distance: formData.distance,
           start_time: startDateTime,
           track_name: formData.trackName || null,
-          prize_money: formData.prizeMoney ? parseInt(formData.prizeMoney) : null,
+          prize_money: null,
           is_active: true
         }]);
 
@@ -101,7 +93,6 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
         distance: "",
         surface: "",
         trackName: "",
-        prizeMoney: "",
         startDate: "",
         startTime: ""
       });
@@ -242,17 +233,7 @@ const AddRaceForm = ({ onRaceAdded }: AddRaceFormProps) => {
               />
             </div>
 
-            <div className="md:col-span-2">
-              <Label htmlFor="prizeMoney">Prize Money ($)</Label>
-              <Input
-                id="prizeMoney"
-                type="number"
-                value={formData.prizeMoney}
-                onChange={(e) => setFormData({...formData, prizeMoney: e.target.value})}
-                placeholder="Enter prize money"
-                min="0"
-              />
-            </div>
+            {/* Removed prize money field */}
           </div>
 
           <div className="flex gap-2 pt-4">

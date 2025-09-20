@@ -165,20 +165,14 @@ const LiveEvents = () => {
               <div className="space-y-6">
                 {raceMatches.map((race) => (
                   <div key={race.id} className="border rounded-lg p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold">{race.race_name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {race.track_name} • {formatDateTime(race.start_time)}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-lg font-semibold text-green-600">
-                          ${race.prize_money?.toLocaleString()}
-                        </div>
-                        <div className="text-sm text-muted-foreground">Prize Money</div>
-                      </div>
-                    </div>
+                     <div className="flex items-center justify-between mb-4">
+                       <div>
+                         <h3 className="text-lg font-semibold">{race.race_name}</h3>
+                         <p className="text-sm text-muted-foreground">
+                           {race.track_name && `${race.track_name} • `}{formatDateTime(race.start_time)}
+                         </p>
+                       </div>
+                     </div>
 
                     <div className="flex gap-4 mb-4">
                       <Badge variant="outline" className="text-sm">
