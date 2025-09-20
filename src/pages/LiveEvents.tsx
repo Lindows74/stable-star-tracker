@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import Layout from "@/components/layout/Layout";
 import AddRaceForm from "@/components/races/AddRaceForm";
 import { TraitsByDisciplineInline } from "@/components/horses/TraitsByDisciplineInline";
-import { getHorseSpecialIcons } from "@/utils/horseTraitUtils";
+import { getHorseSpecialIcons, checkHorseHasSpeedStackingTraits, checkHorseHasJumpingStackingTraits, checkHorseHasFullStaminaTrait } from "@/utils/horseTraitUtils";
 
 interface MatchingHorse {
   id: number;

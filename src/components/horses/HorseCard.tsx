@@ -10,7 +10,7 @@ import { TraitBadge } from "./TraitBadge";
 import { TraitsByDiscipline } from "./TraitsByDiscipline";
 import { useToast } from "@/hooks/use-toast";
 import { checkHorseLiveRaceMatches, formatSurfaceName, type HorseRaceMatch } from "@/utils/liveRaces";
-import { getHorseSpecialIcons, checkHorseHasStackingTraits, checkHorseHasFullStaminaTrait } from "@/utils/horseTraitUtils";
+import { getHorseSpecialIcons, checkHorseHasStackingTraits, checkHorseHasFullStaminaTrait, checkHorseHasSpeedStackingTraits, checkHorseHasJumpingStackingTraits } from "@/utils/horseTraitUtils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -115,7 +115,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   const hasFullStaminaTrait = checkHorseHasFullStaminaTrait(allTraitNames);
 
   // Check if horse has stacking traits
-  const hasStackingTraits = checkHorseHasStackingTraits(allTraitNames);
+  const hasSpeedStackingTraits = checkHorseHasSpeedStackingTraits(allTraitNames);
+  const hasJumpingStackingTraits = checkHorseHasJumpingStackingTraits(allTraitNames);
   
   // Check for live race matches
   const horseDistances = horse.horse_distances?.map((d: any) => d.distance.toString()) || [];
@@ -132,7 +133,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
               <CardTitle className="text-lg flex items-center gap-1">
                 {horse.name}
                 {hasFullStaminaTrait && <span className="text-lg">💯</span>}
-                {hasStackingTraits && <span className="text-lg">🔥</span>}
+                {hasSpeedStackingTraits && <span className="text-lg">🔥</span>}
+                {hasJumpingStackingTraits && <span className="text-lg">🐸</span>}
               </CardTitle>
             </div>
             {horse.tier && (
