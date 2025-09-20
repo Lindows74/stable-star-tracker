@@ -9,9 +9,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { X, Search, Filter } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { X, Search, Filter, Calendar as CalendarIcon } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 import Layout from "@/components/layout/Layout";
 
 const sortHorses = (horses: any[]) => {
@@ -67,9 +71,12 @@ const HorseSearch = () => {
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
   const [minTier, setMinTier] = useState<number | null>(null);
   const [maxTier, setMaxTier] = useState<number | null>(null);
+  const [fromDate, setFromDate] = useState<Date | undefined>();
+  const [toDate, setToDate] = useState<Date | undefined>();
+  const [dateFilterType, setDateFilterType] = useState<"created_at" | "updated_at">("created_at");
 
   const { data: horses, isLoading, error } = useQuery({
-    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier],
+    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, dateFilterType],
     queryFn: async () => {
       console.log("HorseSearch: Fetching horses with filters...");
       
@@ -103,6 +110,19 @@ const HorseSearch = () => {
       }
       if (maxTier !== null) {
         query = query.lte("tier", maxTier);
+      }
+
+      // Apply date filters
+      if (fromDate) {
+        const fromDateISO = fromDate.toISOString();
+        query = query.gte(dateFilterType, fromDateISO);
+      }
+      if (toDate) {
+        // Set to end of day for toDate
+        const toDateEndOfDay = new Date(toDate);
+        toDateEndOfDay.setHours(23, 59, 59, 999);
+        const toDateISO = toDateEndOfDay.toISOString();
+        query = query.lte(dateFilterType, toDateISO);
       }
 
       const { data, error } = await query.order("created_at", { ascending: false });
@@ -185,6 +205,9 @@ const HorseSearch = () => {
     setSelectedTraits([]);
     setMinTier(null);
     setMaxTier(null);
+    setFromDate(undefined);
+    setToDate(undefined);
+    setDateFilterType("created_at");
   };
 
   const formatLabel = (value: string) => {
@@ -257,6 +280,105 @@ const HorseSearch = () => {
                       min="1"
                       max="10"
                     />
+                  </div>
+                </div>
+
+                {/* Date Filter */}
+                <div>
+                  <Label>Date Added/Updated</Label>
+                  <div className="space-y-3 mt-2">
+                    <Select value={dateFilterType} onValueChange={(value: "created_at" | "updated_at") => setDateFilterType(value)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="created_at">Date Added</SelectItem>
+                        <SelectItem value="updated_at">Date Updated</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <Label className="text-xs text-muted-foreground">From</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !fromDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {fromDate ? format(fromDate, "PPP") : <span>From date</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={fromDate}
+                              onSelect={setFromDate}
+                              initialFocus
+                              className={cn("p-3 pointer-events-auto")}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      
+                      <div>
+                        <Label className="text-xs text-muted-foreground">To</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "w-full justify-start text-left font-normal",
+                                !toDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                              {toDate ? format(toDate, "PPP") : <span>To date</span>}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={toDate}
+                              onSelect={setToDate}
+                              initialFocus
+                              className={cn("p-3 pointer-events-auto")}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+                    
+                    {(fromDate || toDate) && (
+                      <div className="flex gap-1">
+                        {fromDate && (
+                          <Badge variant="secondary" className="text-xs">
+                            From: {format(fromDate, "MMM d, yyyy")}
+                            <button
+                              onClick={() => setFromDate(undefined)}
+                              className="ml-1 hover:bg-muted/50 rounded-full"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        )}
+                        {toDate && (
+                          <Badge variant="secondary" className="text-xs">
+                            To: {format(toDate, "MMM d, yyyy")}
+                            <button
+                              onClick={() => setToDate(undefined)}
+                              className="ml-1 hover:bg-muted/50 rounded-full"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </Badge>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
 
