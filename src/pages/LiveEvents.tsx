@@ -164,11 +164,27 @@ const LiveEvents = () => {
           <CardContent>
             {raceMatches.length > 0 ? (
               <div className="space-y-6">
-                {raceMatches.map((race, index) => (
-                  <div key={race.id} className="border rounded-lg p-6">
-                     <div className="mb-4">
-                         <h3 className="text-lg font-semibold">Race {index + 1}</h3>
-                     </div>
+                {raceMatches.map((race, index) => {
+                  const raceNumber = index + 1;
+                  let raceType = "";
+                  let raceLabel = "";
+                  
+                  if (raceNumber <= 17) {
+                    raceType = "Flat Racing";
+                    raceLabel = `${raceType} Race ${raceNumber}`;
+                  } else if (raceNumber <= 19) {
+                    raceType = "Steeplechase";
+                    raceLabel = `${raceType} Race ${raceNumber}`;
+                  } else {
+                    raceType = "Cross Country";
+                    raceLabel = `${raceType} (Surface preference only)`;
+                  }
+                  
+                  return (
+                    <div key={race.id} className="border rounded-lg p-6">
+                       <div className="mb-4">
+                           <h3 className="text-lg font-semibold">{raceLabel}</h3>
+                       </div>
 
                     <div className="flex gap-4 mb-4">
                       <Badge variant="outline" className="text-sm">
@@ -208,10 +224,11 @@ const LiveEvents = () => {
                       <div className="text-center py-8 text-muted-foreground">
                         No horses match this race's surface and distance requirements
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                     )}
+                   </div>
+                  );
+                })}
+               </div>
             ) : (
               <div className="text-center py-12">
                 <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
