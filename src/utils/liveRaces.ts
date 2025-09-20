@@ -48,12 +48,23 @@ export interface HorseRaceMatch {
 export const checkHorseLiveRaceMatches = (
   horseDistances: string[] = [],
   horseSurfaces: string[] = [],
-  horseCategories: string[] = []
+  horseCategories: string[] = [],
+  horseTier?: number
 ): HorseRaceMatch[] => {
   const matches: HorseRaceMatch[] = [];
   
   // Convert horse distances to numbers for comparison
   const distanceNumbers = horseDistances.map(d => parseInt(d)).filter(d => !isNaN(d));
+  
+  // Helper: validate race vs tier when race has grade restriction
+  const isTierAllowedForRace = (raceGrades: string, tier?: number) => {
+    const grades = raceGrades?.toLowerCase();
+    if (!grades || grades === 'all') return true;
+    if (typeof tier !== 'number') return false; // if restricted race and tier unknown -> not allowed
+    if (grades === 'odd') return [3, 5, 7, 9].includes(tier);
+    if (grades === 'even') return [2, 4, 6, 8].includes(tier);
+    return true;
+  };
   
   // Check Flat Racing and Steeplechase matches
   for (const race of LIVE_RACES_2025) {
@@ -63,8 +74,9 @@ export const checkHorseLiveRaceMatches = (
     const hasMatchingSurface = horseSurfaces.includes(race.surface);
     const hasMatchingCategory = horseCategories.length === 0 || 
       horseCategories.some(cat => cat.toLowerCase().includes(race.category.toLowerCase().replace(' ', '_')));
+    const tierOk = isTierAllowedForRace(race.grades, horseTier);
     
-    if (hasMatchingDistance && hasMatchingSurface) {
+    if (hasMatchingDistance && hasMatchingSurface && tierOk) {
       matches.push({
         distance: race.distance,
         surface: race.surface,
