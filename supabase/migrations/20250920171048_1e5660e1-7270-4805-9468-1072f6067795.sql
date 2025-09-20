@@ -1,0 +1,23 @@
+-- Update live race dates to be in the near future
+UPDATE public.live_races SET start_time = '2025-10-15 14:00:00+00' WHERE race_name = 'Grade Championship 800m';
+UPDATE public.live_races SET start_time = '2025-10-22 15:30:00+00' WHERE race_name = 'Grade Championship 900m';
+UPDATE public.live_races SET start_time = '2025-11-05 16:00:00+00' WHERE race_name = 'Grade Championship 1000m';
+UPDATE public.live_races SET start_time = '2025-11-12 14:30:00+00' WHERE race_name = 'Grade Championship 1200m Medium';
+UPDATE public.live_races SET start_time = '2025-11-19 15:00:00+00' WHERE race_name = 'Grade Championship 1200m Soft';
+UPDATE public.live_races SET start_time = '2025-12-05 16:30:00+00' WHERE race_name = 'Grade Championship 1400m';
+UPDATE public.live_races SET start_time = '2025-12-12 14:00:00+00' WHERE race_name = 'Grade Championship 1600m Firm';
+UPDATE public.live_races SET start_time = '2025-12-19 15:30:00+00' WHERE race_name = 'Grade Championship 1600m Hard';
+UPDATE public.live_races SET start_time = '2025-12-26 16:00:00+00' WHERE race_name = 'Grade Championship 1600m Very Hard';
+UPDATE public.live_races SET start_time = '2026-01-02 14:30:00+00' WHERE race_name = 'Grade Championship 1800m';
+UPDATE public.live_races SET start_time = '2026-01-09 15:00:00+00' WHERE race_name = 'Grade Championship 2000m Hard';
+UPDATE public.live_races SET start_time = '2026-01-16 16:30:00+00' WHERE race_name = 'Grade Championship 2000m Soft';
+UPDATE public.live_races SET start_time = '2026-01-23 14:00:00+00' WHERE race_name = 'Grade Championship 2400m';
+UPDATE public.live_races SET start_time = '2026-01-30 15:30:00+00' WHERE race_name = 'Grade Championship 2800m';
+UPDATE public.live_races SET start_time = '2026-02-07 16:00:00+00' WHERE race_name = 'Grade Championship 3000m';
+UPDATE public.live_races SET start_time = '2026-02-14 14:30:00+00' WHERE race_name = 'Grade Championship 3200m Soft';
+UPDATE public.live_races SET start_time = '2026-02-21 15:00:00+00' WHERE race_name = 'Grade Championship 3200m Very Hard';
+UPDATE public.live_races SET start_time = '2026-03-07 16:30:00+00' WHERE race_name = 'Steeplechase Championship 900m';
+UPDATE public.live_races SET start_time = '2026-03-14 14:00:00+00' WHERE race_name = 'Steeplechase Championship 1400m';
+UPDATE public.live_races SET start_time = '2026-03-21 15:30:00+00' WHERE race_name = 'Cross Country Challenge I';
+UPDATE public.live_races SET start_time = '2026-03-28 16:00:00+00' WHERE race_name = 'Cross Country Challenge II';
+UPDATE public.live_races SET start_time = '2026-04-05 14:30:00+00' WHERE race_name = 'Cross Country Challenge III';
