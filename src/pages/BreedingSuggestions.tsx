@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,11 @@ const BreedingSuggestions = () => {
   const [loading, setLoading] = useState(false);
   const [totalHorses, setTotalHorses] = useState(0);
   const { toast } = useToast();
+
+  // Auto-load data when component mounts
+  useEffect(() => {
+    fetchLiveRaces();
+  }, []);
 
   const fetchLiveRaces = async () => {
     setLoading(true);
