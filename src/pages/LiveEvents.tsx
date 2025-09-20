@@ -299,12 +299,12 @@ const LiveEvents = () => {
                         </Badge>
                       )}
                       {race.is_active === false && (
-                        <Badge variant="secondary" className="text-sm">Inactive</Badge>
+                        <Badge variant="destructive" className="text-sm">Under Repair</Badge>
                       )}
                       <Badge variant="secondary" className="text-sm">
                         {race.matchingHorses.length} Matching Horses
                       </Badge>
-                    </div>
+                     </div>
 
                     {race.matchingHorses.length > 0 ? (
                        <Table>
