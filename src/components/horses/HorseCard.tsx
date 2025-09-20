@@ -8,6 +8,7 @@ import { useState } from "react";
 import { HorseEditForm } from "./HorseEditForm";
 import { TraitBadge } from "./TraitBadge";
 import { useToast } from "@/hooks/use-toast";
+import { checkHorseLiveRaceMatches, formatSurfaceName, type HorseRaceMatch } from "@/utils/liveRaces";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -133,6 +134,12 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
 
   // Check if horse has stacking traits
   const hasStackingTraits = checkIfHorseHasStackingTraits(allTraitNames);
+  
+  // Check for live race matches
+  const horseDistances = horse.horse_distances?.map((d: any) => d.distance.toString()) || [];
+  const horseSurfaces = horse.horse_surfaces?.map((s: any) => s.surface) || [];
+  const horseCategories = horse.horse_categories?.map((c: any) => c.category) || [];
+  const liveRaceMatches = checkHorseLiveRaceMatches(horseDistances, horseSurfaces, horseCategories);
 
   return (
     <Card className="w-full">
@@ -308,6 +315,36 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             </div>
           )}
         </div>
+
+        {/* Live Race Matches */}
+        {liveRaceMatches.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+              <span className="text-red-600">🔴 LIVE</span>
+              <span>Race Matches</span>
+            </h4>
+            <div className="space-y-1">
+              {liveRaceMatches.map((match: HorseRaceMatch, idx: number) => (
+                <div key={idx} className="flex items-center gap-2 text-xs">
+                  <Badge variant="destructive" className="text-xs">
+                    {match.category}
+                  </Badge>
+                  {match.distance > 0 && (
+                    <Badge variant="outline" className="text-xs">
+                      {match.distance}m
+                    </Badge>
+                  )}
+                  <Badge variant="outline" className="text-xs">
+                    {formatSurfaceName(match.surface)}
+                  </Badge>
+                  <Badge variant="secondary" className="text-xs">
+                    {match.grades} Grades
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Traits */}
         {horse.horse_traits && horse.horse_traits.length > 0 && (
