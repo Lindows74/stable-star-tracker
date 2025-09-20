@@ -37,8 +37,27 @@ const BreedingSuggestions = () => {
   const positionOptions = ["Front", "Middle", "Back"];
 
   const traitOptions = [
-    "Speed Boost", "Acceleration Boost", "Stamina Boost",
-    "Recovery Boost", "Agility Boost", "Jump Boost"
+    // Multi Modes
+    "Burst of Speed", "Photo Finish", "Acceleration", "Stamina", "Agility", "Jump", 
+    "Burst of Strength", "Lightning Speed", "Acceleration Boost", "Speed Boost", 
+    "Stamina Boost", "Agility Boost", "Jump Boost", "Recovery Boost",
+    
+    // Flat Racing
+    "Front Runner", "Stalker", "Closer", "Deep Closer", "Pacesetter", "Rail Runner", 
+    "Mudder", "Turf Specialist", "Distance Specialist", "Sprint Specialist", 
+    "Miler Specialist", "Route Specialist", "Early Speed", "Late Speed",
+    
+    // Steeplechase
+    "Jumper", "Sure Footed", "Obstacle Specialist", "Steeplechase Champion", 
+    "Hurdle Master", "Cross Country Expert",
+    
+    // Cross Country
+    "Endurance", "Hill Climber", "Terrain Master", "Cross Country Specialist",
+    "All Weather", "Mud Runner", "Firm Ground",
+    
+    // Misc
+    "Crowd Pleaser", "Camera Shy", "Early Developer", "Late Developer", 
+    "Consistent", "Temperamental", "Trainer's Pet", "Hard to Handle"
   ];
 
   const toggleArrayFilter = (category: keyof typeof filters, value: string) => {
@@ -181,6 +200,27 @@ const BreedingSuggestions = () => {
                       />
                       <Label htmlFor={`surface-${surface}`} className="text-sm font-normal">
                         {surface}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Traits */}
+              <div className="space-y-3">
+                <Label>Desired Traits</Label>
+                <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
+                  {traitOptions.map((trait) => (
+                    <div key={trait} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={`trait-${trait}`}
+                        checked={filters.traits.includes(trait)}
+                        onCheckedChange={() => toggleArrayFilter('traits', trait)}
+                      />
+                      <Label htmlFor={`trait-${trait}`} className="text-sm font-normal">
+                        {trait}
                       </Label>
                     </div>
                   ))}
