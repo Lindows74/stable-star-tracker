@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -79,6 +79,7 @@ const TRAIT_CATEGORIES = {
 export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
   const [selectKey, setSelectKey] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddTrait = (trait: string) => {
     if (selectedTraits.includes(trait)) {
@@ -97,6 +98,11 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
     // Reset the select component to show placeholder again
     setSelectKey(prev => prev + 1);
     setSearchTerm(""); // Clear search when trait is added
+    
+    // Focus back to search input for next trait selection
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 100);
   };
 
   const handleRemoveTrait = (traitToRemove: string) => {
@@ -167,6 +173,7 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
           {/* Search Input */}
           <div>
             <Input
+              ref={searchInputRef}
               placeholder="Search traits..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
