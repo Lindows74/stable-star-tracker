@@ -35,8 +35,8 @@ export const LIVE_RACES_2025: LiveRace[] = [
   { distance: 1400, surface: "firm", category: "Steeplechase", grades: "Even", active: true }, // Special Event
   
   // Cross Country - Only surface matching, no distance requirement
-  { distance: 0, surface: "very_hard", category: "Cross Country", grades: "Odd", active: true },
-  { distance: 0, surface: "very_soft", category: "Cross Country", grades: "Even", active: true },
+  { distance: 0, surface: "very_hard", category: "Cross Country", grades: "All", active: true },
+  { distance: 0, surface: "very_soft", category: "Cross Country", grades: "All", active: true },
 ];
 
 export interface HorseRaceMatch {
