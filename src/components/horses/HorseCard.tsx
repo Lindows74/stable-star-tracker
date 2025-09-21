@@ -177,8 +177,51 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 Tier {horse.tier}
               </Badge>
             )}
+          </div>
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleEdit}
+              >
+                {!isAuthenticated && <Lock className="h-3 w-3 mr-1" />}
+                <Edit2 className="h-4 w-4" />
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => !isAuthenticated && handleDelete()}
+                    disabled={!isAuthenticated && pendingAction === 'delete'}
+                  >
+                    {!isAuthenticated && <Lock className="h-3 w-3 mr-1" />}
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Horse</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete {horse.name}? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => isAuthenticated && deleteMutation.mutate(horse.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      disabled={!isAuthenticated}
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
             {/* Timestamp */}
-            <div className="text-[10px] text-gray-400 ml-2">
+            <div className="text-[10px] text-gray-400">
               {horse.created_at && horse.updated_at && 
                new Date(horse.created_at).toISOString() !== new Date(horse.updated_at).toISOString() ? (
                 <>Updated: {new Date(horse.updated_at).toLocaleDateString()}</>
@@ -186,47 +229,6 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
                 <>Added: {new Date(horse.created_at || horse.updated_at).toLocaleDateString()}</>
               )}
             </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEdit}
-            >
-              {!isAuthenticated && <Lock className="h-3 w-3 mr-1" />}
-              <Edit2 className="h-4 w-4" />
-            </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => !isAuthenticated && handleDelete()}
-                  disabled={!isAuthenticated && pendingAction === 'delete'}
-                >
-                  {!isAuthenticated && <Lock className="h-3 w-3 mr-1" />}
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Horse</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete {horse.name}? This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={() => isAuthenticated && deleteMutation.mutate(horse.id)}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    disabled={!isAuthenticated}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
           </div>
         </div>
 
