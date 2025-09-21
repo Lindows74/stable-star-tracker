@@ -2,9 +2,10 @@
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, X, Save } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Plus, X, Save, ChevronsUpDown, Check } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,6 +36,7 @@ const breedOptions = [
 export const BreedingSection = ({ breedSelections, setBreedSelections, gender, setGender }: BreedingSectionProps) => {
   const { toast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
 
   const addBreedSelection = () => {
     setBreedSelections([...breedSelections, { breed: "", percentage: 0 }]);
@@ -130,21 +132,50 @@ export const BreedingSection = ({ breedSelections, setBreedSelections, gender, s
         <div className="space-y-3">
           {breedSelections.map((selection, index) => (
             <div key={index} className="flex items-center gap-2">
-              <Select 
-                value={selection.breed} 
-                onValueChange={(value) => updateBreedSelection(index, "breed", value)}
+              <Popover 
+                open={openPopoverIndex === index} 
+                onOpenChange={(open) => setOpenPopoverIndex(open ? index : null)}
               >
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Select breed" />
-                </SelectTrigger>
-                <SelectContent>
-                  {breedOptions.map((breed) => (
-                    <SelectItem key={breed} value={breed}>
-                      {breed}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openPopoverIndex === index}
+                    className="flex-1 justify-between"
+                  >
+                    {selection.breed || "Select breed..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0 bg-background z-50">
+                  <Command>
+                    <CommandInput placeholder="Search breeds..." />
+                    <CommandList className="max-h-60">
+                      <CommandEmpty>No breeds found.</CommandEmpty>
+                      <CommandGroup>
+                        {breedOptions.map((breed) => (
+                          <CommandItem
+                            key={breed}
+                            value={breed}
+                            onSelect={() => {
+                              updateBreedSelection(index, "breed", breed);
+                              setOpenPopoverIndex(null);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={`mr-2 h-4 w-4 ${
+                                selection.breed === breed ? "opacity-100" : "opacity-0"
+                              }`}
+                            />
+                            {breed}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
               
               <Input
                 type="number"
