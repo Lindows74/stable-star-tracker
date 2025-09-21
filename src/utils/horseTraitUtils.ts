@@ -1,6 +1,6 @@
 // Define which traits can stack together
 const SPEED_STACKING_TRAITS = [
-  ["Lightning Bolt", "Hard 'N' Fast", "Hard n´Fast"], // Faster stamina refill during final stretch - handle both apostrophe variations
+  ["Lightning Bolt", "Hard 'N' Fast", "Hard N' Fast", "Hard n´Fast"], // Faster stamina refill during final stretch - handle both apostrophe variations
 ];
 
 const JUMPING_STACKING_TRAITS = [
@@ -17,21 +17,26 @@ const FULL_STAMINA_TRAITS = [
 ];
 
 export const checkHorseHasStackingTraits = (horseTraits: string[]): boolean => {
+  const normalize = (s: string) =>
+    s.toLowerCase().replace(/[’´`]/g, "'").replace(/\s+/g, ' ').trim().replace("hard n' fast", "hard 'n' fast");
+  const normalizedSet = new Set(horseTraits.map(normalize));
   return STACKING_TRAIT_GROUPS.some(group => {
-    // Check if horse has at least 2 traits from the same stacking group
-    const traitsInGroup = group.filter(trait => horseTraits.includes(trait));
+    const traitsInGroup = group.map(normalize).filter(trait => normalizedSet.has(trait));
     return traitsInGroup.length >= 2;
   });
 };
 
 export const checkHorseHasSpeedStackingTraits = (horseTraits: string[]): boolean => {
+  const normalize = (s: string) =>
+    s.toLowerCase().replace(/[’´`]/g, "'").replace(/\s+/g, ' ').trim().replace("hard n' fast", "hard 'n' fast");
+  const normalizedSet = new Set(horseTraits.map(normalize));
   console.log('checkHorseHasSpeedStackingTraits - Input traits:', horseTraits);
   console.log('SPEED_STACKING_TRAITS:', SPEED_STACKING_TRAITS);
   
   const result = SPEED_STACKING_TRAITS.some(group => {
-    // Check if horse has at least 2 traits from the same stacking group
-    const traitsInGroup = group.filter(trait => horseTraits.includes(trait));
-    console.log(`Checking group ${JSON.stringify(group)} - found traits:`, traitsInGroup);
+    const normalizedGroup = group.map(normalize);
+    const traitsInGroup = normalizedGroup.filter(trait => normalizedSet.has(trait));
+    console.log(`Checking group ${JSON.stringify(group)} - normalized: ${JSON.stringify(normalizedGroup)} - found traits:`, Array.from(traitsInGroup));
     return traitsInGroup.length >= 2;
   });
   
@@ -40,9 +45,12 @@ export const checkHorseHasSpeedStackingTraits = (horseTraits: string[]): boolean
 };
 
 export const checkHorseHasJumpingStackingTraits = (horseTraits: string[]): boolean => {
+  const normalize = (s: string) =>
+    s.toLowerCase().replace(/[’´`]/g, "'").replace(/\s+/g, ' ').trim().replace("hard n' fast", "hard 'n' fast");
+  const normalizedSet = new Set(horseTraits.map(normalize));
   return JUMPING_STACKING_TRAITS.some(group => {
     // Check if horse has at least 2 traits from the same stacking group
-    const traitsInGroup = group.filter(trait => horseTraits.includes(trait));
+    const traitsInGroup = group.map(normalize).filter(trait => normalizedSet.has(trait));
     return traitsInGroup.length >= 2;
   });
 };
