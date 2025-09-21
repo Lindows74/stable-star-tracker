@@ -63,11 +63,18 @@ const getTraitCategoryColor = (category: string, isPro?: boolean, isStacking?: b
 };
 
 const checkIfTraitStacks = (traitName: string, allTraits: string[] = []): boolean => {
+  const normalize = (s: string) =>
+    s.toLowerCase().replace(/['´`]/g, "'").replace(/\s+/g, ' ').trim().replace("hard n' fast", "hard 'n' fast");
+  
+  const normalizedTraitName = normalize(traitName);
+  const normalizedAllTraits = new Set(allTraits.map(normalize));
+  
   return STACKING_TRAIT_GROUPS.some(group => {
+    const normalizedGroup = group.map(normalize);
     // Check if current trait is in this group and at least one other trait from the same group exists
-    if (group.includes(traitName)) {
-      const otherTraitsInGroup = group.filter(t => t !== traitName);
-      return otherTraitsInGroup.some(otherTrait => allTraits.includes(otherTrait));
+    if (normalizedGroup.includes(normalizedTraitName)) {
+      const otherTraitsInGroup = normalizedGroup.filter(t => t !== normalizedTraitName);
+      return otherTraitsInGroup.some(otherTrait => normalizedAllTraits.has(otherTrait));
     }
     return false;
   });
@@ -81,7 +88,8 @@ export const TraitBadge = ({ traitName, allTraits = [], horseBreeding }: TraitBa
   const shouldBePro = horseBreeding ? checkTraitShouldBePro(traitName, horseBreeding) : false;
   const isPro = traitInfo?.isPro || shouldBePro;
   
-  const colorClass = traitInfo ? getTraitCategoryColor(traitInfo.category, isPro, isStacking) : "bg-gray-100 text-gray-800 border-gray-200";
+  const colorClass = isStacking ? "bg-red-600 text-white border-red-700 font-bold shadow-lg" : 
+    (traitInfo ? getTraitCategoryColor(traitInfo.category, isPro, isStacking) : "bg-gray-100 text-gray-800 border-gray-200");
 
   console.log(`TraitBadge for "${traitName}":`, {
     traitInfo,
