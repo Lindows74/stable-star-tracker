@@ -106,7 +106,11 @@ const LiveEvents = () => {
         
         const flats = raceMatchesWithAll.filter((r: any) => !isSteeple(r) && !isCrossCountry(r));
         const steeples = raceMatchesWithAll.filter((r: any) => isSteeple(r));
-        const cross = raceMatchesWithAll.filter((r: any) => isCrossCountry(r));
+        
+        // Enforce exactly two Cross Country races (very_hard and very_soft) and dedupe by surface
+        const crossSurfaces = ['very_hard', 'very_soft'];
+        const crossAll = raceMatchesWithAll.filter((r: any) => isCrossCountry(r) && crossSurfaces.includes(r.surface));
+        const cross = Array.from(new Map(crossAll.map((r: any) => [r.surface, r])).values());
         
         const sortByOrder = (arr: any[], order: { d: string; s: string }[]) =>
           arr.sort((a, b) => {
@@ -120,7 +124,7 @@ const LiveEvents = () => {
         const flatsSorted = sortByOrder(flats, flatOrder);
         const steeplesSorted = sortByOrder(steeples, steepleOrder);
         const crossSorted = cross.sort((a: any, b: any) => {
-          // Very Hard first, then Very Soft, then others
+          // Very Hard first, then Very Soft
           const pref = (s: string) => (s === 'very_hard' ? 0 : s === 'very_soft' ? 1 : 2);
           return pref(a.surface) - pref(b.surface);
         });
