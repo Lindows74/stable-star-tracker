@@ -23,7 +23,7 @@ interface TraitBadgeProps {
 
 // Define which traits can stack together
 const STACKING_TRAIT_GROUPS = [
-  ["Lightning Bolt", "Hard 'N' Fast"], // Faster stamina refill during final stretch
+  ["Lightning Bolt", "Hard 'N' Fast", "Hard N' Fast", "Hard n´Fast"], // Faster stamina refill during final stretch (handle apostrophe variants)
   ["Leaping Star", "Leaping Lancer"], // Enhanced jump streak in Steeplechase
   ["Perfect Step", "Leaping Lancer"], // Enhanced boost after perfect jump in Steeplechase
 ];
