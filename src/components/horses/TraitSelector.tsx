@@ -1,6 +1,9 @@
 import { useState, useRef } from "react";
 import { FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { ChevronsUpDown, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -66,8 +69,8 @@ const TRAIT_CATEGORIES = {
 };
 
 export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
-  const [selectKey, setSelectKey] = useState(0);
-  const selectRef = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleAddTrait = (trait: string) => {
     if (selectedTraits.includes(trait)) {
@@ -82,14 +85,8 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
 
     const newTraits = [...selectedTraits, trait];
     onTraitsChange(newTraits);
-    
-    // Reset the select component to show placeholder again
-    setSelectKey(prev => prev + 1);
-    
-    // Focus back to select for next trait selection
-    setTimeout(() => {
-      selectRef.current?.focus();
-    }, 100);
+    setOpen(false);
+    setSearchValue("");
   };
 
   const handleRemoveTrait = (traitToRemove: string) => {
@@ -131,31 +128,56 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
       {/* Trait Selection */}
       {selectedTraits.length < 5 && (
         <div className="mt-2">
-          <Select key={selectKey} onValueChange={handleAddTrait} value="">
-            <SelectTrigger ref={selectRef}>
-              <SelectValue placeholder="Select a trait to add..." />
-            </SelectTrigger>
-            <SelectContent className="max-h-80 bg-white z-50">
-              {Object.entries(TRAIT_CATEGORIES).map(([category, traits]) => {
-                const availableTraits = traits.filter(trait => !selectedTraits.includes(trait));
-                
-                if (availableTraits.length === 0) return null;
-                
-                return (
-                  <div key={category}>
-                    <div className="px-2 py-1.5 text-sm font-semibold text-gray-900 bg-gray-50 border-b">
-                      {category}
-                    </div>
-                    {availableTraits.map((trait) => (
-                      <SelectItem key={trait} value={trait} className="pl-4 bg-white hover:bg-gray-100">
-                        {trait}
-                      </SelectItem>
-                    ))}
-                  </div>
-                );
-              })}
-            </SelectContent>
-          </Select>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between"
+              >
+                Select a trait to add...
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0 bg-background z-50">
+              <Command>
+                <CommandInput 
+                  placeholder="Search traits..." 
+                  value={searchValue}
+                  onValueChange={setSearchValue}
+                />
+                <CommandList className="max-h-80">
+                  <CommandEmpty>No traits found.</CommandEmpty>
+                  {Object.entries(TRAIT_CATEGORIES).map(([category, traits]) => {
+                    const availableTraits = traits.filter(trait => !selectedTraits.includes(trait));
+                    
+                    if (availableTraits.length === 0) return null;
+                    
+                    return (
+                      <CommandGroup key={category} heading={category}>
+                        {availableTraits.map((trait) => (
+                          <CommandItem
+                            key={trait}
+                            value={trait}
+                            onSelect={() => handleAddTrait(trait)}
+                            className="cursor-pointer"
+                          >
+                            <Check
+                              className={`mr-2 h-4 w-4 ${
+                                selectedTraits.includes(trait) ? "opacity-100" : "opacity-0"
+                              }`}
+                            />
+                            {trait}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    );
+                  })}
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
         </div>
       )}
       <FormMessage />
