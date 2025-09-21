@@ -1,6 +1,7 @@
 // Define which traits can stack together
 const SPEED_STACKING_TRAITS = [
   ["Lightning Bolt", "Hard 'N' Fast"], // Faster stamina refill during final stretch
+  ["Lightning Bolt", "Hard n´Fast"], // Handle both apostrophe variations
 ];
 
 const JUMPING_STACKING_TRAITS = [
