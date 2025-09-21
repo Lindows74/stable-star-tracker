@@ -12,6 +12,16 @@ interface TraitSelectorProps {
 }
 
 const TRAIT_CATEGORIES = {
+  "Pro Traits": [
+    "Blazing Hoof Pro",
+    "Fleet Dash Pro",
+    "Agile Arrow Pro",
+    "Flash Ignite Pro",
+    "To The Moon Pro",
+    "Endless Stride Pro",
+    "Rolling Current Pro",
+    "Streak Shield Pro"
+  ],
   "General Traits": [
     "Blazing Hoof",
     "Fleet Dash",
@@ -34,7 +44,8 @@ const TRAIT_CATEGORIES = {
     "Leaping Star",
     "Perfect Step",
     "River Rider",
-    "Fast Draw"
+    "Fast Draw",
+    "Revitalizing Surge"
   ],
   "Distance Preference Traits": [
     "Quick Gallop",

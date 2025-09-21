@@ -34,6 +34,7 @@ const TRAIT_CATEGORIES = {
   crossCountry: [
     "River Rider",
     "Fast Draw",
+    "Revitalizing Surge",
     "Meadowstride"
   ],
   multiDiscipline: [
