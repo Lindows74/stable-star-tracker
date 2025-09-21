@@ -115,6 +115,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
 
   // Extract all trait names for stacking detection
   const allTraitNames = horse.horse_traits?.map((trait: any) => trait.trait_name) || [];
+  console.log(`Horse ${horse.name} traits:`, allTraitNames);
   
   // Check if horse has full stamina traits
   const hasFullStaminaTrait = checkHorseHasFullStaminaTrait(allTraitNames);
@@ -122,6 +123,8 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   // Check if horse has stacking traits
   const hasSpeedStackingTraits = checkHorseHasSpeedStackingTraits(allTraitNames);
   const hasJumpingStackingTraits = checkHorseHasJumpingStackingTraits(allTraitNames);
+  
+  console.log(`Horse ${horse.name} - Speed stacking: ${hasSpeedStackingTraits}, Jumping stacking: ${hasJumpingStackingTraits}, Full stamina: ${hasFullStaminaTrait}`);
   
   // Check for live race matches
   const horseDistances = horse.horse_distances?.map((d: any) => d.distance.toString()) || [];

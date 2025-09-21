@@ -1,7 +1,6 @@
 // Define which traits can stack together
 const SPEED_STACKING_TRAITS = [
-  ["Lightning Bolt", "Hard 'N' Fast"], // Faster stamina refill during final stretch
-  ["Lightning Bolt", "Hard n´Fast"], // Handle both apostrophe variations
+  ["Lightning Bolt", "Hard 'N' Fast", "Hard n´Fast"], // Faster stamina refill during final stretch - handle both apostrophe variations
 ];
 
 const JUMPING_STACKING_TRAITS = [
@@ -26,11 +25,18 @@ export const checkHorseHasStackingTraits = (horseTraits: string[]): boolean => {
 };
 
 export const checkHorseHasSpeedStackingTraits = (horseTraits: string[]): boolean => {
-  return SPEED_STACKING_TRAITS.some(group => {
+  console.log('checkHorseHasSpeedStackingTraits - Input traits:', horseTraits);
+  console.log('SPEED_STACKING_TRAITS:', SPEED_STACKING_TRAITS);
+  
+  const result = SPEED_STACKING_TRAITS.some(group => {
     // Check if horse has at least 2 traits from the same stacking group
     const traitsInGroup = group.filter(trait => horseTraits.includes(trait));
+    console.log(`Checking group ${JSON.stringify(group)} - found traits:`, traitsInGroup);
     return traitsInGroup.length >= 2;
   });
+  
+  console.log('Speed stacking result:', result);
+  return result;
 };
 
 export const checkHorseHasJumpingStackingTraits = (horseTraits: string[]): boolean => {
