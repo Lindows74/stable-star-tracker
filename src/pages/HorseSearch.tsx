@@ -11,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { X, Search, Filter, Calendar as CalendarIcon, Menu } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { X, Search, Filter, Calendar as CalendarIcon, Menu, Check, ChevronsUpDown } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
@@ -77,6 +78,7 @@ const HorseSearch = () => {
   const [toDate, setToDate] = useState<Date | undefined>();
   const [selectedDateSort, setSelectedDateSort] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc" | null>(null);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
+  const [traitsOpen, setTraitsOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const { data: horses, isLoading, error } = useQuery({
@@ -503,18 +505,48 @@ const HorseSearch = () => {
       {/* Traits */}
       <div>
         <Label>Traits</Label>
-        <Select onValueChange={(value) => toggleArrayValue(selectedTraits, setSelectedTraits, value)}>
-          <SelectTrigger className="mt-1">
-            <SelectValue placeholder="Select traits..." />
-          </SelectTrigger>
-          <SelectContent className="max-h-60">
-            {traits.map((trait) => (
-              <SelectItem key={trait} value={trait}>
-                {trait}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Popover open={traitsOpen} onOpenChange={setTraitsOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={traitsOpen}
+              className="w-full justify-between mt-1"
+            >
+              {selectedTraits.length > 0
+                ? `${selectedTraits.length} trait${selectedTraits.length > 1 ? 's' : ''} selected`
+                : "Select traits..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search traits..." className="h-9" />
+              <CommandList>
+                <CommandEmpty>No trait found.</CommandEmpty>
+                <CommandGroup>
+                  {traits.map((trait) => (
+                    <CommandItem
+                      key={trait}
+                      value={trait}
+                      onSelect={() => {
+                        toggleArrayValue(selectedTraits, setSelectedTraits, trait);
+                      }}
+                    >
+                      {trait}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          selectedTraits.includes(trait) ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         {selectedTraits.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-2">
             {selectedTraits.map((trait) => (
