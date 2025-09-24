@@ -72,6 +72,7 @@ const HorseSearch = () => {
   const [selectedDistances, setSelectedDistances] = useState<string[]>([]);
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
+  const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
   const [minTier, setMinTier] = useState<number | null>(null);
   const [maxTier, setMaxTier] = useState<number | null>(null);
   const [fromDate, setFromDate] = useState<Date | undefined>();
@@ -79,10 +80,11 @@ const HorseSearch = () => {
   const [selectedDateSort, setSelectedDateSort] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc" | null>(null);
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [traitsOpen, setTraitsOpen] = useState(false);
+  const [breedsOpen, setBreedsOpen] = useState(false);
   const isMobile = useIsMobile();
 
   const { data: horses, isLoading, error } = useQuery({
-    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, minTier, maxTier, fromDate, toDate, selectedDateSort],
+    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, selectedBreeds, minTier, maxTier, fromDate, toDate, selectedDateSort],
     queryFn: async () => {
       console.log("HorseSearch: Fetching horses with filters...");
       
@@ -184,6 +186,12 @@ const HorseSearch = () => {
         );
       }
 
+      if (selectedBreeds.length > 0) {
+        filteredData = filteredData.filter(horse => 
+          horse.horse_breeding?.some(breeding => selectedBreeds.includes(breeding.breeds.name))
+        );
+      }
+
       // Sort horses using the default logic only if no date sort is selected
       if (!selectedDateSort) {
         const sortedData = sortHorses(filteredData);
@@ -193,6 +201,24 @@ const HorseSearch = () => {
         console.log("HorseSearch: Filtered horses (date sorted):", filteredData);
         return filteredData;
       }
+    },
+  });
+
+  // Fetch available breeds
+  const { data: availableBreeds } = useQuery({
+    queryKey: ["breeds"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("breeds")
+        .select("name")
+        .order("name");
+      
+      if (error) {
+        console.error("Error fetching breeds:", error);
+        throw error;
+      }
+      
+      return data?.map(breed => breed.name) || [];
     },
   });
 
@@ -226,6 +252,7 @@ const HorseSearch = () => {
     setSelectedDistances([]);
     setSelectedPositions([]);
     setSelectedTraits([]);
+    setSelectedBreeds([]);
     setMinTier(null);
     setMaxTier(null);
     setFromDate(undefined);
@@ -554,6 +581,68 @@ const HorseSearch = () => {
                 {trait}
                 <button
                   onClick={() => toggleArrayValue(selectedTraits, setSelectedTraits, trait)}
+                  className="ml-1 hover:bg-muted/50 rounded-full"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Breeds */}
+      <div>
+        <Label>Breeds</Label>
+        <Popover open={breedsOpen} onOpenChange={setBreedsOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={breedsOpen}
+              className="w-full justify-between mt-1"
+            >
+              {selectedBreeds.length > 0
+                ? `${selectedBreeds.length} breed${selectedBreeds.length > 1 ? 's' : ''} selected`
+                : "Select breeds..."}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0" align="start">
+            <Command>
+              <CommandInput placeholder="Search breeds..." className="h-9" />
+              <CommandList>
+                <CommandEmpty>No breed found.</CommandEmpty>
+                <CommandGroup>
+                  {availableBreeds?.map((breed) => (
+                    <CommandItem
+                      key={breed}
+                      value={breed}
+                      onSelect={() => {
+                        toggleArrayValue(selectedBreeds, setSelectedBreeds, breed);
+                      }}
+                    >
+                      {breed}
+                      <Check
+                        className={cn(
+                          "ml-auto h-4 w-4",
+                          selectedBreeds.includes(breed) ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        {selectedBreeds.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {selectedBreeds.map((breed) => (
+              <Badge key={breed} variant="secondary" className="text-xs">
+                {breed}
+                <button
+                  onClick={() => toggleArrayValue(selectedBreeds, setSelectedBreeds, breed)}
                   className="ml-1 hover:bg-muted/50 rounded-full"
                 >
                   <X className="h-3 w-3" />
