@@ -546,7 +546,7 @@ const HorseSearch = () => {
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0" align="start">
+          <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className="z-50 w-full p-0 bg-popover" align="start">
             <Command>
               <CommandInput placeholder="Search traits..." className="h-9" />
               <CommandList>
@@ -609,7 +609,7 @@ const HorseSearch = () => {
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-full p-0" align="start">
+          <PopoverContent onOpenAutoFocus={(e) => e.preventDefault()} className="z-50 w-full p-0 bg-popover" align="start">
             <Command>
               <CommandInput placeholder="Search breeds..." className="h-9" />
               <CommandList>
@@ -676,7 +676,7 @@ const HorseSearch = () => {
                   Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-full sm:w-96">
+              <SheetContent side="left" className="w-full sm:w-96" onOpenAutoFocus={(e) => e.preventDefault()} onCloseAutoFocus={(e) => e.preventDefault()}>
                 <SheetHeader className="mb-4">
                   <SheetTitle className="flex items-center gap-2">
                     <Filter className="h-5 w-5" />
