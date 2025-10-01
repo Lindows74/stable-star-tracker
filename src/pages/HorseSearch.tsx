@@ -556,8 +556,9 @@ const HorseSearch = () => {
                     <CommandItem
                       key={trait}
                       value={trait}
-                      onSelect={() => {
+                      onSelect={(currentValue) => {
                         toggleArrayValue(selectedTraits, setSelectedTraits, trait);
+                        // Keep popover open for multiple selections
                       }}
                     >
                       {trait}
@@ -618,8 +619,9 @@ const HorseSearch = () => {
                     <CommandItem
                       key={breed}
                       value={breed}
-                      onSelect={() => {
+                      onSelect={(currentValue) => {
                         toggleArrayValue(selectedBreeds, setSelectedBreeds, breed);
+                        // Keep popover open for multiple selections
                       }}
                     >
                       {breed}
@@ -675,25 +677,23 @@ const HorseSearch = () => {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-full sm:w-96">
-                <SheetHeader>
-                  <SheetTitle className="flex items-center justify-between">
-                    <span className="flex items-center gap-2">
-                      <Filter className="h-5 w-5" />
-                      Filters
-                    </span>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={clearAllFilters}
-                      className="flex items-center gap-2"
-                    >
-                      <X className="h-4 w-4" />
-                      Clear All
-                    </Button>
+                <SheetHeader className="mb-4">
+                  <SheetTitle className="flex items-center gap-2">
+                    <Filter className="h-5 w-5" />
+                    Filters
                   </SheetTitle>
                 </SheetHeader>
-                <div className="mt-6">
-                  <ScrollArea className="h-[calc(100vh-8rem)]">
+                <div className="space-y-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={clearAllFilters}
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Clear All Filters
+                  </Button>
+                  <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
                     <FilterContent />
                   </ScrollArea>
                 </div>
