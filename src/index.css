@@ -101,3 +101,6 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent Radix focus guards from causing scroll-to-top on mobile */
+[data-radix-focus-guard] { position: fixed; }
