@@ -275,7 +275,11 @@ const HorseSearch = () => {
             id="search"
             placeholder="Search by name..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              e.stopPropagation();
+              setSearchTerm(e.target.value);
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
             className="pl-10"
           />
         </div>
@@ -288,16 +292,24 @@ const HorseSearch = () => {
           <Input
             type="number"
             placeholder="Min"
-            value={minTier || ""}
-            onChange={(e) => setMinTier(e.target.value ? Number(e.target.value) : null)}
+            value={minTier ?? ""}
+            onChange={(e) => {
+              e.stopPropagation();
+              setMinTier(e.target.value ? Number(e.target.value) : null);
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
             min="1"
             max="10"
           />
           <Input
             type="number"
             placeholder="Max"
-            value={maxTier || ""}
-            onChange={(e) => setMaxTier(e.target.value ? Number(e.target.value) : null)}
+            value={maxTier ?? ""}
+            onChange={(e) => {
+              e.stopPropagation();
+              setMaxTier(e.target.value ? Number(e.target.value) : null);
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
             min="1"
             max="10"
           />
@@ -694,7 +706,9 @@ const HorseSearch = () => {
                     Clear All Filters
                   </Button>
                   <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
-                    <FilterContent />
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <FilterContent />
+                    </div>
                   </ScrollArea>
                 </div>
               </SheetContent>
