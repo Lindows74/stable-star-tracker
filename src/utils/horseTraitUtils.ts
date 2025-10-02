@@ -63,8 +63,8 @@ export const checkHorseHasFullStaminaTrait = (horseTraits: string[]): boolean =>
 const TRAIT_BREEDING_REQUIREMENTS = {
   "Blazing Hoof": ["Thoroughbred"],
   "Fleet Dash": ["Arabian", "Mustang"],  
-  "Agile Arrow": ["KS"],
-  "Flash Ignite": ["QH"],
+  "Agile Arrow": ["Knabstrupper"],
+  "Flash Ignite": ["Quarter Horse"],
   "To The Moon": ["Selle Francais", "Knabstrupper"],
   "Endless Stride": ["Akhal-Teke"],
   "Rolling Current": ["Anglo-Arab"]
