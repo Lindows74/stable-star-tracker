@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Plus, X, Save, ChevronsUpDown, Check } from "lucide-react";
-import { useState, useEffect, memo, useCallback } from "react";
+import { useState, useEffect, useRef, memo, useCallback, type KeyboardEvent } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface BreedSelection {
@@ -37,6 +37,8 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
   const { toast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
+  const [searchValues, setSearchValues] = useState<Record<number, string>>({});
+  const inputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   const addBreedSelection = useCallback(() => {
     setBreedSelections([...breedSelections, { breed: "", percentage: 0 }]);
@@ -91,6 +93,31 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
     }
   }, [setGender]);
 
+  const handleTriggerKeyDown = useCallback((e: KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    const isModifier = e.ctrlKey || e.metaKey || e.altKey;
+    const isChar = e.key.length === 1 && !isModifier;
+    const isBackspace = e.key === "Backspace";
+    const isEnterOrSpace = e.key === "Enter" || e.key === " ";
+
+    if (isChar || isBackspace || isEnterOrSpace) {
+      e.preventDefault();
+      setOpenPopoverIndex(idx);
+      setTimeout(() => {
+        const input = inputRefs.current[idx];
+        if (input) {
+          if (isBackspace) {
+            setSearchValues((prev) => ({ ...prev, [idx]: "" }));
+          } else if (isChar) {
+            setSearchValues((prev) => ({ ...prev, [idx]: (prev[idx] ?? "") + e.key }));
+          }
+          input.focus();
+          const len = input.value.length;
+          try { input.setSelectionRange(len, len); } catch {}
+        }
+      }, 0);
+    }
+  }, []);
+
   const totalPercentage = breedSelections.reduce((sum, selection) => sum + (selection.percentage || 0), 0);
 
   return (
@@ -142,6 +169,7 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
                     role="combobox"
                     aria-expanded={openPopoverIndex === index}
                     className="flex-1 justify-between"
+                    onKeyDown={(e) => handleTriggerKeyDown(e, index)}
                   >
                     {selection.breed || "Select breed..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -149,7 +177,13 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
                 </PopoverTrigger>
                 <PopoverContent className="w-full p-0 bg-popover z-[70]">
                   <Command>
-                    <CommandInput placeholder="Search breeds..." autoFocus />
+                    <CommandInput 
+                      placeholder="Search breeds..."
+                      value={searchValues[index] ?? ""}
+                      onValueChange={(v) => setSearchValues((prev) => ({ ...prev, [index]: v }))}
+                      ref={(el) => (inputRefs.current[index] = el)}
+                      autoFocus
+                    />
                     <CommandList className="max-h-60">
                       <CommandEmpty>No breeds found.</CommandEmpty>
                       <CommandGroup>
@@ -160,6 +194,7 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
                             onSelect={() => {
                               updateBreedSelection(index, "breed", breed);
                               setOpenPopoverIndex(null);
+                              setSearchValues((prev) => ({ ...prev, [index]: "" }));
                             }}
                             className="cursor-pointer"
                           >
