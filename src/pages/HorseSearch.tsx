@@ -73,8 +73,8 @@ const HorseSearch = () => {
   const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
   const [selectedTraits, setSelectedTraits] = useState<string[]>([]);
   const [selectedBreeds, setSelectedBreeds] = useState<string[]>([]);
-  const [minTier, setMinTier] = useState<number | null>(null);
-  const [maxTier, setMaxTier] = useState<number | null>(null);
+  const [minTierInput, setMinTierInput] = useState<string>("");
+  const [maxTierInput, setMaxTierInput] = useState<string>("");
   const [fromDate, setFromDate] = useState<Date | undefined>();
   const [toDate, setToDate] = useState<Date | undefined>();
   const [selectedDateSort, setSelectedDateSort] = useState<"created_desc" | "created_asc" | "updated_desc" | "updated_asc" | null>(null);
@@ -86,18 +86,32 @@ const HorseSearch = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Auto-focus search input once per page session
-    const w = window as any;
-    if (w.__horseSearchInitialFocusDone) return;
+    const key = 'horseSearchInitialFocusDone'
+    if (sessionStorage.getItem(key) === '1') return
     const timer = setTimeout(() => {
-      searchInputRef.current?.focus();
-    }, 100);
-    w.__horseSearchInitialFocusDone = true;
-    return () => clearTimeout(timer);
-  }, []);
+      if (document.activeElement === document.body) {
+        searchInputRef.current?.focus()
+      }
+      sessionStorage.setItem(key, '1')
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Derived numeric tier values for filtering and query keys
+  const minTierNum = (() => {
+    const n = parseInt(minTierInput, 10)
+    if (isNaN(n)) return null
+    return Math.min(10, Math.max(1, n))
+  })()
+
+  const maxTierNum = (() => {
+    const n = parseInt(maxTierInput, 10)
+    if (isNaN(n)) return null
+    return Math.min(10, Math.max(1, n))
+  })()
 
   const { data: horses, isLoading, error } = useQuery({
-    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, selectedBreeds, minTier, maxTier, fromDate, toDate, selectedDateSort],
+    queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, selectedBreeds, minTierNum, maxTierNum, fromDate, toDate, selectedDateSort],
     queryFn: async () => {
       console.log("HorseSearch: Fetching horses with filters...");
       
@@ -126,11 +140,11 @@ const HorseSearch = () => {
       }
 
       // Apply tier filters
-      if (minTier !== null) {
-        query = query.gte("tier", minTier);
+      if (minTierNum !== null) {
+        query = query.gte("tier", minTierNum);
       }
-      if (maxTier !== null) {
-        query = query.lte("tier", maxTier);
+      if (maxTierNum !== null) {
+        query = query.lte("tier", maxTierNum);
       }
 
       // Apply date filters and sorting only if a date sort option is selected
@@ -266,8 +280,8 @@ const HorseSearch = () => {
     setSelectedPositions([]);
     setSelectedTraits([]);
     setSelectedBreeds([]);
-    setMinTier(null);
-    setMaxTier(null);
+    setMinTierInput("");
+    setMaxTierInput("");
     setFromDate(undefined);
     setToDate(undefined);
     setSelectedDateSort(null);
@@ -302,16 +316,16 @@ const HorseSearch = () => {
           <Input
             type="number"
             placeholder="Min"
-            value={minTier ?? ""}
-            onChange={(e) => setMinTier(e.target.value ? Number(e.target.value) : null)}
+            value={minTierInput}
+            onChange={(e) => setMinTierInput(e.target.value)}
             min="1"
             max="10"
           />
           <Input
             type="number"
             placeholder="Max"
-            value={maxTier ?? ""}
-            onChange={(e) => setMaxTier(e.target.value ? Number(e.target.value) : null)}
+            value={maxTierInput}
+            onChange={(e) => setMaxTierInput(e.target.value)}
             min="1"
             max="10"
           />
