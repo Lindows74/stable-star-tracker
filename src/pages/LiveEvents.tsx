@@ -339,11 +339,19 @@ const LiveEvents = () => {
                             <>
                               Odd Grades (
                               {[3, 5, 7, 9].map((tier, index) => {
-                                const hasMatch = race.matchingHorses.some(h => h.tier === tier);
+                                const matchingHorsesForTier = race.matchingHorses.filter(h => h.tier === tier);
+                                const hasMatch = matchingHorsesForTier.length > 0;
+                                const hasMaxTrained = matchingHorsesForTier.some(h => isMaxTrained(h));
                                 return (
                                   <span key={tier}>
                                     {index > 0 && ','}
-                                    <span className={hasMatch ? '' : 'text-destructive font-semibold'}>{tier}</span>
+                                    <span className={
+                                      !hasMatch 
+                                        ? 'text-destructive font-semibold' 
+                                        : hasMaxTrained 
+                                          ? 'text-cyan-400 font-semibold' 
+                                          : ''
+                                    }>{tier}</span>
                                   </span>
                                 );
                               })}
@@ -353,11 +361,19 @@ const LiveEvents = () => {
                             <>
                               Even Grades (
                               {[2, 4, 6, 8].map((tier, index) => {
-                                const hasMatch = race.matchingHorses.some(h => h.tier === tier);
+                                const matchingHorsesForTier = race.matchingHorses.filter(h => h.tier === tier);
+                                const hasMatch = matchingHorsesForTier.length > 0;
+                                const hasMaxTrained = matchingHorsesForTier.some(h => isMaxTrained(h));
                                 return (
                                   <span key={tier}>
                                     {index > 0 && ','}
-                                    <span className={hasMatch ? '' : 'text-destructive font-semibold'}>{tier}</span>
+                                    <span className={
+                                      !hasMatch 
+                                        ? 'text-destructive font-semibold' 
+                                        : hasMaxTrained 
+                                          ? 'text-cyan-400 font-semibold' 
+                                          : ''
+                                    }>{tier}</span>
                                   </span>
                                 );
                               })}
