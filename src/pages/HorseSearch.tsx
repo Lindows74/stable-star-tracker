@@ -293,7 +293,7 @@ const HorseSearch = () => {
     return value.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
-  const FilterContent = () => (
+  const filterContent = (
     <div className="space-y-6">
       {/* Search by Name */}
       <div>
@@ -724,7 +724,7 @@ const HorseSearch = () => {
                     Clear All Filters
                   </Button>
                   <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
-                    <FilterContent />
+                    {filterContent}
                   </ScrollArea>
                 </div>
               </SheetContent>
@@ -753,7 +753,7 @@ const HorseSearch = () => {
               </div>
 
               <ScrollArea className="h-[calc(100vh-12rem)]">
-                <FilterContent />
+                {filterContent}
               </ScrollArea>
             </div>
           )}
