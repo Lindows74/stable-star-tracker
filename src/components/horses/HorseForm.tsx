@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -357,17 +357,19 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
     await createHorseMutation.mutateAsync(horseData);
   };
 
+  const breedingSectionProps = useMemo(() => ({
+    breedSelections,
+    setBreedSelections,
+    gender,
+    setGender
+  }), [breedSelections, gender]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <BasicInfoSection control={form.control} />
 
-        <BreedingSection 
-          breedSelections={breedSelections}
-          setBreedSelections={setBreedSelections}
-          gender={gender}
-          setGender={setGender}
-        />
+        <BreedingSection {...breedingSectionProps} />
 
         <CategorySelector control={form.control} />
 

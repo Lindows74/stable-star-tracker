@@ -222,4 +222,11 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
       )}
     </div>
   );
+}, (prevProps, nextProps) => {
+  return (
+    prevProps.breedSelections === nextProps.breedSelections &&
+    prevProps.gender === nextProps.gender &&
+    prevProps.setBreedSelections === nextProps.setBreedSelections &&
+    prevProps.setGender === nextProps.setGender
+  );
 });
