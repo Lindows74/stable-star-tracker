@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { HorseCard } from "@/components/horses/HorseCard";
@@ -82,6 +82,16 @@ const HorseSearch = () => {
   const [traitsOpen, setTraitsOpen] = useState(false);
   const [breedsOpen, setBreedsOpen] = useState(false);
   const isMobile = useIsMobile();
+  
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Auto-focus search input on page load
+    const timer = setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const { data: horses, isLoading, error } = useQuery({
     queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, selectedBreeds, minTier, maxTier, fromDate, toDate, selectedDateSort],
@@ -272,6 +282,7 @@ const HorseSearch = () => {
         <div className="relative mt-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
+            ref={searchInputRef}
             id="search"
             placeholder="Search by name..."
             value={searchTerm}
