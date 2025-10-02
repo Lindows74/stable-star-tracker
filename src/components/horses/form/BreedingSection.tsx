@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Plus, X, Save, ChevronsUpDown, Check } from "lucide-react";
-import { useState, useEffect, useRef, memo, useCallback, type KeyboardEvent } from "react";
+import { useState, useEffect, useRef, memo, useCallback, type KeyboardEvent, type RefObject } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface BreedSelection {
@@ -19,6 +19,7 @@ interface BreedingSectionProps {
   setBreedSelections: (selections: BreedSelection[]) => void;
   gender?: "stallion" | "mare";
   setGender?: (gender: "stallion" | "mare" | undefined) => void;
+  nextFocusRef?: RefObject<HTMLElement>;
 }
 
 const breedOptions = [
@@ -33,7 +34,7 @@ const breedOptions = [
   "Knabstrupper"
 ];
 
-export const BreedingSection = memo(({ breedSelections, setBreedSelections, gender, setGender }: BreedingSectionProps) => {
+export const BreedingSection = memo(({ breedSelections, setBreedSelections, gender, setGender, nextFocusRef }: BreedingSectionProps) => {
   const { toast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
@@ -79,7 +80,11 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
       title: "Breeding Data Saved",
       description: "Breeding information will be saved when you submit the horse form.",
     });
-  }, [breedSelections, toast]);
+    // Move focus to next section (e.g., Flat Racing) after saving
+    setTimeout(() => {
+      nextFocusRef?.current?.focus();
+    }, 0);
+  }, [breedSelections, toast, nextFocusRef]);
 
   const handleStallionChange = useCallback((checked: boolean) => {
     if (setGender) {
@@ -219,6 +224,12 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
                 placeholder="Percentage"
                 value={selection.percentage || ""}
                 onChange={(e) => updateBreedSelection(index, "percentage", parseInt(e.target.value) || 0)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    saveBreedingData();
+                  }
+                }}
                 className="w-32"
               />
               
@@ -262,6 +273,7 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
     prevProps.breedSelections === nextProps.breedSelections &&
     prevProps.gender === nextProps.gender &&
     prevProps.setBreedSelections === nextProps.setBreedSelections &&
-    prevProps.setGender === nextProps.setGender
+    prevProps.setGender === nextProps.setGender &&
+    prevProps.nextFocusRef === nextProps.nextFocusRef
   );
 });

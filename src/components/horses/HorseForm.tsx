@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -103,6 +103,7 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
   const [gender, setGender] = useState<"stallion" | "mare" | undefined>(undefined);
   const [showDietPlans, setShowDietPlans] = useState(false);
   const [showMaxTraining, setShowMaxTraining] = useState(false);
+  const flatRacingRef = useRef<HTMLElement | null>(null);
 
   console.log("Current breed selections in HorseForm:", breedSelections);
   console.log("Current gender in HorseForm:", gender);
@@ -369,9 +370,9 @@ export const HorseForm = ({ onSuccess }: HorseFormProps) => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <BasicInfoSection control={form.control} />
 
-        <BreedingSection {...breedingSectionProps} />
+        <BreedingSection {...breedingSectionProps} nextFocusRef={flatRacingRef} />
 
-        <CategorySelector control={form.control} />
+        <CategorySelector control={form.control} focusRef={flatRacingRef} />
 
         <TraitSelector 
           selectedTraits={selectedTraits} 

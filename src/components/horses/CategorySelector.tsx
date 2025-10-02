@@ -2,9 +2,11 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Control } from "react-hook-form";
+import { RefObject } from "react";
 
 interface CategorySelectorProps {
   control: Control<any>;
+  focusRef?: RefObject<HTMLElement>;
 }
 
 const RACING_CATEGORIES = [
@@ -14,7 +16,7 @@ const RACING_CATEGORIES = [
   { id: "misc", label: "Misc" },
 ];
 
-export const CategorySelector = ({ control }: CategorySelectorProps) => {
+export const CategorySelector = ({ control, focusRef }: CategorySelectorProps) => {
   return (
     <div>
       <FormLabel className="text-base font-semibold">Racing Categories</FormLabel>
@@ -28,6 +30,7 @@ export const CategorySelector = ({ control }: CategorySelectorProps) => {
               <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                 <FormControl>
                   <Checkbox
+                    ref={category.id === "flat_racing" ? (focusRef as any) : undefined}
                     checked={field.value?.includes(category.id)}
                     onCheckedChange={(checked) => {
                       const updatedCategories = checked
