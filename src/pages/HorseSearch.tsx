@@ -84,9 +84,6 @@ const HorseSearch = () => {
   const isMobile = useIsMobile();
   
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const minTierRef = useRef<HTMLInputElement>(null);
-  const maxTierRef = useRef<HTMLInputElement>(null);
-  const lastFocusedRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     const key = 'horseSearchInitialFocusDone'
@@ -99,15 +96,6 @@ const HorseSearch = () => {
     }, 100)
     return () => clearTimeout(timer)
   }, [])
-
-  const restoreFocusIfLost = (ref: React.RefObject<HTMLInputElement>) => {
-    setTimeout(() => {
-      const ae = document.activeElement as HTMLElement | null
-      if (!ae || ae === document.body) {
-        ref.current?.focus()
-      }
-    }, 0)
-  }
 
 
   // Derived numeric tier values for filtering and query keys
@@ -262,11 +250,6 @@ const HorseSearch = () => {
     },
   });
 
-  useEffect(() => {
-    if (document.activeElement === document.body && lastFocusedRef.current) {
-      lastFocusedRef.current.focus();
-    }
-  }, [isLoading, horses]);
 
   const categories = ["flat_racing", "steeplechase", "cross_country", "misc"];
   const surfaces = ["very_hard", "hard", "firm", "medium", "soft", "very_soft"];
@@ -337,10 +320,6 @@ const HorseSearch = () => {
             placeholder="Min"
             value={minTierInput}
             onChange={(e) => setMinTierInput(e.target.value)}
-            onFocus={(e) => { lastFocusedRef.current = e.currentTarget }}
-            onBlur={() => restoreFocusIfLost(minTierRef)}
-            ref={minTierRef}
-            inputMode="numeric"
             min="1"
             max="10"
           />
@@ -349,10 +328,6 @@ const HorseSearch = () => {
             placeholder="Max"
             value={maxTierInput}
             onChange={(e) => setMaxTierInput(e.target.value)}
-            onFocus={(e) => { lastFocusedRef.current = e.currentTarget }}
-            onBlur={() => restoreFocusIfLost(maxTierRef)}
-            ref={maxTierRef}
-            inputMode="numeric"
             min="1"
             max="10"
           />
