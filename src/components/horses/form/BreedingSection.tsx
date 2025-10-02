@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Plus, X, Save, ChevronsUpDown, Check } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export interface BreedSelection {
@@ -33,31 +33,31 @@ const breedOptions = [
   "Knabstrupper"
 ];
 
-export const BreedingSection = ({ breedSelections, setBreedSelections, gender, setGender }: BreedingSectionProps) => {
+export const BreedingSection = memo(({ breedSelections, setBreedSelections, gender, setGender }: BreedingSectionProps) => {
   const { toast } = useToast();
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [openPopoverIndex, setOpenPopoverIndex] = useState<number | null>(null);
 
-  const addBreedSelection = () => {
+  const addBreedSelection = useCallback(() => {
     setBreedSelections([...breedSelections, { breed: "", percentage: 0 }]);
     setHasUnsavedChanges(true);
-  };
+  }, [breedSelections, setBreedSelections]);
 
-  const removeBreedSelection = (index: number) => {
+  const removeBreedSelection = useCallback((index: number) => {
     const updated = breedSelections.filter((_, i) => i !== index);
     setBreedSelections(updated);
     setHasUnsavedChanges(true);
-  };
+  }, [breedSelections, setBreedSelections]);
 
-  const updateBreedSelection = (index: number, field: keyof BreedSelection, value: string | number) => {
+  const updateBreedSelection = useCallback((index: number, field: keyof BreedSelection, value: string | number) => {
     const updated = breedSelections.map((selection, i) => 
       i === index ? { ...selection, [field]: value } : selection
     );
     setBreedSelections(updated);
     setHasUnsavedChanges(true);
-  };
+  }, [breedSelections, setBreedSelections]);
 
-  const saveBreedingData = () => {
+  const saveBreedingData = useCallback(() => {
     // Validate that all breed selections have both breed and percentage
     const incompleteSelections = breedSelections.some(selection => 
       !selection.breed || selection.percentage <= 0
@@ -77,19 +77,19 @@ export const BreedingSection = ({ breedSelections, setBreedSelections, gender, s
       title: "Breeding Data Saved",
       description: "Breeding information will be saved when you submit the horse form.",
     });
-  };
+  }, [breedSelections, toast]);
 
-  const handleStallionChange = (checked: boolean) => {
+  const handleStallionChange = useCallback((checked: boolean) => {
     if (setGender) {
       setGender(checked ? "stallion" : undefined);
     }
-  };
+  }, [setGender]);
 
-  const handleMareChange = (checked: boolean) => {
+  const handleMareChange = useCallback((checked: boolean) => {
     if (setGender) {
       setGender(checked ? "mare" : undefined);
     }
-  };
+  }, [setGender]);
 
   const totalPercentage = breedSelections.reduce((sum, selection) => sum + (selection.percentage || 0), 0);
 
@@ -222,4 +222,4 @@ export const BreedingSection = ({ breedSelections, setBreedSelections, gender, s
       )}
     </div>
   );
-};
+});
