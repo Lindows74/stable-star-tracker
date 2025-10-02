@@ -71,6 +71,31 @@ const TRAIT_CATEGORIES = {
 export const TraitSelector = memo(({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const handleTriggerKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    const isModifier = e.ctrlKey || e.metaKey || e.altKey;
+    const isChar = e.key.length === 1 && !isModifier;
+    const isBackspace = e.key === "Backspace";
+    const isEnterOrSpace = e.key === "Enter" || e.key === " ";
+
+    if (isChar || isBackspace || isEnterOrSpace) {
+      e.preventDefault();
+      setOpen(true);
+      setTimeout(() => {
+        if (isBackspace) {
+          setSearchValue("");
+        } else if (isChar) {
+          setSearchValue((prev) => prev + e.key);
+        }
+        const el = inputRef.current;
+        if (el) {
+          el.focus();
+          const len = el.value.length;
+          try { el.setSelectionRange(len, len); } catch {}
+        }
+      }, 0);
+    }
+  };
 
   const handleAddTrait = useCallback((trait: string) => {
     if (selectedTraits.includes(trait)) {
@@ -135,6 +160,7 @@ export const TraitSelector = memo(({ selectedTraits, onTraitsChange }: TraitSele
                 role="combobox"
                 aria-expanded={open}
                 className="w-full justify-between"
+                onKeyDown={handleTriggerKeyDown}
               >
                 Select a trait to add...
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -147,6 +173,7 @@ export const TraitSelector = memo(({ selectedTraits, onTraitsChange }: TraitSele
                   value={searchValue}
                   onValueChange={setSearchValue}
                   autoFocus
+                  ref={(el) => (inputRef.current = el)}
                 />
                 <CommandList className="max-h-80">
                   <CommandEmpty>No traits found.</CommandEmpty>
