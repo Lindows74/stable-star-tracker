@@ -140,12 +140,13 @@ export const TraitSelector = memo(({ selectedTraits, onTraitsChange }: TraitSele
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-full p-0 bg-background z-50">
+            <PopoverContent className="w-full p-0 bg-popover z-[70]">
               <Command>
                 <CommandInput 
                   placeholder="Search traits..." 
                   value={searchValue}
                   onValueChange={setSearchValue}
+                  autoFocus
                 />
                 <CommandList className="max-h-80">
                   <CommandEmpty>No traits found.</CommandEmpty>

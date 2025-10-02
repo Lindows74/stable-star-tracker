@@ -147,9 +147,9 @@ export const BreedingSection = memo(({ breedSelections, setBreedSelections, gend
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-full p-0 bg-background z-50">
+                <PopoverContent className="w-full p-0 bg-popover z-[70]">
                   <Command>
-                    <CommandInput placeholder="Search breeds..." />
+                    <CommandInput placeholder="Search breeds..." autoFocus />
                     <CommandList className="max-h-60">
                       <CommandEmpty>No breeds found.</CommandEmpty>
                       <CommandGroup>
