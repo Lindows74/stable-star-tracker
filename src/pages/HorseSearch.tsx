@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { HorseCard } from "@/components/horses/HorseCard";
@@ -82,24 +82,6 @@ const HorseSearch = () => {
   const [traitsOpen, setTraitsOpen] = useState(false);
   const [breedsOpen, setBreedsOpen] = useState(false);
   const isMobile = useIsMobile();
-
-  const nameInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!isMobile) {
-      nameInputRef.current?.focus();
-      nameInputRef.current?.select();
-    }
-  }, [isMobile]);
-
-  useEffect(() => {
-    if (filterSheetOpen) {
-      setTimeout(() => {
-        nameInputRef.current?.focus();
-        nameInputRef.current?.select();
-      }, 0);
-    }
-  }, [filterSheetOpen]);
 
   const { data: horses, isLoading, error } = useQuery({
     queryKey: ["horses", "search", searchTerm, selectedCategories, selectedSurfaces, selectedDistances, selectedPositions, selectedTraits, selectedBreeds, minTier, maxTier, fromDate, toDate, selectedDateSort],
@@ -282,7 +264,7 @@ const HorseSearch = () => {
     return value.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
 
-  const FilterContent = ({ nameInputRef }: { nameInputRef?: React.RefObject<HTMLInputElement> }) => (
+  const FilterContent = () => (
     <div className="space-y-6">
       {/* Search by Name */}
       <div>
@@ -295,7 +277,6 @@ const HorseSearch = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
-            ref={nameInputRef}
           />
         </div>
       </div>
@@ -713,7 +694,7 @@ const HorseSearch = () => {
                     Clear All Filters
                   </Button>
                   <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
-                    <FilterContent nameInputRef={nameInputRef} />
+                    <FilterContent />
                   </ScrollArea>
                 </div>
               </SheetContent>
@@ -742,7 +723,7 @@ const HorseSearch = () => {
               </div>
 
               <ScrollArea className="h-[calc(100vh-12rem)]">
-                <FilterContent nameInputRef={nameInputRef} />
+                <FilterContent />
               </ScrollArea>
             </div>
           )}
