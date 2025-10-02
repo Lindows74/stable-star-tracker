@@ -86,10 +86,13 @@ const HorseSearch = () => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    // Auto-focus search input on page load
+    // Auto-focus search input once per page session
+    const w = window as any;
+    if (w.__horseSearchInitialFocusDone) return;
     const timer = setTimeout(() => {
       searchInputRef.current?.focus();
     }, 100);
+    w.__horseSearchInitialFocusDone = true;
     return () => clearTimeout(timer);
   }, []);
 
