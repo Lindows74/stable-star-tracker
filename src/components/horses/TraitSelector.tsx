@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, memo, useCallback } from "react";
 import { FormLabel, FormMessage } from "@/components/ui/form";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -68,11 +68,11 @@ const TRAIT_CATEGORIES = {
   ]
 };
 
-export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
+export const TraitSelector = memo(({ selectedTraits, onTraitsChange }: TraitSelectorProps) => {
   const [open, setOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  const handleAddTrait = (trait: string) => {
+  const handleAddTrait = useCallback((trait: string) => {
     if (selectedTraits.includes(trait)) {
       toast.error("Trait already selected");
       return;
@@ -87,12 +87,12 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
     onTraitsChange(newTraits);
     setOpen(false);
     setSearchValue("");
-  };
+  }, [selectedTraits, onTraitsChange]);
 
-  const handleRemoveTrait = (traitToRemove: string) => {
+  const handleRemoveTrait = useCallback((traitToRemove: string) => {
     const newTraits = selectedTraits.filter(trait => trait !== traitToRemove);
     onTraitsChange(newTraits);
-  };
+  }, [selectedTraits, onTraitsChange]);
 
   return (
     <div>
@@ -183,4 +183,4 @@ export const TraitSelector = ({ selectedTraits, onTraitsChange }: TraitSelectorP
       <FormMessage />
     </div>
   );
-};
+});
