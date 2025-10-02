@@ -706,14 +706,14 @@ const HorseSearch = () => {
                   Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-full sm:w-96" onOpenAutoFocus={(e) => e.preventDefault()} onCloseAutoFocus={(e) => e.preventDefault()}>
+              <SheetContent side="left" className="w-full sm:w-96 flex flex-col" onOpenAutoFocus={(e) => e.preventDefault()} onCloseAutoFocus={(e) => e.preventDefault()}>
                 <SheetHeader className="mb-4">
                   <SheetTitle className="flex items-center gap-2">
                     <Filter className="h-5 w-5" />
                     Filters
                   </SheetTitle>
                 </SheetHeader>
-                <div className="space-y-4">
+                <div className="flex-1 space-y-4 overflow-hidden">
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -723,9 +723,18 @@ const HorseSearch = () => {
                     <X className="h-4 w-4" />
                     Clear All Filters
                   </Button>
-                  <ScrollArea className="h-[calc(100vh-12rem)] pr-4">
+                  <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
                     {filterContent}
                   </ScrollArea>
+                </div>
+                <div className="pt-4 border-t mt-auto">
+                  <Button 
+                    onClick={() => setFilterSheetOpen(false)}
+                    className="w-full"
+                    size="lg"
+                  >
+                    Apply Filters
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
