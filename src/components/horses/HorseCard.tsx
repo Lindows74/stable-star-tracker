@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Edit2, Trash2, Lock } from "lucide-react";
+import { Edit2, Trash2, Lock, Star } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -124,7 +124,10 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
   const hasSpeedStackingTraits = checkHorseHasSpeedStackingTraits(allTraitNames);
   const hasJumpingStackingTraits = checkHorseHasJumpingStackingTraits(allTraitNames);
   
-  console.log(`Horse ${horse.name} - Speed stacking: ${hasSpeedStackingTraits}, Jumping stacking: ${hasJumpingStackingTraits}, Full stamina: ${hasFullStaminaTrait}`);
+  // Check if horse has Elite Lineage trait
+  const hasEliteLineage = allTraitNames.includes("Elite Lineage");
+  
+  console.log(`Horse ${horse.name} - Speed stacking: ${hasSpeedStackingTraits}, Jumping stacking: ${hasJumpingStackingTraits}, Full stamina: ${hasFullStaminaTrait}, Elite Lineage: ${hasEliteLineage}`);
   
   // Check for live race matches
   const horseDistances = horse.horse_distances?.map((d: any) => d.distance.toString()) || [];
@@ -167,6 +170,7 @@ export const HorseCard = ({ horse }: HorseCardProps) => {
             <div className={`inline-block px-3 py-2 rounded-lg ${getGenderNameBackgroundClass(horse.gender || '')}`}>
               <CardTitle className="text-lg flex items-center gap-1">
                 {horse.name}
+                {hasEliteLineage && <Star className="h-4 w-4 fill-purple-500 text-purple-500" />}
                 {hasFullStaminaTrait && <span className="text-lg">💯</span>}
                 {hasSpeedStackingTraits && <span className="text-lg">🔥</span>}
                 {hasJumpingStackingTraits && <span className="text-lg">🐸</span>}
