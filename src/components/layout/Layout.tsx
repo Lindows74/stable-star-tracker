@@ -3,14 +3,12 @@ import Navigation from "./Navigation";
 
 interface LayoutProps {
   children: ReactNode;
-  onAddHorse?: () => void;
-  showAddButton?: boolean;
 }
 
-const Layout = ({ children, onAddHorse, showAddButton = false }: LayoutProps) => {
+const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation onAddHorse={onAddHorse} showAddButton={showAddButton} />
+      <Navigation />
       <main className="container mx-auto px-4 py-8">
         {children}
       </main>

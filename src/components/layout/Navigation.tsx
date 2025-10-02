@@ -1,17 +1,26 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Home, Search, Heart, Plus, Lock } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { MasterKeyDialog } from "@/components/auth/MasterKeyDialog";
+import { HorseForm } from "@/components/horses/HorseForm";
 
-interface NavigationProps {
-  onAddHorse?: () => void;
-  showAddButton?: boolean;
-}
-
-const Navigation = ({ onAddHorse, showAddButton = false }: NavigationProps) => {
+const Navigation = () => {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
+  const [showForm, setShowForm] = useState(false);
+  const [showMasterKeyDialog, setShowMasterKeyDialog] = useState(false);
+
+  const handleAddHorse = () => {
+    if (isAuthenticated) {
+      setShowForm(true);
+    } else {
+      setShowMasterKeyDialog(true);
+    }
+  };
 
   const navItems = [
     { path: "/", label: "Dashboard", icon: Home },
@@ -50,15 +59,30 @@ const Navigation = ({ onAddHorse, showAddButton = false }: NavigationProps) => {
             </nav>
           </div>
           
-          {showAddButton && (
-            <Button onClick={onAddHorse} className="flex items-center gap-2">
-              {!isAuthenticated && <Lock className="h-3 w-3" />}
-              <Plus className="h-4 w-4" />
-              Add Horse
-            </Button>
-          )}
+          <Button onClick={handleAddHorse} className="flex items-center gap-2">
+            {!isAuthenticated && <Lock className="h-3 w-3" />}
+            <Plus className="h-4 w-4" />
+            Add Horse
+          </Button>
         </div>
       </div>
+
+      {/* Add Horse Dialog */}
+      <Dialog open={showForm} onOpenChange={setShowForm}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add New Horse</DialogTitle>
+          </DialogHeader>
+          <HorseForm onSuccess={() => setShowForm(false)} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Master Key Dialog */}
+      <MasterKeyDialog
+        isOpen={showMasterKeyDialog}
+        onClose={() => setShowMasterKeyDialog(false)}
+        onSuccess={() => setShowForm(true)}
+      />
     </header>
   );
 };
