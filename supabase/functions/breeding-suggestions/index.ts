@@ -101,6 +101,11 @@ serve(async (req) => {
           acceleration: horse.acceleration,
           agility: horse.agility,
           jump: horse.jump,
+          max_speed: horse.max_speed,
+          max_sprint_energy: horse.max_sprint_energy,
+          max_acceleration: horse.max_acceleration,
+          max_agility: horse.max_agility,
+          max_jump: horse.max_jump,
           traits: horse.horse_traits?.map(t => t.trait_name) || []
         })) || [];
 

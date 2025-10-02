@@ -16,6 +16,11 @@ interface MatchingHorse {
   name: string;
   tier: number;
   traits: string[];
+  max_speed?: boolean;
+  max_sprint_energy?: boolean;
+  max_acceleration?: boolean;
+  max_agility?: boolean;
+  max_jump?: boolean;
 }
 
 interface RaceMatch {
@@ -36,6 +41,11 @@ interface NonMatchingHorse {
   name: string;
   tier: number;
   traits: string[];
+  max_speed?: boolean;
+  max_sprint_energy?: boolean;
+  max_acceleration?: boolean;
+  max_agility?: boolean;
+  max_jump?: boolean;
 }
 
 const LiveEvents = () => {
@@ -149,6 +159,11 @@ const LiveEvents = () => {
             id,
             name,
             tier,
+            max_speed,
+            max_sprint_energy,
+            max_acceleration,
+            max_agility,
+            max_jump,
             horse_traits!inner(trait_name)
           `);
 
@@ -159,7 +174,12 @@ const LiveEvents = () => {
               id: horse.id,
               name: horse.name,
               tier: horse.tier,
-              traits: horse.horse_traits?.map((ht: any) => ht.trait_name) || []
+              traits: horse.horse_traits?.map((ht: any) => ht.trait_name) || [],
+              max_speed: horse.max_speed,
+              max_sprint_energy: horse.max_sprint_energy,
+              max_acceleration: horse.max_acceleration,
+              max_agility: horse.max_agility,
+              max_jump: horse.max_jump
             }))
             .sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name));
           
@@ -194,6 +214,11 @@ const LiveEvents = () => {
 
   const formatSurface = (surface: string) => {
     return surface.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const isMaxTrained = (horse: MatchingHorse | NonMatchingHorse) => {
+    return horse.max_speed && horse.max_sprint_energy && horse.max_acceleration && 
+           horse.max_agility && horse.max_jump;
   };
 
   return (
@@ -360,15 +385,20 @@ const LiveEvents = () => {
                          </TableHeader>
                          <TableBody>
                            {race.matchingHorses.map((horse) => (
-                              <TableRow key={horse.id}>
-                                <TableCell className="font-medium">
-                                  <div className="flex items-center gap-1">
-                                    {horse.name}
-                                    {getHorseSpecialIcons(horse.traits || []) && (
-                                      <span className="text-sm">{getHorseSpecialIcons(horse.traits || [])}</span>
-                                    )}
-                                  </div>
-                                </TableCell>
+                               <TableRow key={horse.id}>
+                                 <TableCell className="font-medium">
+                                   <div className="flex items-center gap-1.5">
+                                     {horse.name}
+                                     {isMaxTrained(horse) && (
+                                       <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-400/30">
+                                         MAX
+                                       </span>
+                                     )}
+                                     {getHorseSpecialIcons(horse.traits || []) && (
+                                       <span className="text-sm">{getHorseSpecialIcons(horse.traits || [])}</span>
+                                     )}
+                                   </div>
+                                 </TableCell>
                                <TableCell>
                                  <Badge variant="outline">Tier {horse.tier}</Badge>
                                </TableCell>
@@ -423,15 +453,20 @@ const LiveEvents = () => {
                  </TableHeader>
                  <TableBody>
                    {nonMatchingHorses.map((horse) => (
-                     <TableRow key={horse.id}>
-                       <TableCell className="font-medium">
-                         <div className="flex items-center gap-1">
-                           {horse.name}
-                           {getHorseSpecialIcons(horse.traits || []) && (
-                             <span className="text-sm">{getHorseSpecialIcons(horse.traits || [])}</span>
-                           )}
-                         </div>
-                       </TableCell>
+                      <TableRow key={horse.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-1.5">
+                            {horse.name}
+                            {isMaxTrained(horse) && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-400 border border-cyan-400/30">
+                                MAX
+                              </span>
+                            )}
+                            {getHorseSpecialIcons(horse.traits || []) && (
+                              <span className="text-sm">{getHorseSpecialIcons(horse.traits || [])}</span>
+                            )}
+                          </div>
+                        </TableCell>
                        <TableCell>
                          <Badge variant="outline">Tier {horse.tier}</Badge>
                        </TableCell>
